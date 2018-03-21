@@ -1,5 +1,5 @@
 ################################################################################
-# BrkgaMpIpr.jl: Main module for BRKGA-MP-IPR framework.
+# init.jl: Initialization routines.
 #
 # (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
 #
@@ -21,18 +21,21 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
 
-module BrkgaMpIpr
+function init(opt_sense::Sense, num_chromosomes::Int64,
+              chromosome_size::Int64)::BrkgaData
 
-include("types.jl")
-include("init.jl")
-include("evolution.jl")
+    brkga_data = BrkgaData()
+    brkga_data.opt_sense = opt_sense
 
-# TODO (ceandrade): exporting of each item of the enums is weird.
-# If Julia change these in the future, remove the items from exporting.
-export Sense, MINIMIZE, MAXIMIZE
+    brkga_data.rng = MersenneTwister(1234)
 
-export BrkgaData, AbstractInstance, ExternalControlParams
-export init
-export evolve!
+    # brkga_data.num_chromosomes = num_chromosomes
+    # brkga_data.chromosome_size = chromosome_size
+    #
+    # brkga_data.chromosomes = Array{Array{Float64}}(0)
+    # for i in 1:num_chromosomes
+    #     push!(brkga_data.chromosomes, rand(brkga_data.rng, chromosome_size))
+    # end
 
+    return brkga_data
 end

@@ -1,5 +1,5 @@
 ################################################################################
-# BrkgaMpIpr.jl: Main module for BRKGA-MP-IPR framework.
+# test_main.jl: anchor point for test and development.
 #
 # (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
 #
@@ -21,18 +21,19 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
 
-module BrkgaMpIpr
+push!(LOAD_PATH, ".")
 
-include("types.jl")
-include("init.jl")
-include("evolution.jl")
+import BrkgaMpIpr
+import TestInstance
+import Decoder
 
-# TODO (ceandrade): exporting of each item of the enums is weird.
-# If Julia change these in the future, remove the items from exporting.
-export Sense, MINIMIZE, MAXIMIZE
+chr_size = 100
 
-export BrkgaData, AbstractInstance, ExternalControlParams
-export init
-export evolve!
+print("\n\n>> Building instance")
+instance = TestInstance.Instance(chr_size)
 
-end
+print("\n\n>> Building BRKGA data")
+brkga_data = BrkgaMpIpr.init(BrkgaMpIpr.MAXIMIZE, chr_size, chr_size)
+
+print("\n\n>> Evolving")
+@time BrkgaMpIpr.evolve!(brkga_data, instance, Decoder.decode!)
