@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Mar 21, 2018 by ceandrade
+# Last update: Mar 23, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -31,8 +31,12 @@ include("evolution.jl")
 # If Julia change these in the future, remove the items from exporting.
 export Sense, MINIMIZE, MAXIMIZE
 
+# TODO (ceandrade): exporting of each item of the enums is weird.
+# If Julia change these in the future, remove the items from exporting.
+export BiasFunction, CONSTANT, CUBIC, EXPONENTIAL, LINEAR, LOGINVERSE, QUADRATIC
+
 export BrkgaData, AbstractInstance, ExternalControlParams
-export init
+export build_brkga, set_bias_custom_function!
 export evolve!
 
 end

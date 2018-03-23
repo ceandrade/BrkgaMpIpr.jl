@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Mar 21, 2018 by ceandrade
+# Last update: Mar 23, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -25,15 +25,31 @@ push!(LOAD_PATH, ".")
 
 import BrkgaMpIpr
 import TestInstance
-import Decoder
+import TestDecoder
 
 chr_size = 100
+pop_size = 10
+elite_percentage = 0.3
+mutants_percentage = 0.1
+evolutionary_mechanism_on = true
+num_elite_parents = 1
+total_parents = 2
+bias = BrkgaMpIpr.LOGINVERSE
+num_independent_populations = 1
 
 print("\n\n>> Building instance")
 instance = TestInstance.Instance(chr_size)
 
 print("\n\n>> Building BRKGA data")
-brkga_data = BrkgaMpIpr.init(BrkgaMpIpr.MAXIMIZE, chr_size, chr_size)
+brkga_data = BrkgaMpIpr.build_brkga(instance, TestDecoder.decode!,
+                             BrkgaMpIpr.MAXIMIZE, 2700001, chr_size, pop_size,
+                             elite_percentage, mutants_percentage,
+                             evolutionary_mechanism_on, num_elite_parents,
+                             total_parents, bias, num_independent_populations)
+
+# brkga_data = BrkgaMpIpr.init(instance, Decoder.decode!, BrkgaMpIpr.MAXIMIZE,
+#                              2700001, chr_size, "ze.conf")
+
 
 print("\n\n>> Evolving")
-@time BrkgaMpIpr.evolve!(brkga_data, instance, Decoder.decode!)
+@time BrkgaMpIpr.evolve!(brkga_data, instance, TestDecoder.decode!)

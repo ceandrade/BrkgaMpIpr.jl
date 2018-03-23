@@ -124,9 +124,6 @@ inadvertent results. However, some fields of interest are documented using
 docstring. Internal only fields have regular comments as documentation.
 """
 mutable struct BrkgaData
-    # Default constructor.
-    BrkgaData() = new()
-
     ########################################
     # BRKGA Hyper-parameter
     ########################################
@@ -196,11 +193,36 @@ mutable struct BrkgaData
     # Path Relinking parameters
     ########################################
 
-    # TODO (ceandrade): list the IPR parameters here.
+    # TODO (ceandrade): list the path relink parameters here.
 
     ########################################
     # Internal data
     ########################################
+
+    """
+    (Internal data)
+    The problem instance used by the `decode!` function to map a chromosome
+    to a problem solution. Since `decode!` should not change this data,
+    this attribute can be considered constant.
+    """
+    problem_instance::AbstractInstance
+
+    """
+    (Internal data)
+    This is the **main decode function** called during the evolutionary
+    process and in the path relink. It **must have** the following signature:
+
+        decode!(chromosome::Array{Float64, 1},
+                problem_instance::AbstractInstance,
+                rewrite::Bool = true)::Float64
+
+    Note that if `rewrite == true`, `decode!` can change `chromosome`.
+    """
+    # TODO (ceandrade): the current Julia version (0.6) doesn't support
+    # strong typing function signatures, as defined above. When such cabability
+    # be available in Julia, the definition below must be changed for a
+    # strong typed version.
+    decode!::Function
 
     """
     (Internal data)

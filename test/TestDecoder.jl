@@ -1,4 +1,4 @@
-module Decoder
+module TestDecoder
 export decode!
 
 import TestInstance
