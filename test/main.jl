@@ -23,9 +23,9 @@
 
 push!(LOAD_PATH, ".")
 
-import BrkgaMpIpr
 import TestInstance
 import TestDecoder
+using BrkgaMpIpr
 
 chr_size = 100
 pop_size = 10
@@ -52,5 +52,5 @@ brkga_data = BrkgaMpIpr.build_brkga(instance, TestDecoder.decode!,
                              "configuration_files/regular.conf")
 
 
-print("\n\n>> Evolving")
-@time BrkgaMpIpr.evolve!(brkga_data, instance, TestDecoder.decode!)
+# print("\n\n>> Evolving")
+# @time BrkgaMpIpr.evolve!(brkga_data, instance, TestDecoder.decode!)

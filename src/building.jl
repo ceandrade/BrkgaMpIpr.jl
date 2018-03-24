@@ -1,12 +1,12 @@
 ################################################################################
-# init.jl: Building andiInitialization routines.
+# building.jl: Building and parameter setup routines.
 #
 # (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
 #
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Mar 23, 2018 by ceandrade
+# Last update: Mar 24, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -213,6 +213,11 @@ functions. This version reads most of the parameters from a configuration file.
 
  - `evolutionary_mechanism_on::Bool = true`: if false, no evolution is performed
    but only chromosome decoding. Very useful to emulate a multi-start algorithm.
+
+# Throws
+- `LoadError`: in cases of the file is an invalid configuration file,
+  parameters are missing, or parameters are ill-formatted.
+- `SystemError`: in case the configuration files cannot be openned.
 """
 function build_brkga(problem_instance::AbstractInstance,
         decode_function!::Function,
@@ -230,7 +235,7 @@ function build_brkga(problem_instance::AbstractInstance,
         ("MUTANTS_PERCENTAGE", Float64),
         ("ELITE_PARENTS", Int64),
         ("TOTAL_PARENTS", Int64),
-        #("BIAS_FUNCTION", ),
+        ("BIAS_FUNCTION", BiasFunction),
         ("INDEPENDENT_POPULATIONS", Int64),
         # ("PR_MINIMUM_DISTANCE", Float64),
         # ("PR_TYPE", ),
@@ -247,11 +252,6 @@ function build_brkga(problem_instance::AbstractInstance,
 
     param_values = Array{Any}(length(param_names_types))
     param_given = falses(length(param_names_types))
-
-    # println("\n\n>> param_names: ", param_names_types)
-    # println("\n\n>> param_index: ", param_index)
-    # println("\n\n>> param_values: ", param_values)
-    # println("\n\n>> param_given: ", param_given)
 
     lines = Array{String,1}()
     open(configuration_file) do file
@@ -273,7 +273,7 @@ function build_brkga(problem_instance::AbstractInstance,
         try
             param_name, value = split(line)
             idx = param_index[param_name]
-            param_values[idx] = parse(param_names_types[idx][2], value)
+            param_values[idx] = parse(param_names_types[idx][2], String(value))
             param_given[idx] = true
         catch err
             if isa(err, BoundsError)
@@ -304,10 +304,6 @@ function build_brkga(problem_instance::AbstractInstance,
                         "missing parameters: $missing_params"))
     end
 
-    println("\n\n** ", param_values, "\n\n")
-    println("\n\n** ", param_given, "\n\n")
-    println("\n\n** ", all(param_given), "\n\n")
-
     return build_brkga(problem_instance, decode_function!, opt_sense, seed,
             chromosome_size,
             param_values[param_index["POPULATION_SIZE"]],
@@ -329,6 +325,10 @@ Set a new bias function to be used to rank the chromosomes during the mating.
 **It must be a positive non-decreasing function** returning a Float64, i.e.,
 `f(::Int64)::Float64` such that `f(i) ≥ 0` and `f(i) ≥ f(i+1)` for
 `i ∈ [1..total_parents]`.
+
+# Throws
+- `ArgumentError`: in case the function is not a non-decreasing positive
+  function.
 """
 function set_bias_custom_function!(brkga_data::BrkgaData,
                                    bias_function::Function)

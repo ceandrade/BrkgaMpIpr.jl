@@ -1,11 +1,11 @@
 ################################################################################
-# BrkgaMpIpr.jl: Main module for BRKGA-MP-IPR framework.
+# types_io_tests.jl: unit tests for I/O type handling.
 #
 # (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
 #
 # This code is released under LICENSE.md.
 #
-# Created on:  Mar 20, 2018 by ceandrade
+# Created on:  Mar 24, 2018 by ceandrade
 # Last update: Mar 24, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -21,24 +21,16 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
 
-module BrkgaMpIpr
+using BrkgaMpIpr
+using Base.Test
 
-include("types.jl")
-include("types_io.jl")
-include("building.jl")
-include("evolution.jl")
-
-# TODO (ceandrade): exporting of each item of the enums is weird.
-# If Julia change these in the future, remove the items from exporting.
-export Sense, MINIMIZE, MAXIMIZE
-
-# TODO (ceandrade): exporting of each item of the enums is weird.
-# If Julia change these in the future, remove the items from exporting.
-export BiasFunction, CONSTANT, CUBIC, EXPONENTIAL, LINEAR, LOGINVERSE, QUADRATIC
-export parse
-
-export BrkgaData, AbstractInstance, ExternalControlParams
-export build_brkga, set_bias_custom_function!
-export evolve!
-
+@testset "Parsing BiasFunction" begin
+    @test parse(BrkgaMpIpr.BiasFunction, "CONSTANT") == CONSTANT
+    @test parse(BrkgaMpIpr.BiasFunction, "CUBIC") == CUBIC
+    @test parse(BrkgaMpIpr.BiasFunction, "EXPONENTIAL") == EXPONENTIAL
+    @test parse(BrkgaMpIpr.BiasFunction, "LINEAR") == LINEAR
+    @test parse(BrkgaMpIpr.BiasFunction, "LOGINVERSE") == LOGINVERSE
+    @test parse(BrkgaMpIpr.BiasFunction, "QUADRATIC") == QUADRATIC
+    @test parse(BrkgaMpIpr.BiasFunction, "QuAdRaTiC") == QUADRATIC
+    @test_throws ArgumentError parse(BrkgaMpIpr.BiasFunction, "invalid")
 end

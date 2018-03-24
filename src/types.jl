@@ -59,7 +59,6 @@ rank r, we have the following functions:
     - LOGINVERSE: 1 / log(r + 1)
 
     - QUADRATIC: r^-2
-
 """
 # TODO (ceandrade): implement using `begin...end` block in future Julia
 # versions:

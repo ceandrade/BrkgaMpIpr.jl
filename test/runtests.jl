@@ -24,4 +24,5 @@
 
 using Base.Test
 
-include("init_tests.jl")
+# include("types_io_tests.jl")
+include("building_tests.jl")

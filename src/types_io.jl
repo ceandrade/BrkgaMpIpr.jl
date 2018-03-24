@@ -1,11 +1,11 @@
 ################################################################################
-# BrkgaMpIpr.jl: Main module for BRKGA-MP-IPR framework.
+# types_io.jl: Input/output/parsing methods for internal data strucutures.
 #
 # (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
 #
 # This code is released under LICENSE.md.
 #
-# Created on:  Mar 20, 2018 by ceandrade
+# Created on:  Mar 24, 2018 by ceandrade
 # Last update: Mar 24, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -21,24 +21,33 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
 
-module BrkgaMpIpr
+import Base: parse
 
-include("types.jl")
-include("types_io.jl")
-include("building.jl")
-include("evolution.jl")
+################################################################################
 
-# TODO (ceandrade): exporting of each item of the enums is weird.
-# If Julia change these in the future, remove the items from exporting.
-export Sense, MINIMIZE, MAXIMIZE
+"""
+    parse(::Type{BiasFunction}, value::String)::BiasFunction
 
-# TODO (ceandrade): exporting of each item of the enums is weird.
-# If Julia change these in the future, remove the items from exporting.
-export BiasFunction, CONSTANT, CUBIC, EXPONENTIAL, LINEAR, LOGINVERSE, QUADRATIC
-export parse
+Parse `value` and return a valid `BiasFunction` enumeration.
 
-export BrkgaData, AbstractInstance, ExternalControlParams
-export build_brkga, set_bias_custom_function!
-export evolve!
+# Throws
+- `ArgumentError`: in case the bias description does not match.
+"""
+function parse(::Type{BiasFunction}, value::String)::BiasFunction
+    value = uppercase(strip(value))
+    if value == "CONSTANT"
+        return CONSTANT
+    elseif value == "CUBIC"
+        return CUBIC
+    elseif value == "EXPONENTIAL"
+        return EXPONENTIAL
+    elseif value == "LINEAR"
+        return LINEAR
+    elseif value == "LOGINVERSE"
+        return LOGINVERSE
+    elseif value == "QUADRATIC"
+        return QUADRATIC
+    end
 
+    throw(ArgumentError("cannot parse $value as BiasFunction"))
 end
