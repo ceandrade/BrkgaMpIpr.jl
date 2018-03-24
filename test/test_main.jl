@@ -41,14 +41,15 @@ print("\n\n>> Building instance")
 instance = TestInstance.Instance(chr_size)
 
 print("\n\n>> Building BRKGA data")
-brkga_data = BrkgaMpIpr.build_brkga(instance, TestDecoder.decode!,
-                             BrkgaMpIpr.MAXIMIZE, 2700001, chr_size, pop_size,
-                             elite_percentage, mutants_percentage,
-                             evolutionary_mechanism_on, num_elite_parents,
-                             total_parents, bias, num_independent_populations)
+# brkga_data = BrkgaMpIpr.build_brkga(instance, TestDecoder.decode!,
+#                              BrkgaMpIpr.MAXIMIZE, 2700001, chr_size, pop_size,
+#                              elite_percentage, mutants_percentage,
+#                              evolutionary_mechanism_on, num_elite_parents,
+#                              total_parents, bias, num_independent_populations)
 
-# brkga_data = BrkgaMpIpr.init(instance, Decoder.decode!, BrkgaMpIpr.MAXIMIZE,
-#                              2700001, chr_size, "ze.conf")
+brkga_data = BrkgaMpIpr.build_brkga(instance, TestDecoder.decode!,
+                             BrkgaMpIpr.MAXIMIZE, 2700001, chr_size,
+                             "configuration_files/regular.conf")
 
 
 print("\n\n>> Evolving")
