@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Mar 24, 2018 by ceandrade
+# Last update: Mar 25, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -32,7 +32,7 @@ procedures. Such data structure should not be changed outside the `BrkgaMpIpr`
 functions. This version accepts all control arguments, and it is handy for
 tuning purposes.
 
-# Arguments:
+# Arguments
 - `problem_instance::AbstractInstance`: an instance to the problem to be
   solved.
 
@@ -43,7 +43,7 @@ tuning purposes.
                     problem_instance::AbstractInstance,
                     rewrite::Bool = true)::Float64
 
-  Note that if `rewrite == true`, `decode!` can change `chromosome`.
+  Note that if `rewrite == false`, `decode!` cannot modify `chromosome`.
 
 - `opt_sense::Sense`: the optimization sense (maximization or minimization).
 
@@ -182,13 +182,14 @@ end
 """
     build_brkga(problem_instance, decode_function!, opt_sense, seed,
         chromosome_size, configuration_file,
-        evolutionary_mechanism_on)::BrkgaData
+        evolutionary_mechanism_on)::Tuple{BrkgaData, ExternalControlParams}
 
 Build a `BrkgaData` object to be used in the evolutionary and path relink
-procedures. Such data structure should not be changed outside the `BrkgaMpIpr`
+procedures, and a `ExternalControlParams` that holds additional control
+parameters. Note that `BrkgaData` should not be changed outside the `BrkgaMpIpr`
 functions. This version reads most of the parameters from a configuration file.
 
-# Arguments:
+# Arguments
 - `problem_instance::AbstractInstance`: an instance to the problem to be
   solved.
 
@@ -199,7 +200,7 @@ functions. This version reads most of the parameters from a configuration file.
                     problem_instance::AbstractInstance,
                     rewrite::Bool = true)::Float64
 
-  Note that if `rewrite == true`, `decode!` can change `chromosome`.
+  Note that if `rewrite == false`, `decode!` cannot modify `chromosome`.
 
 - `opt_sense::Sense`: the optimization sense (maximization or minimization).
 
@@ -219,13 +220,15 @@ functions. This version reads most of the parameters from a configuration file.
   parameters are missing, or parameters are ill-formatted.
 - `SystemError`: in case the configuration files cannot be openned.
 """
-function build_brkga(problem_instance::AbstractInstance,
+function build_brkga(
+        problem_instance::AbstractInstance,
         decode_function!::Function,
         opt_sense::Sense,
         seed::Int64,
         chromosome_size::Int64,
         configuration_file::String,
-        evolutionary_mechanism_on::Bool = true)::BrkgaData
+        evolutionary_mechanism_on::Bool = true
+    )::Tuple{BrkgaData, ExternalControlParams}
 
     # TODO (ceandrade) add the path relink parameters.
 
@@ -258,8 +261,7 @@ function build_brkga(problem_instance::AbstractInstance,
         lines = readlines(file)
     end
     if length(lines) == 0
-        throw(LoadError(configuration_file, 0,
-                        "cannot read '$configuration_file'"))
+        throw(LoadError(configuration_file, 0, "cannot read '$configuration_file'"))
     end
 
     for (line_number, line) in enumerate(lines)
@@ -278,16 +280,13 @@ function build_brkga(problem_instance::AbstractInstance,
         catch err
             if isa(err, BoundsError)
                 throw(LoadError(configuration_file, line_number,
-                    "error line $line_number of '$configuration_file': " *
-                    "missing parameter or value"))
+                        "error line $line_number of '$configuration_file': missing parameter or value"))
 
             elseif isa(err, KeyError)
-                throw(LoadError(configuration_file, line_number,
-                                "parameter '$param_name' unknown"))
+                throw(LoadError(configuration_file, line_number, "parameter '$param_name' unknown"))
 
             elseif isa(err, ArgumentError)
-                throw(LoadError(configuration_file, line_number,
-                                "invalid value for '$param_name': $value"))
+                throw(LoadError(configuration_file, line_number, "invalid value for '$param_name': $value"))
             end
         end
     end
@@ -298,22 +297,28 @@ function build_brkga(problem_instance::AbstractInstance,
             missing_params *= "'" * param_names_types[idx][1] * "',"
         end
     end
-
     if length(missing_params) > 0
-        throw(LoadError(configuration_file, 0,
-                        "missing parameters: $missing_params"))
+        throw(LoadError(configuration_file, 0, "missing parameters: $missing_params"))
     end
 
-    return build_brkga(problem_instance, decode_function!, opt_sense, seed,
-            chromosome_size,
-            param_values[param_index["POPULATION_SIZE"]],
-            param_values[param_index["ELITE_PERCENTAGE"]],
-            param_values[param_index["MUTANTS_PERCENTAGE"]],
-            evolutionary_mechanism_on,
-            param_values[param_index["ELITE_PARENTS"]],
-            param_values[param_index["TOTAL_PARENTS"]],
-            LOGINVERSE,
-            param_values[param_index["INDEPENDENT_POPULATIONS"]])
+    external_params = ExternalControlParams(
+        param_values[param_index["EXCHANGE_INTERVAL"]],
+        param_values[param_index["NUM_EXCHANGE_INDIVUDUALS"]],
+        param_values[param_index["RESET_INTERVAL"]]
+    )
+
+    brkga_data = build_brkga(problem_instance, decode_function!, opt_sense,
+                    seed, chromosome_size,
+                    param_values[param_index["POPULATION_SIZE"]],
+                    param_values[param_index["ELITE_PERCENTAGE"]],
+                    param_values[param_index["MUTANTS_PERCENTAGE"]],
+                    evolutionary_mechanism_on,
+                    param_values[param_index["ELITE_PARENTS"]],
+                    param_values[param_index["TOTAL_PARENTS"]],
+                    param_values[param_index["BIAS_FUNCTION"]],
+                    param_values[param_index["INDEPENDENT_POPULATIONS"]])
+
+    return (brkga_data, external_params)
 end
 
 ################################################################################
@@ -334,12 +339,11 @@ function set_bias_custom_function!(brkga_data::BrkgaData,
                                    bias_function::Function)
 
     bias_values = map(bias_function, 1:brkga_data.total_parents)
-
     if any(x -> x < 0.0, bias_values)
         throw(ArgumentError("bias_function must be positive non-decreasing"))
     end
 
-    # TODO (ceandrade) issorted(bias_values, rev=true) and variants do not
+    # NOTE (ceandrade) issorted(bias_values, rev=true) and variants do not
     # work for constant functions.
     for i in 2:brkga_data.total_parents
         if bias_values[i - 1] < bias_values[i]
@@ -349,4 +353,5 @@ function set_bias_custom_function!(brkga_data::BrkgaData,
 
     brkga_data.bias_function = bias_function
     brkga_data.total_bias_weight = sum(bias_values)
+    nothing
 end

@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Mar 24, 2018 by ceandrade
+# Last update: Mar 25, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -241,8 +241,9 @@ end
     # Test regular/correct building.
     ########################
 
-    brkga_data = build_brkga(local_param_values...,
-                             joinpath(config_path, "regular.conf"))
+    brkga_data, external_params =
+        build_brkga(local_param_values...,
+                    joinpath(config_path, "regular.conf"))
 
     @test brkga_data.population_size == 500
     @test brkga_data.elite_size == 150
@@ -253,7 +254,9 @@ end
     @test brkga_data.num_independent_populations == 3
     # TODO (ceandrade): test path relink parameters
 
-    # TODO (ceandrade): test ExternalControlParams values.
+    @test external_params.exchange_interval == 200
+    @test external_params.num_exchange_indivuduals == 2
+    @test external_params.reset_interval == 600
 
     ########################
     # Test exceptions.
