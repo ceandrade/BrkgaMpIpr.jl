@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Mar 21, 2018 by ceandrade
+# Last update: Mar 25, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -110,6 +110,12 @@ mutable struct Population
     the chromosome index.
     """
     fitness::Array{Tuple{Float64, Int64}, 1}
+
+    """
+    Default constructor.
+    """
+    Population() = new(Array{Array{Float64, 1}, 1}(),
+                       Array{Tuple{Float64, Int64}, 1}())
 end
 
 ################################################################################
@@ -266,7 +272,7 @@ mutable struct BrkgaData
     (Internal data)
     Defines the order of parents during the mating.
     """
-    parents_ordered::Array{Tuple{Float64,Int64}, 1}
+    parents_ordered::Array{Tuple{Float64, Int64}, 1}
 
     """
     (Internal data)

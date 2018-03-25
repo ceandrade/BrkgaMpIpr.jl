@@ -278,7 +278,7 @@ end
 
 ################################################################################
 
-@testset "set_bias_custom_function()" begin
+@testset "set_bias_custom_function!()" begin
     param_values = copy(default_param_values)
     param_values[param_index["total_parents"]] = 10
     brkga_data = build_brkga(param_values...)
@@ -307,4 +307,64 @@ end
 
     set_bias_custom_function!(brkga_data, x -> 0.6325 / sqrt(x))
     @test brkga_data.total_bias_weight ≈ 3.175781171302612
+end
+
+################################################################################
+
+@testset "set_initial_population!()" begin
+    param_values = copy(default_param_values)
+    param_values[param_index["chr_size"]] = 3
+    param_values[param_index["num_independent_populations"]] = 2
+    brkga_data = build_brkga(param_values...)
+    local_rng = MersenneTwister(param_values[param_index["seed"]])
+
+    chromosomes = Array{Array{Float64, 1}, 1}(
+        param_values[param_index["pop_size"]] + 1
+    )
+    @test_throws ArgumentError set_initial_population!(brkga_data, chromosomes)
+
+    chromosomes = Array{Array{Float64, 1}, 1}(1)
+    chromosomes[1] = rand(local_rng, param_values[param_index["chr_size"]] + 1)
+    @test_throws ArgumentError set_initial_population!(brkga_data, chromosomes)
+
+    chromosomes[1] = rand(local_rng, param_values[param_index["chr_size"]] - 1)
+    @test_throws ArgumentError set_initial_population!(brkga_data, chromosomes)
+
+    chromosomes = Array{Array{Float64, 1}, 1}(3)
+    chromosomes[1] = rand(local_rng, param_values[param_index["chr_size"]] + 1)
+    chromosomes[2] = rand(local_rng, param_values[param_index["chr_size"]])
+    chromosomes[3] = rand(local_rng, param_values[param_index["chr_size"]])
+    @test_throws ArgumentError set_initial_population!(brkga_data, chromosomes)
+
+    chromosomes = Array{Array{Float64, 1}, 1}(3)
+    chromosomes[1] = rand(local_rng, param_values[param_index["chr_size"]])
+    chromosomes[2] = rand(local_rng, param_values[param_index["chr_size"]] + 1)
+    chromosomes[3] = rand(local_rng, param_values[param_index["chr_size"]])
+    @test_throws ArgumentError set_initial_population!(brkga_data, chromosomes)
+
+    chromosomes = Array{Array{Float64, 1}, 1}(3)
+    chromosomes[1] = rand(local_rng, param_values[param_index["chr_size"]])
+    chromosomes[2] = rand(local_rng, param_values[param_index["chr_size"]])
+    chromosomes[3] = rand(local_rng, param_values[param_index["chr_size"]] + 1)
+    @test_throws ArgumentError set_initial_population!(brkga_data, chromosomes)
+
+    chromosomes = Array{Array{Float64, 1}, 1}(1)
+    chromosomes[1] = rand(local_rng, param_values[param_index["chr_size"]])
+    set_initial_population!(brkga_data, chromosomes)
+
+    @test length(brkga_data.current[1].chromosomes) == length(chromosomes)
+    @test brkga_data.current[1].chromosomes == chromosomes
+    @test brkga_data.current[1].chromosomes !== chromosomes
+
+    chromosomes[1] = [0.1111, 0.2222, 0.3333]
+    @test brkga_data.current[1].chromosomes != chromosomes
+
+    chromosomes = Array{Array{Float64, 1}, 1}(3)
+    chromosomes[1] = rand(local_rng, param_values[param_index["chr_size"]])
+    chromosomes[2] = rand(local_rng, param_values[param_index["chr_size"]])
+    chromosomes[3] = rand(local_rng, param_values[param_index["chr_size"]])
+    set_initial_population!(brkga_data, chromosomes)
+    @test length(brkga_data.current[1].chromosomes) == length(chromosomes)
+    @test brkga_data.current[1].chromosomes == chromosomes
+    @test brkga_data.current[1].chromosomes !== chromosomes
 end

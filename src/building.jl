@@ -127,7 +127,6 @@ function build_brkga(problem_instance::AbstractInstance,
     # TODO (ceandrade): check path relink params here
     end
 
-
     brkga_data = BrkgaData(
         opt_sense,
         chromosome_size,
@@ -143,15 +142,15 @@ function build_brkga(problem_instance::AbstractInstance,
         problem_instance,
         decode_function!,
         MersenneTwister(seed),
-        Array{Population, 1}(num_independent_populations),
-        Array{Population, 1}(num_independent_populations),
-        x -> 1 / x,
-        0.0,
-        Array{Int64, 1}(population_size),
-        Array{Tuple{Float64,Int64}, 1}(population_size),
-        false,
-        false,
-        false
+        Array{Population, 1}(num_independent_populations), # previous pop
+        Array{Population, 1}(num_independent_populations), # current pop
+        x -> 1 / x,                                        # bias_function
+        0.0,                                               # total_bias_weight
+        Array{Int64, 1}(population_size),                  # shuffled_inds
+        Array{Tuple{Float64, Int64}, 1}(population_size),  # parents_ordered
+        false,                                             # initial_population
+        false,                                             # initialized
+        false                                              # reset_phase
     )
 
     if bias == LOGINVERSE
@@ -353,5 +352,47 @@ function set_bias_custom_function!(brkga_data::BrkgaData,
 
     brkga_data.bias_function = bias_function
     brkga_data.total_bias_weight = sum(bias_values)
+    nothing
+end
+
+################################################################################
+
+"""
+    set_initial_population!(brkga_data::BrkgaData,
+                            chromosomes::Array{Array{Float64, 1}, 1})
+
+Set initial individuals into the poulation to work as warm-starters. Such
+individuals can be obtained from solutions of external procedures such as
+fast heuristics, other methaheuristics, or even relaxations from a
+mixed integer programming model that models the problem.
+
+# Throws
+- `ArgumentError`: if the number of given chromosomes is larger than the
+  population size; if the sizes of the given chromosomes do not match
+  with the required chromosome size.
+"""
+function set_initial_population!(brkga_data::BrkgaData,
+                                 chromosomes::Array{Array{Float64, 1}, 1})
+
+    if length(chromosomes) > brkga_data.population_size
+        throw(ArgumentError("number of given chromosomes " *
+            "($(length(chromosomes))) is larger than the population size " *
+            "($(brkga_data.population_size))"))
+    end
+
+    # Clean up the current population.
+    current = Array{Population, 1}(brkga_data.num_independent_populations)
+    current[1] = Population()
+
+    for (i, chr) in enumerate(chromosomes)
+        if length(chr) != brkga_data.chromosome_size
+            msg = "error on setting initial population: chromosome $i does " *
+                "not have the required dimension (actual size: " *
+                "$(length(chr)), required size: $(brkga_data.chromosome_size))"
+            throw(ArgumentError(msg))
+        end
+        push!(current[1].chromosomes, copy(chr))
+    end
+    brkga_data.current = current
     nothing
 end
