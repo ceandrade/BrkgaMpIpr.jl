@@ -35,7 +35,7 @@ evolutionary_mechanism_on = true
 num_elite_parents = 1
 total_parents = 2
 bias = BrkgaMpIpr.LOGINVERSE
-num_independent_populations = 1
+num_independent_populations = 2
 
 print("\n\n>> Building instance")
 instance = TestInstance.Instance(chr_size)
@@ -60,3 +60,6 @@ BrkgaMpIpr.reset!(brkga_data)
 
 # print("\n\n>> Evolving")
 # @time BrkgaMpIpr.evolve!(brkga_data, instance, TestDecoder.decode!)
+
+print("\n\n>> Exchanging individuals")
+BrkgaMpIpr.exchange_elite!(brkga_data, 2)

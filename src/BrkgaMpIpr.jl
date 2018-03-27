@@ -40,7 +40,7 @@ export parse
 
 export BrkgaData, AbstractInstance, ExternalControlParams
 export build_brkga, set_bias_custom_function!, set_initial_population!
-export initialize!, reset!
+export initialize!, reset!, exchange_elite!
 
 # export evolve!
 

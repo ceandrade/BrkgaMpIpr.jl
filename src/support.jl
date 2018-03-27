@@ -41,7 +41,7 @@ environmental variable `JULIA_NUM_THREADS = 1`
 (see https://docs.julialang.org/en/stable/manual/parallel-computing).
 """
 function initialize!(brkga_data::BrkgaData)
-    bd = brkga_data  # Just an short alias.
+    bd = brkga_data  # Just a short alias.
 
     # If we have warmstaters, complete the population if necessary.
     # Note that it is done only in the true initialization.
@@ -71,13 +71,9 @@ function initialize!(brkga_data::BrkgaData)
                 Array{Tuple{Float64, Int64}, 1}(bd.population_size)
             brkga_data.current[i] = population
 
-        # For reset phase, only generates new keys. No new memory allocation
-        # and much faster than copy/deepcopy.
         else
             for chr in brkga_data.current[i].chromosomes
-                for j = 1:length(chr)
-                    chr[j] = rand(bd.rng)
-                end
+                chr .= rand(bd.rng, length(chr))
             end
         end
     end
@@ -114,6 +110,9 @@ threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
 If such property cannot be held, we suggest using single thread by setting the
 environmental variable `JULIA_NUM_THREADS = 1`
 (see https://docs.julialang.org/en/stable/manual/parallel-computing).
+
+# Throws
+- `ErrorException`: if `initialize!()` was not called before.
 """
 function reset!(brkga_data::BrkgaData)
     if !brkga_data.initialized
@@ -121,4 +120,72 @@ function reset!(brkga_data::BrkgaData)
     end
     brkga_data.reset_phase = true
     initialize!(brkga_data)
+    nothing
+end
+
+################################################################################
+
+"""
+    exchange_elite!(brkga_data::BrkgaData, num_immigrants::Int64)
+
+Exchange elite-solutions between the populations. Given a population, the
+`num_immigrants` best solutions are copied to the neighbor populations,
+replacing their worth solutions. If there is only one population, nothing is
+done.
+
+# Throws
+- `ErrorException`: if `initialize!()` was not called before.
+- `ArgumentError`: when `num_immigrants < 1`.
+- `ArgumentError`: `num_immigrants ≥ ⌈population_size/num_independent_populations⌉ - 1`.
+"""
+function exchange_elite!(brkga_data::BrkgaData, num_immigrants::Int64)
+    bd = brkga_data  # Just a short alias.
+
+    if !bd.initialized
+        error("the algorithm hasn't been initialized. Call initialize!() before reset!()")
+    end
+
+    if brkga_data.num_independent_populations == 1
+        return nothing
+    end
+
+    immigrants_threshold = cld(bd.population_size,
+                               bd.num_independent_populations - 1)
+
+    if num_immigrants < 1 || num_immigrants >= immigrants_threshold
+        msg = "number of immigrants ($num_immigrants) less than one, or " *
+              "larger than or equal to population size / " *
+              "num_independent_populations ($immigrants_threshold)"
+        throw(ArgumentError(msg))
+    end
+
+    # Population i receives num_immigrants best individuals from j
+    # overwriting worst i individuals.
+    for i = 1:bd.num_independent_populations
+        to_pop = bd.current[i]
+        dest = bd.population_size
+        for j = 1:bd.num_independent_populations
+            if j == i
+                continue
+            end
+
+            for m = 1:num_immigrants
+                from_pop = bd.current[j]
+                (from_value, from_idx) = from_pop.fitness[m]
+                to_idx = to_pop.fitness[dest][2]
+
+                # Copy keys.
+                to_pop.chromosomes[to_idx] .= from_pop.chromosomes[from_idx]
+                # Keep the same index but with new value.
+                to_pop.fitness[dest] = (from_value, to_idx)
+                dest -= 1
+            end
+        end
+    end
+
+    # Resort.
+    Threads.@threads for i = 1:bd.num_independent_populations
+        sort!(bd.current[i].fitness, rev = bd.opt_sense == MAXIMIZE)
+    end
+    nothing
 end

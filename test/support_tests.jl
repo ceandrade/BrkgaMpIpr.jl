@@ -141,7 +141,7 @@
     @test brkga_data.current[1].chromosomes[1] == local_chr
 end
 
-################################################################################
+###############################################################################
 
 @testset "reset!()" begin
     param_values = copy(default_param_values)
@@ -171,4 +171,118 @@ end
 
     # After reset, the reset phase flag should be deactivated.
     @test brkga_data.reset_phase == false;
+end
+
+################################################################################
+
+@testset "exchange_elite!()" begin
+    ########################
+    # Exceptions
+    ########################
+
+    param_values = copy(default_param_values)
+    param_values[param_index["pop_size"]] = 10
+    param_values[param_index["num_independent_populations"]] = 2
+    brkga_data = build_brkga(param_values...)
+
+    # Not initialized
+    @test_throws ErrorException exchange_elite!(brkga_data, 1)
+
+    initialize!(brkga_data)
+
+    # Wrong number of individuals to exchange.
+    @test_throws ArgumentError exchange_elite!(brkga_data, 0)
+    @test_throws ArgumentError exchange_elite!(brkga_data, -10)
+    @test_throws ArgumentError exchange_elite!(brkga_data, param_values[param_index["pop_size"]])
+    @test_throws ArgumentError exchange_elite!(brkga_data, param_values[param_index["pop_size"]] + 10)
+
+    # More exchanges than number of chromosomes.
+    num_immigrants = cld(brkga_data.population_size,
+                         brkga_data.num_independent_populations - 1)
+
+    @test_throws ArgumentError exchange_elite!(brkga_data, num_immigrants)
+    @test_throws ArgumentError exchange_elite!(brkga_data, num_immigrants + 1)
+
+    ########################
+    # Single population, no exchange
+    ########################
+
+    param_values = copy(default_param_values)
+    param_values[param_index["num_independent_populations"]] = 1
+    brkga_data = build_brkga(param_values...)
+    initialize!(brkga_data)
+
+    local_chromosomes = deepcopy(brkga_data.current[1].chromosomes)
+    local_fitness = deepcopy(brkga_data.current[1].fitness)
+
+    exchange_elite!(brkga_data, 1)
+
+    @test local_chromosomes == brkga_data.current[1].chromosomes
+    @test local_fitness == brkga_data.current[1].fitness
+
+    ########################
+    # Two populations, maximization
+    ########################
+
+    param_values = copy(default_param_values)
+    param_values[param_index["opt_sense"]] = MAXIMIZE
+    param_values[param_index["pop_size"]] = 10
+    param_values[param_index["num_independent_populations"]] = 2
+    brkga_data = build_brkga(param_values...)
+    initialize!(brkga_data)
+
+    if brkga_data.current[1].fitness[1][1] > brkga_data.current[2].fitness[1][1]
+        pop = 1
+    else
+        pop = 2
+    end
+
+    value_idx = brkga_data.current[pop].fitness[1]
+    best_value = value_idx[1]
+    best_chr = copy(brkga_data.current[pop].chromosomes[value_idx[2]])
+
+    exchange_elite!(brkga_data, 1)
+
+    value_idx = brkga_data.current[1].fitness[1]
+    @test value_idx[1] == best_value
+    @test brkga_data.current[1].chromosomes[value_idx[2]] == best_chr
+
+    value_idx = brkga_data.current[2].fitness[1]
+    @test value_idx[1] == best_value
+    @test brkga_data.current[2].chromosomes[value_idx[2]] == best_chr
+
+    ########################
+    # Five populations, minimization
+    ########################
+
+    param_values = copy(default_param_values)
+    param_values[param_index["instance"]] = Instance(1000)
+    param_values[param_index["chr_size"]] = 1000
+    param_values[param_index["opt_sense"]] = MINIMIZE
+    param_values[param_index["pop_size"]] = 1000
+    param_values[param_index["num_independent_populations"]] = 5
+
+    brkga_data = build_brkga(param_values...)
+    initialize!(brkga_data)
+
+    best_value = brkga_data.current[1].fitness[end][1]
+    pop = 1
+    for i = 1:brkga_data.num_independent_populations
+        if best_value > brkga_data.current[i].fitness[1][1]
+            best_value = brkga_data.current[i].fitness[1][1]
+            pop = i
+        end
+    end
+
+    value_idx = brkga_data.current[pop].fitness[1]
+    best_value = value_idx[1]
+    best_chr = copy(brkga_data.current[pop].chromosomes[value_idx[2]])
+
+    exchange_elite!(brkga_data, 1)
+
+    for i = 1:brkga_data.num_independent_populations
+        value_idx = brkga_data.current[i].fitness[1]
+        @test value_idx[1] == best_value
+        @test brkga_data.current[i].chromosomes[value_idx[2]] == best_chr
+    end
 end
