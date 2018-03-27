@@ -142,13 +142,12 @@ function build_brkga(problem_instance::AbstractInstance,
         problem_instance,
         decode_function!,
         MersenneTwister(seed),
-        Array{Population, 1}(num_independent_populations), # previous pop
-        Array{Population, 1}(num_independent_populations), # current pop
+        Array{Population, 1}(),                            # previous pop
+        Array{Population, 1}(),                            # current pop
         x -> 1 / x,                                        # bias_function
         0.0,                                               # total_bias_weight
         Array{Int64, 1}(population_size),                  # shuffled_inds
         Array{Tuple{Float64, Int64}, 1}(population_size),  # parents_ordered
-        false,                                             # initial_population
         false,                                             # initialized
         false                                              # reset_phase
     )

@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Mar 23, 2018 by ceandrade
+# Last update: Mar 27, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -47,10 +47,13 @@ print("\n\n>> Building BRKGA data")
 #                              evolutionary_mechanism_on, num_elite_parents,
 #                              total_parents, bias, num_independent_populations)
 
-brkga_data = BrkgaMpIpr.build_brkga(instance, TestDecoder.decode!,
-                             BrkgaMpIpr.MAXIMIZE, 2700001, chr_size,
-                             "configuration_files/regular.conf")
+(brkga_data, control_params) =
+    BrkgaMpIpr.build_brkga(instance, TestDecoder.decode!,
+                           BrkgaMpIpr.MAXIMIZE, 2700001, chr_size,
+                           "configuration_files/regular.conf")
 
+print("\n\n>> Initializing BRKGA")
+BrkgaMpIpr.initialize!(brkga_data)
 
 # print("\n\n>> Evolving")
 # @time BrkgaMpIpr.evolve!(brkga_data, instance, TestDecoder.decode!)

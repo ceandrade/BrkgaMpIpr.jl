@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Mar 25, 2018 by ceandrade
+# Last update: Mar 27, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -21,63 +21,17 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
 
-using BrkgaMpIpr
-using Base.Test
-
-include("TestInstance.jl")
-include("TestDecoder.jl")
-
-using TestInstance
-using TestDecoder
-
-################################################################################
-# General objects for testing
-################################################################################
-
-instance = Instance(10)
-
-# Makes easy to change espeficif position on the parameters vector below.
-const param_names = ["instance", "decode!", "opt_sense", "seed", "chr_size",
-                     "pop_size", "elite_percentage", "mutants_percentage",
-                     "evolutionary_mechanism_on", "num_elite_parents",
-                     "total_parents", "bias", "num_independent_populations"]
-
-# Reverse index.
-const param_index = Dict([v => i for (i, v) in enumerate(param_names)])
-
-# Holds the parameters to build new BrkgaData.
-param_values = Array{Any, 1}(length(param_names))
-
-# Some default parameters.
-param_values[param_index["instance"]] = instance
-param_values[param_index["decode!"]] = decode!
-param_values[param_index["opt_sense"]] = MAXIMIZE
-param_values[param_index["seed"]] = 2700001
-param_values[param_index["chr_size"]] = 100
-param_values[param_index["pop_size"]] = 10
-param_values[param_index["elite_percentage"]] = 0.3
-param_values[param_index["mutants_percentage"]] = 0.1
-param_values[param_index["evolutionary_mechanism_on"]] = true
-param_values[param_index["num_elite_parents"]] = 1
-param_values[param_index["total_parents"]] = 2
-param_values[param_index["bias"]] = LOGINVERSE
-param_values[param_index["num_independent_populations"]] = 1
-
-# Used to restore original param_values.
-const default_param_values = copy(param_values)
-
-################################################################################
-
 @testset "Detailed build_brkga()" begin
     ########################
     # Test regular/correct building.
     ########################
 
+    param_values = copy(default_param_values)
     brkga_data = build_brkga(param_values...)
     @test brkga_data.elite_size == 3
     @test brkga_data.num_mutants == 1
-    @test length(brkga_data.previous) == param_values[param_index["num_independent_populations"]]
-    @test length(brkga_data.current) == param_values[param_index["num_independent_populations"]]
+    # @test length(brkga_data.previous) == param_values[param_index["num_independent_populations"]]
+    # @test length(brkga_data.current) == param_values[param_index["num_independent_populations"]]
     @test length(brkga_data.shuffled_individuals) == param_values[param_index["pop_size"]]
     @test length(brkga_data.parents_ordered) == param_values[param_index["pop_size"]]
 
