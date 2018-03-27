@@ -53,8 +53,8 @@
         @test correct_order
     end
 
-    @test brkga_data.initialized == true;
-    @test brkga_data.reset_phase == false;
+    @test brkga_data.initialized == true
+    @test brkga_data.reset_phase == false
 
     param_values = copy(default_param_values)
     param_values[param_index["opt_sense"]] = MINIMIZE
@@ -139,4 +139,36 @@
     decode!(local_chr, instance)
 
     @test brkga_data.current[1].chromosomes[1] == local_chr
+end
+
+################################################################################
+
+@testset "reset!()" begin
+    param_values = copy(default_param_values)
+    brkga_data = build_brkga(param_values...)
+
+    @test_throws ErrorException reset!(brkga_data)
+
+    initialize!(brkga_data)
+
+    # Create a local RNG and advance it until the same state as the internal
+    # BrkgaData RNG after initialization.
+    local_rng = MersenneTwister(param_values[param_index["seed"]])
+    skip = brkga_data.num_independent_populations *
+           brkga_data.population_size * brkga_data.chromosome_size
+
+    # Assert the both generators are in the same state.
+    rand(local_rng, 1000 + skip)
+    @assert rand(brkga_data.rng) == rand(local_rng)
+
+    # Create a local chromosome and applied the decoder on it.
+    local_chr = rand(local_rng, param_values[param_index["chr_size"]])
+    decode!(local_chr, instance)
+
+    # Reset and test the first individual.
+    reset!(brkga_data)
+    @test brkga_data.current[1].chromosomes[1] == local_chr
+
+    # After reset, the reset phase flag should be deactivated.
+    @test brkga_data.reset_phase == false;
 end

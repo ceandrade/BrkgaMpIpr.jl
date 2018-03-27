@@ -55,5 +55,8 @@ print("\n\n>> Building BRKGA data")
 print("\n\n>> Initializing BRKGA")
 BrkgaMpIpr.initialize!(brkga_data)
 
+print("\n\n>> Reseting")
+BrkgaMpIpr.reset!(brkga_data)
+
 # print("\n\n>> Evolving")
 # @time BrkgaMpIpr.evolve!(brkga_data, instance, TestDecoder.decode!)

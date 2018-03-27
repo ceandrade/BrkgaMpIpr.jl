@@ -38,7 +38,7 @@ want to time such procedure in his/her experiments.
 threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
 If such property cannot be held, we suggest using single thread by setting the
 environmental variable `JULIA_NUM_THREADS = 1`
-(see https://docs.julialang.org/en/stable/manual/parallel-computing)
+(see https://docs.julialang.org/en/stable/manual/parallel-computing).
 """
 function initialize!(brkga_data::BrkgaData)
     bd = brkga_data  # Just an short alias.
@@ -99,4 +99,26 @@ function initialize!(brkga_data::BrkgaData)
     bd.initialized = true;
     bd.reset_phase = false;
     nothing
+end
+
+################################################################################
+
+"""
+    reset!(brkga_data::BrkgaData)
+
+Reset all populations with brand new keys. All warm start solutions provided
+by `set_initial_population!()` are discarded.
+
+**NOTE:** as it is in `evolve()`, the decoding is done in parallel using
+threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
+If such property cannot be held, we suggest using single thread by setting the
+environmental variable `JULIA_NUM_THREADS = 1`
+(see https://docs.julialang.org/en/stable/manual/parallel-computing).
+"""
+function reset!(brkga_data::BrkgaData)
+    if !brkga_data.initialized
+        error("the algorithm hasn't been initialized. Call initialize!() before reset!()")
+    end
+    brkga_data.reset_phase = true
+    initialize!(brkga_data)
 end

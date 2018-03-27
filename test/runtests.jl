@@ -73,6 +73,6 @@ const default_param_values = copy(param_values)
 # Functions
 ################################################################################
 
-# include("types_io_tests.jl")
-# include("building_tests.jl")
+include("types_io_tests.jl")
+include("building_tests.jl")
 include("support_tests.jl")
