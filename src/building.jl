@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Mar 25, 2018 by ceandrade
+# Last update: Mar 31, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -19,6 +19,8 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+################################################################################
+
 ################################################################################
 
 """
@@ -144,7 +146,7 @@ function build_brkga(problem_instance::AbstractInstance,
         MersenneTwister(seed),
         Array{Population, 1}(),                            # previous pop
         Array{Population, 1}(),                            # current pop
-        x -> 1 / x,                                        # bias_function
+        empty_function,                                    # bias_function
         0.0,                                               # total_bias_weight
         Array{Int64, 1}(population_size),                  # shuffled_inds
         Array{Tuple{Float64, Int64}, 1}(population_size),  # parents_ordered
@@ -243,9 +245,9 @@ function build_brkga(
         # ("PR_SELECTION", ),
         # ("ALPHA_BLOCK_SIZE", Float64),
         # ("PR_PERCENTAGE", Float64),
-        ("EXCHANGE_INTERVAL", Float64),
-        ("NUM_EXCHANGE_INDIVUDUALS", Float64),
-        ("RESET_INTERVAL", Float64),
+        ("EXCHANGE_INTERVAL", Int64),
+        ("NUM_EXCHANGE_INDIVUDUALS", Int64),
+        ("RESET_INTERVAL", Int64),
     ]
 
     const param_index = Dict(
@@ -347,6 +349,10 @@ function set_bias_custom_function!(brkga_data::BrkgaData,
         if bias_values[i - 1] < bias_values[i]
            throw(ArgumentError("bias_function is not a non-decreasing function"))
         end
+    end
+
+    if brkga_data.bias_function != empty_function
+        brkga_data.bias = CUSTOM
     end
 
     brkga_data.bias_function = bias_function

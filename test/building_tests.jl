@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Mar 27, 2018 by ceandrade
+# Last update: Mar 31, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -237,6 +237,9 @@ end
     param_values[param_index["total_parents"]] = 10
     brkga_data = build_brkga(param_values...)
 
+    # After build, bias function is never CUSTOM
+    @test brkga_data.bias != CUSTOM
+
     @test_throws ArgumentError set_bias_custom_function!(brkga_data, x -> x)
     @test_throws ArgumentError set_bias_custom_function!(brkga_data, x -> x + 1)
     @test_throws ArgumentError set_bias_custom_function!(brkga_data, x -> log1p(x))
@@ -244,23 +247,32 @@ end
     set_bias_custom_function!(brkga_data, x -> 1.0 / log1p(x))
     @test brkga_data.total_bias_weight ≈ 6.554970525044798
 
+    # After 2nd call to set_bias_custom_function, bias function is always CUSTOM
+    @test brkga_data.bias == CUSTOM
+
     set_bias_custom_function!(brkga_data, x -> 1.0 / x)
     @test brkga_data.total_bias_weight ≈ 2.9289682539682538
+    @test brkga_data.bias == CUSTOM
 
     set_bias_custom_function!(brkga_data, x -> x ^ -2.0)
     @test brkga_data.total_bias_weight ≈ 1.5497677311665408
+    @test brkga_data.bias == CUSTOM
 
     set_bias_custom_function!(brkga_data, x -> x ^ -3.0)
     @test brkga_data.total_bias_weight ≈ 1.197531985674193
+    @test brkga_data.bias == CUSTOM
 
     set_bias_custom_function!(brkga_data, x -> exp(-x))
     @test brkga_data.total_bias_weight ≈ 0.5819502851677112
+    @test brkga_data.bias == CUSTOM
 
     set_bias_custom_function!(brkga_data, x -> 1.0 / brkga_data.total_parents)
     @test brkga_data.total_bias_weight ≈ 0.9999999999999999
+    @test brkga_data.bias == CUSTOM
 
     set_bias_custom_function!(brkga_data, x -> 0.6325 / sqrt(x))
     @test brkga_data.total_bias_weight ≈ 3.175781171302612
+    @test brkga_data.bias == CUSTOM
 end
 
 ################################################################################

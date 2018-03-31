@@ -23,6 +23,27 @@
 
 @testset "initialize!()" begin
     ########################
+    # Test with custom function
+    # loaded from configuration file
+    ########################
+
+    config_path = joinpath(@__DIR__, "configuration_files")
+    const local_param_values = [
+        default_param_values[param_index["instance"]],
+        default_param_values[param_index["decode!"]],
+        default_param_values[param_index["opt_sense"]],
+        default_param_values[param_index["seed"]],
+        default_param_values[param_index["chr_size"]]
+    ]
+
+    brkga_data, external_params =
+        build_brkga(local_param_values...,
+                    joinpath(config_path, "custom_bias_function.conf"))
+
+    # Custom function is not defined.
+    @test_throws ErrorException initialize!(brkga_data)
+
+    ########################
     # Test without warmstart
     ########################
     param_values = copy(default_param_values)

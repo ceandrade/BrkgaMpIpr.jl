@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 26, 2018 by ceandrade
-# Last update: Mar 27, 2018 by ceandrade
+# Last update: Mar 31, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -39,8 +39,15 @@ threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
 If such property cannot be held, we suggest using single thread by setting the
 environmental variable `JULIA_NUM_THREADS = 1`
 (see https://docs.julialang.org/en/stable/manual/parallel-computing).
+
+# Throws
+- `ErrorException`: if `bias_function` is not defined previously.
 """
 function initialize!(brkga_data::BrkgaData)
+    if brkga_data.bias_function == empty_function
+        error("bias function is not defined. Call set_bias_custom_function()!.")
+    end
+
     bd = brkga_data  # Just a short alias.
 
     # If we have warmstaters, complete the population if necessary.

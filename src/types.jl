@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Mar 26, 2018 by ceandrade
+# Last update: Mar 31, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -60,17 +60,27 @@ rank r, we have the following functions:
 
     - QUADRATIC: r^-2
 """
-# TODO (ceandrade): implement using `begin...end` block in future Julia
-# versions:
+# TODO (ceandrade): to avoid long declarations as below, implement using
+# `begin...end` block in future Julia versions:
 # @enum BiasFunction begin
 #     CONSTANT = 0
 #     CUBIC = 1
 #     ...
 # end
-@enum BiasFunction CONSTANT=0 CUBIC=1 EXPONENTIAL=2 LINEAR=3 LOGINVERSE=4 QUADRATIC=5
+@enum BiasFunction CONSTANT=0 CUBIC=1 EXPONENTIAL=2 LINEAR=3 LOGINVERSE=4 QUADRATIC=5 CUSTOM=6
 
 ################################################################################
 # Data structures
+################################################################################
+
+"""
+    const empty_function() = nothing
+
+Represent an empty function to be used as flag during data and bias function
+setups.
+"""
+const empty_function() = nothing
+
 ################################################################################
 
 """
@@ -112,13 +122,13 @@ mutable struct Population
     fitness::Array{Tuple{Float64, Int64}, 1}
 
     """
-        Default constructor.
+    Default constructor.
     """
     Population() = new(Array{Array{Float64, 1}, 1}(),
                        Array{Tuple{Float64, Int64}, 1}())
 
     """
-        Copy constructor.
+    Copy constructor.
     """
     Population(pop::Population) = new(deepcopy(pop.chromosomes),
                                       deepcopy(pop.fitness))
@@ -317,4 +327,14 @@ struct ExternalControlParams
     Interval at which the populations are reset (0 means no reset) [> 0].
     """
     reset_interval::Int64
+
+    """
+    Initialization constructor.
+    """
+    ExternalControlParams(
+        exchange_interval::Int64 = 0,
+        num_exchange_indivuduals::Int64 = 0,
+        reset_interval::Int64 = 0) = new(exchange_interval,
+                                         num_exchange_indivuduals,
+                                         reset_interval)
 end

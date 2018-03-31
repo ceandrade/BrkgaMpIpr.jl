@@ -29,6 +29,7 @@
     @test parse(BrkgaMpIpr.BiasFunction, "LOGINVERSE") == LOGINVERSE
     @test parse(BrkgaMpIpr.BiasFunction, "QUADRATIC") == QUADRATIC
     @test parse(BrkgaMpIpr.BiasFunction, "QuAdRaTiC") == QUADRATIC
+    @test parse(BrkgaMpIpr.BiasFunction, "Custom") == CUSTOM
     @test_throws ArgumentError parse(BrkgaMpIpr.BiasFunction, "invalid")
 end
 
@@ -53,11 +54,10 @@ end
         build_brkga(local_param_values...,
                     joinpath(config_path, "regular.conf"))
 
-    @test_throws SystemError write_configuration(brkga_data, external_params,
-                                                 "/invalid")
+    @test_throws SystemError write_configuration("/invalid", brkga_data)
 
     temp_filename = tempname()
-    write_configuration(brkga_data, external_params, temp_filename)
+    write_configuration(temp_filename, brkga_data, external_params)
 
     result = ""
     open(temp_filename) do file
@@ -88,8 +88,7 @@ reset_interval 600
     brkga_data = build_brkga(param_values...)
 
     temp_filename = tempname()
-    write_configuration(brkga_data, ExternalControlParams(0, 0, 0),
-                        temp_filename)
+    write_configuration(temp_filename, brkga_data)
 
     result = ""
     open(temp_filename) do file
@@ -111,4 +110,36 @@ num_exchange_indivuduals 0
 reset_interval 0
 """
     @test result == standard
+
+    #########################
+    # From direct building
+    #########################
+    param_values = copy(default_param_values)
+    brkga_data = build_brkga(param_values...)
+    set_bias_custom_function!(brkga_data, x -> 1 / x)
+
+    temp_filename = tempname()
+    write_configuration(temp_filename, brkga_data)
+
+    result = ""
+    open(temp_filename) do file
+        result = lowercase(readstring(file))
+    end
+    rm(temp_filename)
+
+    standard = """
+population_size 10
+elite_percentage 0.3
+mutants_percentage 0.1
+mutants_percentage 0.1
+elite_parents 1
+total_parents 2
+bias_function custom
+independent_populations 3
+exchange_interval 0
+num_exchange_indivuduals 0
+reset_interval 0
+"""
+    @test result == standard
+
 end
