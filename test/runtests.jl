@@ -76,3 +76,5 @@ const default_param_values = copy(param_values)
 include("types_io_tests.jl")
 include("building_tests.jl")
 include("support_tests.jl")
+
+include("evolution_tests.jl")

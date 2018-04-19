@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Mar 31, 2018 by ceandrade
+# Last update: Apr 19, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -149,7 +149,7 @@ function build_brkga(problem_instance::AbstractInstance,
         empty_function,                                    # bias_function
         0.0,                                               # total_bias_weight
         Array{Int64, 1}(population_size),                  # shuffled_inds
-        Array{Tuple{Float64, Int64}, 1}(population_size),  # parents_ordered
+        Array{Tuple{Float64, Int64}, 1}(total_parents),    # parents_ordered
         false,                                             # initialized
         false                                              # reset_phase
     )

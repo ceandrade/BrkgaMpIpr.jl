@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Mar 31, 2018 by ceandrade
+# Last update: Apr 19, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -33,7 +33,7 @@
     # @test length(brkga_data.previous) == param_values[param_index["num_independent_populations"]]
     # @test length(brkga_data.current) == param_values[param_index["num_independent_populations"]]
     @test length(brkga_data.shuffled_individuals) == param_values[param_index["pop_size"]]
-    @test length(brkga_data.parents_ordered) == param_values[param_index["pop_size"]]
+    @test length(brkga_data.parents_ordered) == param_values[param_index["total_parents"]]
 
     local_rng = MersenneTwister(param_values[param_index["seed"]])
     # Same warm up that in build_brkga().
