@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Apr 19, 2018 by ceandrade
+# Last update: Apr 20, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -319,6 +319,91 @@ function build_brkga(
                     param_values[param_index["INDEPENDENT_POPULATIONS"]])
 
     return (brkga_data, external_params)
+end
+
+################################################################################
+
+"""
+    initialize!(brkga_data::BrkgaData)
+
+Initialize the populations and others data structures of the BRKGA. If an
+initial population is supplied, this method completes the remaining individuals,
+if they do not exist.
+
+**THIS METHOD MUST BE CALLED BEFORE ANY OPTIMIZATIOM METHODS.**
+
+This method also performs the initial decoding of the chromosomes. Therefore,
+depending on the decoder implementation, this can take a while, and the user may
+want to time such procedure in his/her experiments.
+
+**NOTE:** as it is in `evolve()`, the decoding is done in parallel using
+threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
+If such property cannot be held, we suggest using single thread by setting the
+environmental variable `JULIA_NUM_THREADS = 1`
+(see https://docs.julialang.org/en/stable/manual/parallel-computing).
+
+# Throws
+- `ErrorException`: if `bias_function` is not defined previously.
+"""
+function initialize!(brkga_data::BrkgaData)
+    if brkga_data.bias_function == empty_function
+        error("bias function is not defined. Call set_bias_custom_function()!.")
+    end
+
+    bd = brkga_data  # Just a short alias.
+
+    # If we have warmstaters, complete the population if necessary.
+    # Note that it is done only in the true initialization.
+    pop_start = 1
+    if length(bd.current) > 0 && !bd.reset_phase
+        population = bd.current[1]
+        for i = (length(population.chromosomes) + 1):bd.population_size
+            push!(population.chromosomes, rand(bd.rng, bd.chromosome_size))
+        end
+        population.fitness = Array{Tuple{Float64, Int64}, 1}(bd.population_size)
+        pop_start = 2
+
+    elseif length(bd.current) == 0
+        bd.current = Array{Population, 1}(bd.num_independent_populations)
+        bd.previous = Array{Population, 1}(bd.num_independent_populations)
+    end
+
+    # Build the remaining populations and associated data structures.
+    for i = pop_start:bd.num_independent_populations
+        # If no reset, allocate memory.
+        if !bd.reset_phase
+            population = Population()
+            for j = 1:bd.population_size
+                push!(population.chromosomes, rand(bd.rng, bd.chromosome_size))
+            end
+            population.fitness =
+                Array{Tuple{Float64, Int64}, 1}(bd.population_size)
+            brkga_data.current[i] = population
+
+        else
+            for chr in brkga_data.current[i].chromosomes
+                chr .= rand(bd.rng, length(chr))
+            end
+        end
+    end
+
+    # Perform initial decoding. It may take a while.
+    for population in bd.current
+        Threads.@threads for i in eachindex(population.chromosomes)
+            value = bd.decode!(population.chromosomes[i], bd.problem_instance)
+            population.fitness[i] = (value, i)
+        end
+        sort!(population.fitness, rev = (bd.opt_sense == MAXIMIZE))
+    end
+
+    # Copy the data to previous populations.
+    # **NOTE:** (ceandrade) During reset phase, copying item by item maybe
+    # faster than deepcoping (which allocates new memory).
+    bd.previous = deepcopy(bd.current)
+
+    bd.initialized = true;
+    bd.reset_phase = false;
+    nothing
 end
 
 ################################################################################

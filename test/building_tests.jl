@@ -232,6 +232,149 @@ end
 
 ################################################################################
 
+@testset "initialize!()" begin
+    ########################
+    # Test with custom function
+    # loaded from configuration file
+    ########################
+
+    config_path = joinpath(@__DIR__, "configuration_files")
+    const local_param_values = [
+        default_param_values[param_index["instance"]],
+        default_param_values[param_index["decode!"]],
+        default_param_values[param_index["opt_sense"]],
+        default_param_values[param_index["seed"]],
+        default_param_values[param_index["chr_size"]]
+    ]
+
+    brkga_data, external_params =
+        build_brkga(local_param_values...,
+                    joinpath(config_path, "custom_bias_function.conf"))
+
+    # Custom function is not defined.
+    @test_throws ErrorException initialize!(brkga_data)
+
+    ########################
+    # Test without warmstart
+    ########################
+    param_values = copy(default_param_values)
+    param_values[param_index["opt_sense"]] = MAXIMIZE
+    brkga_data = build_brkga(param_values...)
+
+    initialize!(brkga_data)
+
+    for i = 1:brkga_data.num_independent_populations
+        @test length(brkga_data.current) == param_values[param_index["num_independent_populations"]]
+        @test length(brkga_data.current[i].chromosomes) == param_values[param_index["pop_size"]]
+        @test length(brkga_data.current[i].fitness) == param_values[param_index["pop_size"]]
+
+        @test length(brkga_data.previous) == param_values[param_index["num_independent_populations"]]
+        @test length(brkga_data.previous[i].chromosomes) == param_values[param_index["pop_size"]]
+        @test length(brkga_data.previous[i].fitness) == param_values[param_index["pop_size"]]
+
+        @test brkga_data.current[i].chromosomes == brkga_data.previous[i].chromosomes
+        @test brkga_data.current[i].chromosomes !== brkga_data.previous[i].chromosomes
+        @test brkga_data.current[i].fitness == brkga_data.previous[i].fitness
+        @test brkga_data.current[i].fitness !== brkga_data.previous[i].fitness
+
+        correct_order = true
+        for j = 2:length(brkga_data.current[i].fitness)
+            correct_order &= brkga_data.current[i].fitness[j-1] >=
+                             brkga_data.current[i].fitness[j]
+        end
+        @test correct_order
+    end
+
+    @test brkga_data.initialized == true
+    @test brkga_data.reset_phase == false
+
+    param_values = copy(default_param_values)
+    param_values[param_index["opt_sense"]] = MINIMIZE
+    brkga_data = build_brkga(param_values...)
+    initialize!(brkga_data)
+
+    for i = 1:brkga_data.num_independent_populations
+        correct_order = true
+        for j = 2:length(brkga_data.current[i].fitness)
+            correct_order &= brkga_data.current[i].fitness[j-1] <=
+                             brkga_data.current[i].fitness[j]
+        end
+        @test correct_order
+    end
+
+    ########################
+    # Test with warmstart
+    ########################
+
+    local_rng = MersenneTwister(param_values[param_index["seed"]])
+    chromosomes = [
+        rand(local_rng, param_values[param_index["chr_size"]]),
+        rand(local_rng, param_values[param_index["chr_size"]]),
+        rand(local_rng, param_values[param_index["chr_size"]])
+    ]
+    param_values = copy(default_param_values)
+    brkga_data = build_brkga(param_values...)
+    set_initial_population!(brkga_data, chromosomes)
+
+    initialize!(brkga_data)
+
+    for i = 1:brkga_data.num_independent_populations
+        @test length(brkga_data.current) == param_values[param_index["num_independent_populations"]]
+        @test length(brkga_data.current[i].chromosomes) == param_values[param_index["pop_size"]]
+        @test length(brkga_data.current[i].fitness) == param_values[param_index["pop_size"]]
+
+        @test length(brkga_data.previous) == param_values[param_index["num_independent_populations"]]
+        @test length(brkga_data.previous[i].chromosomes) == param_values[param_index["pop_size"]]
+        @test length(brkga_data.previous[i].fitness) == param_values[param_index["pop_size"]]
+
+        @test brkga_data.current[i].chromosomes == brkga_data.previous[i].chromosomes
+        @test brkga_data.current[i].chromosomes !== brkga_data.previous[i].chromosomes
+        @test brkga_data.current[i].fitness == brkga_data.previous[i].fitness
+        @test brkga_data.current[i].fitness !== brkga_data.previous[i].fitness
+    end
+
+    decode!(chromosomes[1], instance)
+    @test brkga_data.current[1].chromosomes[1] == chromosomes[1]
+
+    # Create a local chromosome and applied the decoder on it.
+    local_rng = MersenneTwister(param_values[param_index["seed"]])
+    rand(local_rng, 1000)
+    local_chr = rand(local_rng, param_values[param_index["chr_size"]])
+    decode!(local_chr, instance)
+
+    # 4th chromosome must be the 1st generated due to the warmstart.
+    @test brkga_data.current[1].chromosomes[4] == local_chr
+
+    ########################
+    # Test reset phase
+    ########################
+
+    param_values = copy(default_param_values)
+    brkga_data = build_brkga(param_values...)
+    initialize!(brkga_data)
+
+    # Create a local RNG and advance it until the same state as the internal
+    # BrkgaData RNG after initialization.
+    local_rng = MersenneTwister(param_values[param_index["seed"]])
+    skip = brkga_data.num_independent_populations *
+           brkga_data.population_size * brkga_data.chromosome_size
+    rand(local_rng, 1000 + skip)
+
+    # Assert the both generators are in the same state.
+    @assert rand(brkga_data.rng) == rand(local_rng)
+
+    brkga_data.reset_phase = true
+    initialize!(brkga_data)
+
+    # Create a local chromosome and applied the decoder on it.
+    local_chr = rand(local_rng, param_values[param_index["chr_size"]])
+    decode!(local_chr, instance)
+
+    @test brkga_data.current[1].chromosomes[1] == local_chr
+end
+
+###############################################################################
+
 @testset "set_bias_custom_function!()" begin
     param_values = copy(default_param_values)
     param_values[param_index["total_parents"]] = 10
