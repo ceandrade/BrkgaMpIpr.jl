@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 26, 2018 by ceandrade
-# Last update: Mar 31, 2018 by ceandrade
+# Last update: Apr 20, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -91,12 +91,12 @@ function initialize!(brkga_data::BrkgaData)
             value = bd.decode!(population.chromosomes[i], bd.problem_instance)
             population.fitness[i] = (value, i)
         end
-        sort!(population.fitness, rev = bd.opt_sense == MAXIMIZE)
+        sort!(population.fitness, rev = (bd.opt_sense == MAXIMIZE))
     end
 
     # Copy the data to previous populations.
-    # NOTE (ceandrade) During reset phase, copying item by item maybe faster
-    # than deepcoping (which allocates new memory).
+    # **NOTE:** (ceandrade) During reset phase, copying item by item maybe
+    # faster than deepcoping (which allocates new memory).
     bd.previous = deepcopy(bd.current)
 
     bd.initialized = true;
@@ -195,4 +195,60 @@ function exchange_elite!(brkga_data::BrkgaData, num_immigrants::Int64)
         sort!(bd.current[i].fitness, rev = bd.opt_sense == MAXIMIZE)
     end
     nothing
+end
+
+################################################################################
+
+"""
+    get_best_fitness!(brkga_data::BrkgaData)::Float64
+
+Return the fitness/value of the best individual found so far among all
+populations.
+
+# Throws
+- `ErrorException`: if `initialize!()` was not called before.
+"""
+function get_best_fitness(brkga_data::BrkgaData)::Float64
+    if !brkga_data.initialized
+        error("the algorithm hasn't been initialized. Call initialize!() before reset!()")
+    end
+
+    best = brkga_data.current[1].fitness[1][1]
+    for i in 2:brkga_data.num_independent_populations
+        if (brkga_data.current[i].fitness[1][1] < best) ==
+           (brkga_data.opt_sense == MINIMIZE)
+            best = brkga_data.current[i].fitness[1][1]
+        end
+    end
+    return best
+end
+
+################################################################################
+
+"""
+    get_best_chromosome(brkga_data::BrkgaData)::Array{Float64, 1}
+
+Return a copy of the best individual found so far among all populations.
+
+# Throws
+- `ErrorException`: if `initialize!()` was not called before.
+"""
+function get_best_chromosome(brkga_data::BrkgaData)::Array{Float64, 1}
+    if !brkga_data.initialized
+        error("the algorithm hasn't been initialized. Call initialize!() before reset!()")
+    end
+
+    best_population = 1
+    best_individual = 1
+    for i in 2:brkga_data.num_independent_populations
+        fitness, individual = brkga_data.current[i].fitness[1]
+        if (fitness < brkga_data.current[best_population].fitness[1][1]) ==
+           (brkga_data.opt_sense == MINIMIZE)
+            best_population = i
+            best_individual = individual
+        end
+    end
+
+    return copy(brkga_data.current[best_population].
+                chromosomes[best_individual])
 end

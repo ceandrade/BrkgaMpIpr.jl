@@ -7,7 +7,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Mar 31, 2018 by ceandrade
+# Last update: Apr 20, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -77,4 +77,4 @@ include("types_io_tests.jl")
 include("building_tests.jl")
 include("support_tests.jl")
 
-include("evolution_tests.jl")
+#include("evolution_tests.jl")

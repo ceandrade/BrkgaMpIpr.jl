@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 26, 2018 by ceandrade
-# Last update: Mar 27, 2018 by ceandrade
+# Last update: Apr 20, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -306,4 +306,139 @@ end
         @test value_idx[1] == best_value
         @test brkga_data.current[i].chromosomes[value_idx[2]] == best_chr
     end
+end
+
+################################################################################
+
+@testset "get_best_fitness()" begin
+    param_values = copy(default_param_values)
+    param_values[param_index["opt_sense"]] = MAXIMIZE
+    param_values[param_index["seed"]] = 12323
+    param_values[param_index["chr_size"]] = CHROMOSOME_SIZE
+    param_values[param_index["pop_size"]] = 5000
+    param_values[param_index["num_independent_populations"]] = 10
+
+    brkga_data = build_brkga(param_values...)
+
+    # Not initialized
+    @test_throws ErrorException get_best_fitness(brkga_data)
+
+    initialize!(brkga_data)
+
+    ########################
+    # Test for maximization
+    ########################
+
+    local_rng = MersenneTwister(param_values[param_index["seed"]])
+    rand(local_rng, 1000)
+    num_individuals = param_values[param_index["pop_size"]] *
+        param_values[param_index["num_independent_populations"]]
+
+    best_value = -Inf
+    for i in 1:num_individuals
+        local_chr = rand(local_rng, param_values[param_index["chr_size"]])
+        best_value = max(best_value, decode!(local_chr, instance))
+    end
+
+    # Assert the both generators are in the same state.
+    @assert rand(brkga_data.rng) == rand(local_rng)
+
+    @test get_best_fitness(brkga_data) ≈ best_value
+
+    ########################
+    # Test for minimization
+    ########################
+
+    param_values[param_index["opt_sense"]] = MINIMIZE
+    brkga_data = build_brkga(param_values...)
+    initialize!(brkga_data)
+
+    local_rng = MersenneTwister(param_values[param_index["seed"]])
+    rand(local_rng, 1000)
+    num_individuals = param_values[param_index["pop_size"]] *
+        param_values[param_index["num_independent_populations"]]
+
+    best_value = Inf
+    for i in 1:num_individuals
+        local_chr = rand(local_rng, param_values[param_index["chr_size"]])
+        best_value = min(best_value, decode!(local_chr, instance))
+    end
+
+    # Assert the both generators are in the same state.
+    @assert rand(brkga_data.rng) == rand(local_rng)
+
+    @test get_best_fitness(brkga_data) ≈ best_value
+end
+
+################################################################################
+
+@testset "get_best_chromosome()" begin
+    param_values = copy(default_param_values)
+    param_values[param_index["opt_sense"]] = MAXIMIZE
+    param_values[param_index["seed"]] = 12323
+    param_values[param_index["chr_size"]] = CHROMOSOME_SIZE
+    param_values[param_index["pop_size"]] = 5000
+    param_values[param_index["num_independent_populations"]] = 10
+
+    brkga_data = build_brkga(param_values...)
+
+    # Not initialized
+    @test_throws ErrorException get_best_chromosome(brkga_data)
+
+    initialize!(brkga_data)
+
+    ########################
+    # Test for maximization
+    ########################
+
+    local_rng = MersenneTwister(param_values[param_index["seed"]])
+    rand(local_rng, 1000)
+    num_individuals = param_values[param_index["pop_size"]] *
+        param_values[param_index["num_independent_populations"]]
+
+    best_value = -Inf
+    best_chr = Array{Float64, 1}()
+    for i in 1:num_individuals
+        local_chr = rand(local_rng, param_values[param_index["chr_size"]])
+        value = decode!(local_chr, instance)
+
+        if value > best_value
+            best_value = value
+            best_chr = local_chr
+        end
+    end
+
+    # Assert the both generators are in the same state.
+    @assert rand(brkga_data.rng) == rand(local_rng)
+
+    @test get_best_chromosome(brkga_data) ≈ best_chr
+
+    ########################
+    # Test for minimization
+    ########################
+
+    param_values[param_index["opt_sense"]] = MINIMIZE
+    brkga_data = build_brkga(param_values...)
+    initialize!(brkga_data)
+
+    local_rng = MersenneTwister(param_values[param_index["seed"]])
+    rand(local_rng, 1000)
+    num_individuals = param_values[param_index["pop_size"]] *
+        param_values[param_index["num_independent_populations"]]
+
+    best_value = Inf
+    best_chr = Array{Float64, 1}()
+    for i in 1:num_individuals
+        local_chr = rand(local_rng, param_values[param_index["chr_size"]])
+        value = decode!(local_chr, instance)
+        if value < best_value
+            best_value = value
+            best_chr = local_chr
+        end
+    end
+
+    # Assert the both generators are in the same state.
+    @assert rand(brkga_data.rng) == rand(local_rng)
+
+    @test get_best_chromosome(brkga_data) ≈ best_chr
 end
