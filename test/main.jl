@@ -26,6 +26,7 @@ push!(LOAD_PATH, ".")
 import TestInstance
 import TestDecoder
 using BrkgaMpIpr
+using JLD
 
 chr_size = 100
 pop_size = 10
@@ -55,11 +56,28 @@ print("\n\n>> Building BRKGA data")
 print("\n\n>> Initializing BRKGA")
 BrkgaMpIpr.initialize!(brkga_data)
 
-print("\n\n>> Reseting")
-BrkgaMpIpr.reset!(brkga_data)
 
-# print("\n\n>> Evolving")
-# @time BrkgaMpIpr.evolve!(brkga_data, instance, TestDecoder.decode!)
+# print("\n\n>> Writing data")
+# save("test.jld",
+#      "rng", brkga_data.rng,
+#      "previous", brkga_data.previous,
+#      "current", brkga_data.current
+#      )
 
-print("\n\n>> Exchanging individuals")
-BrkgaMpIpr.exchange_elite!(brkga_data, 2)
+tmp = load("test.jld")
+
+brkga_data.rng = tmp["rng"]
+brkga_data.previous = tmp["previous"]
+brkga_data.current = tmp["current"]
+
+evolve_population!(brkga_data, 1)
+print("\n> ", get_best_fitness(brkga_data))
+
+# print("\n\n>> Reseting")
+# BrkgaMpIpr.reset!(brkga_data)
+#
+# # print("\n\n>> Evolving")
+# # @time BrkgaMpIpr.evolve!(brkga_data, instance, TestDecoder.decode!)
+#
+# print("\n\n>> Exchanging individuals")
+# BrkgaMpIpr.exchange_elite!(brkga_data, 2)

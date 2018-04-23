@@ -7,7 +7,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Apr 20, 2018 by ceandrade
+# Last update: Apr 23, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -23,6 +23,7 @@
 ################################################################################
 
 using BrkgaMpIpr
+using JLD
 using Base.Test
 
 ################################################################################
@@ -73,8 +74,14 @@ const default_param_values = copy(param_values)
 # Functions
 ################################################################################
 
-include("types_io_tests.jl")
-include("building_tests.jl")
-include("support_tests.jl")
+print(">> Testing types and their I/O operations...\n")
+@time include("types_io_tests.jl")
 
-#include("evolution_tests.jl")
+print("\n>> Testing BRKGA data building and initialization...\n")
+@time include("building_tests.jl")
+
+print("\n>> Testing support methods...\n")
+@time include("support_tests.jl")
+
+print("\n>> Testing evolutionary methods (it may take a while)...\n")
+@time include("evolution_tests.jl")
