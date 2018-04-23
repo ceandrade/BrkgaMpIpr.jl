@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 26, 2018 by ceandrade
-# Last update: Apr 20, 2018 by ceandrade
+# Last update: Apr 23, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -166,4 +166,105 @@ function get_best_chromosome(brkga_data::BrkgaData)::Array{Float64, 1}
 
     return copy(brkga_data.current[best_population].
                 chromosomes[best_individual])
+end
+
+
+################################################################################
+
+"""
+    get_chromosome(brkga_data::BrkgaData, population::Int64,
+                   position::Int64)::Array{Float64, 1}
+
+Return a copy of the chromosome `position` in the population `population`.
+
+# Throws
+- `ErrorException`: if `initialize!()` was not called before.
+- `ArgumentError`: when `population < 1` or `population > num_independent_populations`.
+- `ArgumentError`: when `position < 1` or `position > population_size`.
+"""
+function get_chromosome(brkga_data::BrkgaData, population::Int64,
+                        position::Int64)::Array{Float64, 1}
+
+    bd = brkga_data
+
+    if !brkga_data.initialized
+        error("the algorithm hasn't been initialized. Call initialize!() before reset!()")
+    end
+
+    if population < 1 || population > bd.num_independent_populations
+        msg = "Population must be in [1, " *
+              "$(bd.num_independent_populations)]: $population"
+        throw(ArgumentError(msg))
+    end
+
+    if position < 1 || position > bd.population_size
+        msg = "Chromosome position must be in [1, " *
+              "$(bd.population_size)]: $position"
+        throw(ArgumentError(msg))
+    end
+
+    pop = bd.current[population]
+    return pop.chromosomes[pop.fitness[position][2]]
+end
+
+################################################################################
+
+"""
+    function inject_chromosome(brkga_data::BrkgaData,
+                               chromosome::Array{Float64, 1},
+                               population::Int64,
+                               position::Int64,
+                               fitness::Float64 = Inf)
+
+Inject `chromosome` and its `fitness` into population of index `population`
+in the `position` place. If fitness is not provided (`fitness = Inf`), the
+decoding is performed over `chromosome`. Once the chromosome is injected,
+the population is re-sorted according to the chromosomes' fitness.
+
+# Throws
+- `ErrorException`: if `initialize!()` was not called before.
+- `ArgumentError`: when `population < 1` or `population > num_independent_populations`.
+- `ArgumentError`: when `position < 1` or `position > population_size`.
+- `ArgumentError`: when `lenght(chromosome) != chromosome_size`.
+"""
+function inject_chromosome!(brkga_data::BrkgaData,
+                            chromosome::Array{Float64, 1},
+                            population::Int64,
+                            position::Int64,
+                            fitness::Float64 = Inf)
+    bd = brkga_data
+
+    if !brkga_data.initialized
+        error("the algorithm hasn't been initialized. Call initialize!() before reset!()")
+    end
+
+    if population < 1 || population > bd.num_independent_populations
+        msg = "Population must be in [1, " *
+              "$(bd.num_independent_populations)]: $population"
+        throw(ArgumentError(msg))
+    end
+
+    if position < 1 || position > bd.population_size
+        msg = "Chromosome position must be in [1, " *
+              "$(bd.population_size)]: $position"
+        throw(ArgumentError(msg))
+    end
+
+    if length(chromosome) != bd.chromosome_size
+        msg = "Chromosome size must be $(bd.chromosome_size) not " *
+              "$(length(chromosome))"
+        throw(ArgumentError(msg))
+    end
+
+    pop = bd.current[population]
+    idx = pop.fitness[position][2]
+    unsafe_copy!(pop.chromosomes[idx], 1, chromosome, 1, bd.chromosome_size)
+
+    if fitness == Inf
+        fitness = bd.decode!(pop.chromosomes[idx], bd.problem_instance)
+    end
+
+    pop.fitness[position] = (fitness, idx)
+    sort!(pop.fitness, rev = (bd.opt_sense == MAXIMIZE))
+    nothing
 end
