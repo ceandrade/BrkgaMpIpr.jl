@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Apr 19, 2018 by ceandrade
+# Last update: Apr 23, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -416,6 +416,24 @@ end
     set_bias_custom_function!(brkga_data, x -> 0.6325 / sqrt(x))
     @test brkga_data.total_bias_weight ≈ 3.175781171302612
     @test brkga_data.bias == CUSTOM
+
+    param_values = copy(default_param_values)
+    param_values[param_index["num_elite_parents"]] = 1
+    param_values[param_index["total_parents"]] = 2
+    brkga_data = build_brkga(param_values...)
+
+    rho = 0.5
+    set_bias_custom_function!(brkga_data, x -> x ≈ 1.0 ? rho : 1.0 - rho)
+    @test brkga_data.total_bias_weight ≈ 1.0
+    @test brkga_data.bias == CUSTOM
+
+    rho = 0.75
+    set_bias_custom_function!(brkga_data, x -> x ≈ 1.0 ? rho : 1.0 - rho)
+    @test brkga_data.total_bias_weight ≈ 1.0
+
+    rho = 0.90
+    set_bias_custom_function!(brkga_data, x -> x ≈ 1.0 ? rho : 1.0 - rho)
+    @test brkga_data.total_bias_weight ≈ 1.0
 end
 
 ################################################################################
