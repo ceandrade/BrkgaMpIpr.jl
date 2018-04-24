@@ -341,6 +341,28 @@ end
     @test copy_chr ≈ actual_chr.chromosomes[actual_chr.fitness[idx][2]]
 end
 
+
+################################################################################
+
+@testset "get_current_population()" begin
+    param_values = copy(default_param_values)
+    param_values[param_index["num_independent_populations"]] = 3
+    brkga_data = build_brkga(param_values...)
+
+    # Not initialized
+    @test_throws ErrorException get_current_population(brkga_data, 1)
+
+    initialize!(brkga_data)
+
+    @test_throws ArgumentError get_current_population(brkga_data, 0)
+    @test_throws ArgumentError get_current_population(brkga_data,
+        brkga_data.num_independent_populations + 1)
+
+    for i in 1:brkga_data.num_independent_populations
+        @test get_current_population(brkga_data, i) === brkga_data.current[i]
+    end
+end
+
 ################################################################################
 
 @testset "inject_chromosome!()" begin

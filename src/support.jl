@@ -168,32 +168,29 @@ function get_best_chromosome(brkga_data::BrkgaData)::Array{Float64, 1}
                 chromosomes[best_individual])
 end
 
-
 ################################################################################
 
 """
-    get_chromosome(brkga_data::BrkgaData, population::Int64,
+    get_chromosome(brkga_data::BrkgaData, population_index::Int64,
                    position::Int64)::Array{Float64, 1}
 
-Return a copy of the chromosome `position` in the population `population`.
+Return a copy of the chromosome `position` in the population `population_index`.
 
 # Throws
 - `ErrorException`: if `initialize!()` was not called before.
-- `ArgumentError`: when `population < 1` or `population > num_independent_populations`.
+- `ArgumentError`: when `population_index < 1` or `population_index > num_independent_populations`.
 - `ArgumentError`: when `position < 1` or `position > population_size`.
 """
-function get_chromosome(brkga_data::BrkgaData, population::Int64,
+function get_chromosome(brkga_data::BrkgaData, population_index::Int64,
                         position::Int64)::Array{Float64, 1}
-
     bd = brkga_data
-
     if !brkga_data.initialized
         error("the algorithm hasn't been initialized. Call initialize!() before reset!()")
     end
 
-    if population < 1 || population > bd.num_independent_populations
+    if population_index < 1 || population_index > bd.num_independent_populations
         msg = "Population must be in [1, " *
-              "$(bd.num_independent_populations)]: $population"
+              "$(bd.num_independent_populations)]: $population_index"
         throw(ArgumentError(msg))
     end
 
@@ -203,8 +200,40 @@ function get_chromosome(brkga_data::BrkgaData, population::Int64,
         throw(ArgumentError(msg))
     end
 
-    pop = bd.current[population]
+    pop = bd.current[population_index]
     return copy(pop.chromosomes[pop.fitness[position][2]])
+end
+
+################################################################################
+
+"""
+    get_current_population(brkga_data::BrkgaData,
+                           population_index::Int64)::Population
+
+Return a reference for population `population_index`. **NOTE:** this function is
+implemented for complaince with the C++ API. The user can access the population
+directly using `brkga_data.current[population_index]`. However, **IT IS NOT
+ADIVISED TO CHANGE THE POPULATION DIRECTLY,** since such changes can result in
+undefined behavior.
+
+# Throws
+- `ErrorException`: if `initialize!()` was not called before.
+- `ArgumentError`: when `population_index < 1` or `population_index > num_independent_populations`.
+"""
+function get_current_population(brkga_data::BrkgaData,
+                                population_index::Int64)::Population
+    if !brkga_data.initialized
+        error("the algorithm hasn't been initialized. Call initialize!() before reset!()")
+    end
+
+    if population_index < 1 ||
+       population_index > brkga_data.num_independent_populations
+        msg = "Population must be in [1, " *
+              "$(brkga_data.num_independent_populations)]: $population_index"
+        throw(ArgumentError(msg))
+    end
+
+    return brkga_data.current[population_index]
 end
 
 ################################################################################
@@ -212,35 +241,34 @@ end
 """
     function inject_chromosome(brkga_data::BrkgaData,
                                chromosome::Array{Float64, 1},
-                               population::Int64,
+                               population_index::Int64,
                                position::Int64,
                                fitness::Float64 = Inf)
 
-Inject `chromosome` and its `fitness` into population of index `population`
+Inject `chromosome` and its `fitness` into population `population_index`
 in the `position` place. If fitness is not provided (`fitness = Inf`), the
 decoding is performed over `chromosome`. Once the chromosome is injected,
 the population is re-sorted according to the chromosomes' fitness.
 
 # Throws
 - `ErrorException`: if `initialize!()` was not called before.
-- `ArgumentError`: when `population < 1` or `population > num_independent_populations`.
+- `ArgumentError`: when `population_index < 1` or `population_index > num_independent_populations`.
 - `ArgumentError`: when `position < 1` or `position > population_size`.
 - `ArgumentError`: when `lenght(chromosome) != chromosome_size`.
 """
 function inject_chromosome!(brkga_data::BrkgaData,
                             chromosome::Array{Float64, 1},
-                            population::Int64,
+                            population_index::Int64,
                             position::Int64,
                             fitness::Float64 = Inf)
     bd = brkga_data
-
     if !brkga_data.initialized
         error("the algorithm hasn't been initialized. Call initialize!() before reset!()")
     end
 
-    if population < 1 || population > bd.num_independent_populations
+    if population_index < 1 || population_index > bd.num_independent_populations
         msg = "Population must be in [1, " *
-              "$(bd.num_independent_populations)]: $population"
+              "$(bd.num_independent_populations)]: $population_index"
         throw(ArgumentError(msg))
     end
 
@@ -256,7 +284,7 @@ function inject_chromosome!(brkga_data::BrkgaData,
         throw(ArgumentError(msg))
     end
 
-    pop = bd.current[population]
+    pop = bd.current[population_index]
     idx = pop.fitness[position][2]
     unsafe_copy!(pop.chromosomes[idx], 1, chromosome, 1, bd.chromosome_size)
 
