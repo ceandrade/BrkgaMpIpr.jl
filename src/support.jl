@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 26, 2018 by ceandrade
-# Last update: Apr 23, 2018 by ceandrade
+# Last update: Apr 24, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -204,7 +204,7 @@ function get_chromosome(brkga_data::BrkgaData, population::Int64,
     end
 
     pop = bd.current[population]
-    return pop.chromosomes[pop.fitness[position][2]]
+    return copy(pop.chromosomes[pop.fitness[position][2]])
 end
 
 ################################################################################

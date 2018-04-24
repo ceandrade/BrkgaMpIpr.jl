@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 26, 2018 by ceandrade
-# Last update: Apr 23, 2018 by ceandrade
+# Last update: Apr 24, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -321,20 +321,24 @@ end
         brkga_data.population_size + 1)
 
     idx, pop = 1, 1
-    tmp = brkga_data.current[pop]
-    @test get_chromosome(brkga_data, pop, idx) ≈
-        tmp.chromosomes[tmp.fitness[idx][2]]
+    actual_chr = brkga_data.current[pop]
+    copy_chr = get_chromosome(brkga_data, pop, idx)
+    @test copy_chr !== actual_chr.chromosomes[actual_chr.fitness[idx][2]]
+    @test copy_chr ≈ actual_chr.chromosomes[actual_chr.fitness[idx][2]]
 
     idx, pop = 2, 2
-    tmp = brkga_data.current[pop]
-    @test get_chromosome(brkga_data, pop, idx) ≈
-        tmp.chromosomes[tmp.fitness[idx][2]]
+    actual_chr = brkga_data.current[pop]
+    actual_chr = brkga_data.current[pop]
+    copy_chr = get_chromosome(brkga_data, pop, idx)
+    @test copy_chr !== actual_chr.chromosomes[actual_chr.fitness[idx][2]]
+    @test copy_chr ≈ actual_chr.chromosomes[actual_chr.fitness[idx][2]]
 
     idx = brkga_data.population_size
     pop = brkga_data.num_independent_populations
-    tmp = brkga_data.current[pop]
-    @test get_chromosome(brkga_data, pop, idx) ≈
-        tmp.chromosomes[tmp.fitness[idx][2]]
+    actual_chr = brkga_data.current[pop]
+    copy_chr = get_chromosome(brkga_data, pop, idx)
+    @test copy_chr !== actual_chr.chromosomes[actual_chr.fitness[idx][2]]
+    @test copy_chr ≈ actual_chr.chromosomes[actual_chr.fitness[idx][2]]
 end
 
 ################################################################################
