@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Jun 06, 2018 by ceandrade
+# Last update: Jun 12, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -51,6 +51,6 @@ export inject_chromosome!
 
 export evolve!, evolve_population!
 
-export direct_path_relink!
+export direct_path_relink!, permutation_based_path_relink!
 
 end

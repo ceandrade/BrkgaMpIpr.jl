@@ -29,7 +29,7 @@
     mutable struct Triple
 
 Hold the data structures used to build a candidate chromosome for parallel
-decoding.
+decoding on direct path relink.
 
 **THIS IS AN INTERNAL DATA STRUCTURE AND IT IS NOT MEANT TO BE USED DIRECTLY.**
 """
@@ -42,6 +42,27 @@ mutable struct Triple
 end
 
 ################################################################################
+
+"""
+    mutable struct DecodeStruct
+
+Hold the data structures used to build a candidate chromosome for parallel
+decoding on permutation-based path relink.
+
+**THIS IS AN INTERNAL DATA STRUCTURE AND IT IS NOT MEANT TO BE USED DIRECTLY.**
+"""
+mutable struct DecodeStruct
+    chr::Array{Float64, 1}
+    fitness::Float64
+    key_index::Int64
+    pos1::Int64
+    pos2::Int64
+    DecodeStruct() = new(Array{Float64, 1}(), 0.0, 0, 0, 0)
+    DecodeStruct(chr_::Array{Float64, 1}) = new(chr_, 0.0, 0, 0, 0)
+end
+
+################################################################################
+
 """
     find_block_range(block_number::Int64, block_size::Int64,
                      max_end::Int64)::UnitRange{Int64}
@@ -59,14 +80,50 @@ function find_block_range(block_number::Int64, block_size::Int64,
     return block_base:block_end
 end
 
+
+################################################################################
+
+"""
+    swap!(x::Array{Any, 1}, pos1::Int64, pos2::Int64)
+
+Swap the value in position `pos1` with the value in position `pos2` in 
+vector `x`.
+
+**Note:** this function only accept positive numbers, and all sanity and
+bounds check is disregarded due to performance reasons.
+
+**THIS IS AN INTERNAL FUNCTION AND IT IS NOT MEANT TO BE USED DIRECTLY.**
+"""
+@inline function swap!(x::Array{T, 1}, pos1::Int64, pos2::Int64) where T
+    @inbounds x[pos1], x[pos2] = x[pos2], x[pos1]
+    nothing 
+end
+
 ################################################################################
 # Main direct path relinking method
 ################################################################################
 
 """
+    function direct_path_relink!(brkga_data::BrkgaData,
+                                 population_index::Int64,
+                                 chr1_index::Int64,
+                                 chr2_index::Int64,
+                                 affect_solution::Function,
+                                 block_size::Int64,
+                                 max_time::Int64,
+                                 percentage::Float64
+        )::Tuple{Float64, Array{Float64, 1}}
+
 Perform the direct path relinking, changing each allele or block
 of alleles of base chromosome for the correspondent one in the guide
 chromosome.
+
+The API will call `decode!()` function, in `BrkgaData`, always with 
+`writeback = false`. The reason is that if the decoder rewrites the chromosome,
+the path between solutions is lost and inadvertent results may come up. 
+Note that at the end of the path relinking, the method calls the decoder with 
+`writeback = true` in the best chromosome found to guarantee that this
+chromosome is re-written to reflect the best solution found.
 
 This method is a multi-thread implementation. Instead of to build and
 decode each chromosome one at a time, the method builds a list of
@@ -83,7 +140,7 @@ environmental variable `JULIA_NUM_THREADS = 1`
 
 **THIS IS AN INTERNAL METHOD AND IT IS NOT MEANT TO BE USED DIRECTLY. IT IS
 CALLED FROM THE `path_relink()` FUNCTION.** Due to this reason, this method
-**does not** perform health checks on the arguments.
+**DOES NOT** perform health checks on the arguments.
 
 # Arguments
 - `brkga_data::BrkgaData`: the BRKGA data.
@@ -128,7 +185,6 @@ CALLED FROM THE `path_relink()` FUNCTION.** Due to this reason, this method
   `-Inf` returns in case of maximization, and `Inf` in case of minimization.
 
 """
-
 function direct_path_relink!(brkga_data::BrkgaData,
                              population_index::Int64,
                              chr1_index::Int64,
@@ -139,12 +195,9 @@ function direct_path_relink!(brkga_data::BrkgaData,
                              percentage::Float64
     )::Tuple{Float64, Array{Float64, 1}}
 
-    bd = brkga_data
-
     const PR_START_TIME = time()
 
-    const CHR1 = bd.current[population_index].chromosomes[chr1_index]
-    const CHR2 = bd.current[population_index].chromosomes[chr2_index]
+    bd = brkga_data
 
     best_chr_found = Array{Float64, 1}(brkga_data.chromosome_size)
     best_fitness_found::Float64 = (bd.opt_sense == MAXIMIZE)? -Inf : Inf
@@ -158,8 +211,8 @@ function direct_path_relink!(brkga_data::BrkgaData,
     candidates_guide = Array{Triple, 1}(NUM_BLOCKS)
 
     # References for the base and guide chromosomes.
-    base = CHR1
-    guide = CHR2
+    base = bd.current[population_index].chromosomes[chr1_index]
+    guide = bd.current[population_index].chromosomes[chr2_index]
 
     # **NOTE:** two loops are faster than one according to `@benchmark`,
     # probably because of cache racing.
@@ -266,6 +319,228 @@ function direct_path_relink!(brkga_data::BrkgaData,
     if best_fitness_found == Inf || best_fitness_found == -Inf
         best_chr_found = Array{Float64, 1}()
     end
+    return (best_fitness_found, best_chr_found)
+end
 
+################################################################################
+# Main permutation-based path relinking method
+################################################################################
+
+"""
+    function permutation_based_path_relink!(brkga_data::BrkgaData,
+                                            population_index::Int64,
+                                            chr1_index::Int64,
+                                            chr2_index::Int64,
+                                            affect_solution::Function,
+                                            block_size::Int64,
+                                            max_time::Int64,
+                                            percentage::Float64
+        )::Tuple{Float64, Array{Float64, 1}}
+
+Performs the permutation-based path relinking. In this method, the permutation
+induced by the keys in the guide solution is used to change the order of the
+keys in the permutation induced by the base solution.
+
+The API will call `decode!()` function, in `BrkgaData`, always with 
+`writeback = false`. The reason is that if the decoder rewrites the chromosome,
+the path between solutions is lost and inadvertent results may come up. 
+Note that at the end of the path relinking, the method calls the decoder with 
+`writeback = true` in the best chromosome found to guarantee that this
+chromosome is re-written to reflect the best solution found.
+
+This method is a multi-thread implementation. Instead of to build and
+decode each chromosome one at a time, the method builds a list of
+candidates, altering the alleles/keys according to the guide solution,
+and then decode all candidates in parallel. Note that
+`O(chromosome_size^2 / block_size)` additional memory is necessary to build
+the candidates, which can be costly if the `chromosome_size` is very large.
+
+**NOTE:** as it is in `evolve()`, the decoding is done in parallel using
+threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
+If such property cannot be held, we suggest using single thread by setting the
+environmental variable `JULIA_NUM_THREADS = 1`
+(see https://docs.julialang.org/en/stable/manual/parallel-computing).
+
+**THIS IS AN INTERNAL METHOD AND IT IS NOT MEANT TO BE USED DIRECTLY. IT IS
+CALLED FROM THE `path_relink()` FUNCTION.** Due to this reason, this method
+**DOES NOT** perform health checks on the arguments.
+
+# Arguments
+- `brkga_data::BrkgaData`: the BRKGA data.
+
+- `population_index::Int64`: the population from where the chromosomes will be
+  analized.
+
+- `chr1_index::Int64` and `chr2_index::Int64`: two valid indices from
+  chromosomes of the given population.
+
+- `affect_solution::Function`: not used in this function but kept to API 
+  compatibility.
+
+- `block_size::Int64`: not used in this function but kept to API compatibility.
+
+- `max_time::Int64`: abort path-relinking when reach `max_time`.
+       If `max_time <= 0`, no limit is imposed. Given in seconds.
+
+- `percentage::Float64`: define the size, in percentage, of the path to
+       build. Range [0, 1].
+
+# Returns 
+
+- `Tuple{Float64, Array{Float64, 1}}`: the best pair (fitness,   chromosome)
+  found during the relinking. If the relink is not possible due to homogeneity,
+  `-Inf` returns in case of maximization, and `Inf` in case of minimization.
+
+"""
+function permutation_based_path_relink!(brkga_data::BrkgaData,
+                                        population_index::Int64,
+                                        chr1_index::Int64,
+                                        chr2_index::Int64,
+                                        affect_solution::Function,
+                                        block_size::Int64,
+                                        max_time::Int64,
+                                        percentage::Float64
+    )::Tuple{Float64, Array{Float64, 1}}
+
+    const PR_START_TIME = time()
+
+    bd = brkga_data
+
+    best_chr_found = Array{Float64, 1}(bd.chromosome_size)
+    best_fitness_found::Float64 = (bd.opt_sense == MAXIMIZE)? -Inf : Inf
+
+    const PATH_SIZE = Int64(floor(percentage * bd.chromosome_size))
+    remaining_indices = collect(1:bd.chromosome_size)
+
+    # Allocate memory for the candidates.
+    candidates_base = Array{DecodeStruct, 1}(bd.chromosome_size)
+    candidates_guide = Array{DecodeStruct, 1}(bd.chromosome_size)
+
+    # References for the base and guide chromosomes.
+    base = bd.current[population_index].chromosomes[chr1_index]
+    guide = bd.current[population_index].chromosomes[chr2_index]
+
+    # **NOTE:** two loops are faster than one according to `@benchmark`,
+    # probably because of cache racing.
+    @inbounds Threads.@threads for i in 1:bd.chromosome_size
+        candidates_base[i] = DecodeStruct(copy(base))
+    end
+    @inbounds Threads.@threads for i in 1:bd.chromosome_size
+        candidates_guide[i] = DecodeStruct(copy(guide))
+    end
+
+    # Create and order the indices.
+    base_indices = collect(1:bd.chromosome_size)
+    guide_indices = collect(1:bd.chromosome_size)
+    sorted = Array{Tuple{Float64, Int64}, 1}(bd.chromosome_size)
+
+    for j in 1:2
+        for i in 1:bd.chromosome_size
+            sorted[i] = (base[i], i)
+        end
+        sort!(sorted)
+
+        for i in 1:bd.chromosome_size
+            base_indices[i] = sorted[i][2]
+        end
+
+        base, guide = guide, base
+        base_indices, guide_indices = guide_indices, base_indices
+    end
+    base, guide = guide, base
+    base_indices, guide_indices = guide_indices, base_indices
+
+    const SENSE = (bd.opt_sense == MAXIMIZE)
+    iterations = 1
+    while !isempty(remaining_indices)
+        it_idx = start(remaining_indices)
+
+        i = 1
+        while !done(remaining_indices, it_idx)
+            position_in_base = base_indices[remaining_indices[it_idx]]
+            position_in_guide = guide_indices[remaining_indices[it_idx]]
+
+            if position_in_base == position_in_guide
+                deleteat!(remaining_indices, it_idx)
+                continue
+            end
+
+            candidates_base[i].key_index = it_idx
+            candidates_base[i].pos1 = position_in_base
+            candidates_base[i].pos2 = position_in_guide
+            candidates_base[i].fitness = (SENSE)? -Inf : Inf
+
+            _, it_idx = next(remaining_indices, it_idx)
+            i += 1
+        end
+
+        if i == 1 && isempty(remaining_indices)
+            break
+        end
+
+        # Decode the candidates.
+        Threads.@threads for i in 1:length(remaining_indices)
+            if time() - PR_START_TIME > max_time
+                continue
+            end
+
+            swap!(candidates_base[i].chr,
+                  candidates_base[i].pos1, candidates_base[i].pos2)
+
+            candidates_base[i].fitness =
+                bd.decode!(candidates_base[i].chr, bd.problem_instance, false)
+
+            swap!(candidates_base[i].chr, 
+                  candidates_base[i].pos1, candidates_base[i].pos2)
+        end
+
+        # Locate the best candidate.
+        best_value::Float64 = (SENSE)? -Inf : Inf
+        best_index = 1
+        best_key_index = 1
+
+        @inbounds for i in 1:length(remaining_indices)
+            if ((best_value < candidates_base[i].fitness && SENSE) ||
+                (best_value > candidates_base[i].fitness && !SENSE))
+                best_value = candidates_base[i].fitness
+                best_index = i
+                best_key_index = candidates_base[i].key_index
+            end
+        end
+
+        position_in_base = base_indices[best_key_index];
+        position_in_guide = guide_indices[best_key_index];
+
+        # Commit the best exchange in all candidates.
+        # The last candidate will not be used.
+        it_block_idx = start(remaining_indices)
+        @inbounds for i in 1:length(remaining_indices) - 1
+            swap!(candidates_base[i].chr, position_in_base, position_in_guide)
+        end
+
+        swap!(base_indices, position_in_base, position_in_guide)
+
+        # Hold it, if it is the best found until now.
+        if ((SENSE && best_fitness_found < candidates_base[best_index].fitness)
+            ||
+            (!SENSE && best_fitness_found > candidates_base[best_index].fitness))
+            best_fitness_found = candidates_base[best_index].fitness
+            best_chr_found[:] = candidates_base[best_index].chr
+        end
+
+        # Swap roles.
+        base, guide = guide, base
+        candidates_base, candidates_guide = candidates_guide, candidates_base
+        deleteat!(remaining_indices, best_key_index)
+
+        iterations += 1
+        if iterations == PATH_SIZE || time() - PR_START_TIME > max_time
+            break
+        end
+    end
+
+    if best_fitness_found == Inf || best_fitness_found == -Inf
+        best_chr_found = Array{Float64, 1}()
+    end
     return (best_fitness_found, best_chr_found)
 end

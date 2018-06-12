@@ -8,7 +8,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Apr 20, 2018 by ceandrade
-# Last update: Jun 11, 2018 by ceandrade
+# Last update: Jun 12, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -375,151 +375,156 @@ print("\n> Writing path relink")
 write_data("brkga_data_files/data_path_relink.jld", brkga_data)
 
 # Create some test data for path relink methods.
-print("\n> Path relinking population ")
 
-###############
-# Block sizes
-###############
+for (func, name) in [(direct_path_relink!, "direct"), 
+                     (permutation_based_path_relink!, "permutation_based")]
 
-# Size 1
-block1 = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
-                           1, #population_index::Int64,
-                           1, #chr1_index::Int64,
-                           2, #chr2_index::Int64,
-                           (x, y) -> true, #distance_function::Function,
-                           1, #block_size::Int64,
-                           120, #max_time::Int64,
-                           0.5 #percentage::Float64
-                           )
+    print("\n> Path relinking population: ", name)
 
-# Size 10
-block10 = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
-                           1, #population_index::Int64,
-                           1, #chr1_index::Int64,
-                           2, #chr2_index::Int64,
-                           (x, y) -> true, #distance_function::Function,
-                           1, #block_size::Int64,
-                           120, #max_time::Int64,
-                           0.5 #percentage::Float64
-                           )
+    ###############
+    # Block sizes
+    ###############
 
-# Size 100
-block100 = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
-                           1, #population_index::Int64,
-                           1, #chr1_index::Int64,
-                           2, #chr2_index::Int64,
-                           (x, y) -> true, #distance_function::Function,
-                           100, #block_size::Int64,
-                           120, #max_time::Int64,
-                           0.5 #percentage::Float64
-                           )
+    # Size 1
+    block1 = func(brkga_data, #brkga_data::BrkgaData,
+                               1, #population_index::Int64,
+                               1, #chr1_index::Int64,
+                               2, #chr2_index::Int64,
+                               (x, y) -> true, #distance_function::Function,
+                               1, #block_size::Int64,
+                               120, #max_time::Int64,
+                               0.5 #percentage::Float64
+                               )
 
-# Size 400
-block400 = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
-                           1, #population_index::Int64,
-                           1, #chr1_index::Int64,
-                           2, #chr2_index::Int64,
-                           (x, y) -> true, #distance_function::Function,
-                           400, #block_size::Int64,
-                           120, #max_time::Int64,
-                           0.5 #percentage::Float64
-                           )
+    # Size 10
+    block10 = func(brkga_data, #brkga_data::BrkgaData,
+                               1, #population_index::Int64,
+                               1, #chr1_index::Int64,
+                               2, #chr2_index::Int64,
+                               (x, y) -> true, #distance_function::Function,
+                               1, #block_size::Int64,
+                               120, #max_time::Int64,
+                               0.5 #percentage::Float64
+                               )
 
-# Size 372
-block372 = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
-                           1, #population_index::Int64,
-                           1, #chr1_index::Int64,
-                           2, #chr2_index::Int64,
-                           (x, y) -> true, #distance_function::Function,
-                           372, #block_size::Int64,
-                           120, #max_time::Int64,
-                           0.5 #percentage::Float64
-                           )
+    # Size 100
+    block100 = func(brkga_data, #brkga_data::BrkgaData,
+                               1, #population_index::Int64,
+                               1, #chr1_index::Int64,
+                               2, #chr2_index::Int64,
+                               (x, y) -> true, #distance_function::Function,
+                               100, #block_size::Int64,
+                               120, #max_time::Int64,
+                               0.5 #percentage::Float64
+                               )
 
-###############
-# Path sizes
-###############
+    # Size 400
+    block400 = func(brkga_data, #brkga_data::BrkgaData,
+                               1, #population_index::Int64,
+                               1, #chr1_index::Int64,
+                               2, #chr2_index::Int64,
+                               (x, y) -> true, #distance_function::Function,
+                               400, #block_size::Int64,
+                               120, #max_time::Int64,
+                               0.5 #percentage::Float64
+                               )
 
-# Path 10%
-path10 = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
-                           1, #population_index::Int64,
-                           1, #chr1_index::Int64,
-                           2, #chr2_index::Int64,
-                           (x, y) -> true, #distance_function::Function,
-                           10, #block_size::Int64,
-                           120, #max_time::Int64,
-                           0.1 #percentage::Float64
-                           )
+    # Size 372
+    block372 = func(brkga_data, #brkga_data::BrkgaData,
+                               1, #population_index::Int64,
+                               1, #chr1_index::Int64,
+                               2, #chr2_index::Int64,
+                               (x, y) -> true, #distance_function::Function,
+                               372, #block_size::Int64,
+                               120, #max_time::Int64,
+                               0.5 #percentage::Float64
+                               )
 
-# Path 30%
-path30 = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
-                           1, #population_index::Int64,
-                           1, #chr1_index::Int64,
-                           2, #chr2_index::Int64,
-                           (x, y) -> true, #distance_function::Function,
-                           10, #block_size::Int64,
-                           120, #max_time::Int64,
-                           0.3 #percentage::Float64
-                           )
+    ###############
+    # Path sizes
+    ###############
 
-# Path 50%
-path50 = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
-                           1, #population_index::Int64,
-                           1, #chr1_index::Int64,
-                           2, #chr2_index::Int64,
-                           (x, y) -> true, #distance_function::Function,
-                           10, #block_size::Int64,
-                           120, #max_time::Int64,
-                           0.50 #percentage::Float64
-                           )
+    # Path 10%
+    path10 = func(brkga_data, #brkga_data::BrkgaData,
+                               1, #population_index::Int64,
+                               1, #chr1_index::Int64,
+                               2, #chr2_index::Int64,
+                               (x, y) -> true, #distance_function::Function,
+                               10, #block_size::Int64,
+                               120, #max_time::Int64,
+                               0.1 #percentage::Float64
+                               )
 
-# Path 100%
-path100 = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
-                           1, #population_index::Int64,
-                           1, #chr1_index::Int64,
-                           2, #chr2_index::Int64,
-                           (x, y) -> true, #distance_function::Function,
-                           10, #block_size::Int64,
-                           120, #max_time::Int64,
-                           1.0 #percentage::Float64
-                           )
+    # Path 30%
+    path30 = func(brkga_data, #brkga_data::BrkgaData,
+                               1, #population_index::Int64,
+                               1, #chr1_index::Int64,
+                               2, #chr2_index::Int64,
+                               (x, y) -> true, #distance_function::Function,
+                               10, #block_size::Int64,
+                               120, #max_time::Int64,
+                               0.3 #percentage::Float64
+                               )
 
-##############################
-# Simple distance function
-##############################
+    # Path 50%
+    path50 = func(brkga_data, #brkga_data::BrkgaData,
+                               1, #population_index::Int64,
+                               1, #chr1_index::Int64,
+                               2, #chr2_index::Int64,
+                               (x, y) -> true, #distance_function::Function,
+                               10, #block_size::Int64,
+                               120, #max_time::Int64,
+                               0.50 #percentage::Float64
+                               )
 
-# x < y
-xy = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
-                           1, #population_index::Int64,
-                           1, #chr1_index::Int64,
-                           2, #chr2_index::Int64,
-                           (x, y) -> x[1] < y[2], #distance_function::Function,
-                           10, #block_size::Int64,
-                           120, #max_time::Int64,
-                           0.5 #percentage::Float64
-                           )
+    # Path 100%
+    path100 = func(brkga_data, #brkga_data::BrkgaData,
+                               1, #population_index::Int64,
+                               1, #chr1_index::Int64,
+                               2, #chr2_index::Int64,
+                               (x, y) -> true, #distance_function::Function,
+                               10, #block_size::Int64,
+                               120, #max_time::Int64,
+                               1.0 #percentage::Float64
+                               )
 
-# x > y
-yx = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
-                           1, #population_index::Int64,
-                           1, #chr1_index::Int64,
-                           2, #chr2_index::Int64,
-                           (x, y) -> x[1] > y[2], #distance_function::Function,
-                           10, #block_size::Int64,
-                           120, #max_time::Int64,
-                           0.5 #percentage::Float64
-                           )
+    ##############################
+    # Simple distance function
+    ##############################
 
-save("brkga_data_files/best_solutions_direct_pr.jld",
-     "block1", block1,
-     "block10", block10,
-     "block100", block100,
-     "block400", block400,
-     "block372", block372,
-     "path10", path10,
-     "path30", path30,
-     "path50", path50,
-     "path100", path100,
-     "xy", xy,
-     "yx", yx
-)
+    # x < y
+    xy = func(brkga_data, #brkga_data::BrkgaData,
+                               1, #population_index::Int64,
+                               1, #chr1_index::Int64,
+                               2, #chr2_index::Int64,
+                               (x, y) -> x[1] < y[2], #distance_function::Function,
+                               10, #block_size::Int64,
+                               120, #max_time::Int64,
+                               0.5 #percentage::Float64
+                               )
+
+    # x > y
+    yx = func(brkga_data, #brkga_data::BrkgaData,
+                               1, #population_index::Int64,
+                               1, #chr1_index::Int64,
+                               2, #chr2_index::Int64,
+                               (x, y) -> x[1] > y[2], #distance_function::Function,
+                               10, #block_size::Int64,
+                               120, #max_time::Int64,
+                               0.5 #percentage::Float64
+                               )
+
+    save("brkga_data_files/best_solutions_pr_" * name * ".jld",
+         "block1", block1,
+         "block10", block10,
+         "block100", block100,
+         "block400", block400,
+         "block372", block372,
+         "path10", path10,
+         "path30", path30,
+         "path50", path50,
+         "path100", path100,
+         "xy", xy,
+         "yx", yx
+    )
+end
