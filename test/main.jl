@@ -26,9 +26,8 @@ push!(LOAD_PATH, ".")
 import TestInstance
 import TestDecoder
 using BrkgaMpIpr
-using JLD
 
-chr_size = 100
+chr_size = 10000
 pop_size = 10
 elite_percentage = 0.3
 mutants_percentage = 0.1
@@ -38,46 +37,34 @@ total_parents = 2
 bias = BrkgaMpIpr.LOGINVERSE
 num_independent_populations = 2
 
-print("\n\n>> Building instance")
+print("\n\n>> Building instance\n")
 instance = TestInstance.Instance(chr_size)
 
-print("\n\n>> Building BRKGA data")
-# brkga_data = BrkgaMpIpr.build_brkga(instance, TestDecoder.decode!,
-#                              BrkgaMpIpr.MAXIMIZE, 2700001, chr_size, pop_size,
-#                              elite_percentage, mutants_percentage,
-#                              evolutionary_mechanism_on, num_elite_parents,
-#                              total_parents, bias, num_independent_populations)
+print("\n\n>> Building BRKGA data\n")
+brkga_data = BrkgaMpIpr.build_brkga(instance, TestDecoder.decode!,
+                             BrkgaMpIpr.MAXIMIZE, 2700001, chr_size, pop_size,
+                             elite_percentage, mutants_percentage,
+                             evolutionary_mechanism_on, num_elite_parents,
+                             total_parents, bias, num_independent_populations)
 
-(brkga_data, control_params) =
-    BrkgaMpIpr.build_brkga(instance, TestDecoder.decode!,
-                           BrkgaMpIpr.MAXIMIZE, 2700001, chr_size,
-                           "configuration_files/regular.conf")
+# (brkga_data, control_params) =
+#     BrkgaMpIpr.build_brkga(instance, TestDecoder.decode!,
+#                            BrkgaMpIpr.MAXIMIZE, 2700001, chr_size,
+#                            "configuration_files/regular.conf")
 
-print("\n\n>> Initializing BRKGA")
+print("\n\n>> Initializing BRKGA\n")
 BrkgaMpIpr.initialize!(brkga_data)
 
 
-# print("\n\n>> Writing data")
-# save("test.jld",
-#      "rng", brkga_data.rng,
-#      "previous", brkga_data.previous,
-#      "current", brkga_data.current
-#      )
+print("\n\n>> Path relinking\n")
 
-tmp = load("test.jld")
-
-brkga_data.rng = tmp["rng"]
-brkga_data.previous = tmp["previous"]
-brkga_data.current = tmp["current"]
-
-evolve_population!(brkga_data, 1)
-print("\n> ", get_best_fitness(brkga_data))
-
-# print("\n\n>> Reseting")
-# BrkgaMpIpr.reset!(brkga_data)
-#
-# # print("\n\n>> Evolving")
-# # @time BrkgaMpIpr.evolve!(brkga_data, instance, TestDecoder.decode!)
-#
-# print("\n\n>> Exchanging individuals")
-# BrkgaMpIpr.exchange_elite!(brkga_data, 2)
+@time tmp = BrkgaMpIpr.direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
+                              1, #population_index::Int64,
+                              1, #chr1_index::Int64,
+                              2, #chr2_index::Int64,
+                              (x, y) -> true, #distance_function::Function,
+                              1, #block_size::Int64,
+                              10, #max_time::Int64,
+                              1.0 #percentage::Float64
+                              )
+@show tmp[1]

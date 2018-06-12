@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Apr 24, 2018 by ceandrade
+# Last update: Jun 06, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -28,6 +28,7 @@ include("types_io.jl")
 include("building.jl")
 include("support.jl")
 include("evolution.jl")
+include("path_relink.jl")
 
 # TODO (ceandrade): exporting of each item of the enums is weird.
 # If Julia change these in the future, remove the items from exporting.
@@ -49,5 +50,7 @@ export get_chromosome, get_current_population
 export inject_chromosome!
 
 export evolve!, evolve_population!
+
+export direct_path_relink!
 
 end

@@ -4,22 +4,20 @@ export decode!
 import TestInstance
 
 function decode!(chromosome::Array{Float64}, instance::TestInstance.Instance,
-                 rewrite::Bool = false)::Float64
+                 rewrite::Bool = true)::Float64
 
-    chromosome[:] = chromosome + instance.data
-    chromosome[:] = chromosome / maximum(chromosome)
+    tmp = chromosome + instance.data
+    tmp /= maximum(tmp)
 
-    return sum(chromosome)
+    if rewrite
+        # **NOTE:** the following comment assignments are too slow; it is better
+        # do it manually: chromosome = copy(tmp)
+        @inbounds for i in 1:length(tmp)
+            chromosome[i] = tmp[i]
+        end
+    end
 
-    # total = 0
-    # last = chromosome[1]
-    # for i = 1:size(chromosome)[1]
-    #     if last < chromosome[i]
-    #         total += 1
-    #     end
-    #     last = chromosome[i]
-    # end
-    # return Float64(total)
+    return sum(tmp)
 end
 
 end

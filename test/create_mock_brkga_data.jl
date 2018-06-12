@@ -8,7 +8,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Apr 20, 2018 by ceandrade
-# Last update: Apr 23, 2018 by ceandrade
+# Last update: Jun 11, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -31,7 +31,7 @@ using JLD
 using TestDecoder
 using TestInstance
 
-# Makes easy to change espeficif position on the parameters vector below.
+# Makes easy to change specific position on the parameters vector below.
 const param_names = ["instance", "decode!", "opt_sense", "seed", "chr_size",
                      "pop_size", "elite_percentage", "mutants_percentage",
                      "evolutionary_mechanism_on", "num_elite_parents",
@@ -44,7 +44,7 @@ const param_index = Dict([v => i for (i, v) in enumerate(param_names)])
 param_values = Array{Any, 1}(length(param_names))
 
 ################################################################################
-# Writte file
+# Write file
 ################################################################################
 
 function write_data(filename::String, data::BrkgaData)
@@ -345,4 +345,181 @@ save("brkga_data_files/best_solution5.jld",
     "chromosome2", chromosome2,
     "fitness102", fitness102,
     "chromosome102", chromosome102,
+)
+
+################################################################################
+# Configuration for path relink
+################################################################################
+
+chromosome_size = 1000
+instance = Instance(chromosome_size)
+param_values[param_index["instance"]] = instance
+param_values[param_index["decode!"]] = decode!
+param_values[param_index["opt_sense"]] = MAXIMIZE
+param_values[param_index["seed"]] = 16986526969459
+param_values[param_index["chr_size"]] = chromosome_size
+param_values[param_index["pop_size"]] = 100
+param_values[param_index["elite_percentage"]] = 0.25
+param_values[param_index["mutants_percentage"]] = 0.25
+param_values[param_index["evolutionary_mechanism_on"]] = true
+param_values[param_index["num_elite_parents"]] = 2
+param_values[param_index["total_parents"]] = 3
+param_values[param_index["bias"]] = QUADRATIC
+param_values[param_index["num_independent_populations"]] = 1
+
+print("\n\n> Building configuration for path relink")
+brkga_data = build_brkga(param_values...)
+initialize!(brkga_data)
+
+print("\n> Writing path relink")
+write_data("brkga_data_files/data_path_relink.jld", brkga_data)
+
+# Create some test data for path relink methods.
+print("\n> Path relinking population ")
+
+###############
+# Block sizes
+###############
+
+# Size 1
+block1 = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
+                           1, #population_index::Int64,
+                           1, #chr1_index::Int64,
+                           2, #chr2_index::Int64,
+                           (x, y) -> true, #distance_function::Function,
+                           1, #block_size::Int64,
+                           120, #max_time::Int64,
+                           0.5 #percentage::Float64
+                           )
+
+# Size 10
+block10 = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
+                           1, #population_index::Int64,
+                           1, #chr1_index::Int64,
+                           2, #chr2_index::Int64,
+                           (x, y) -> true, #distance_function::Function,
+                           1, #block_size::Int64,
+                           120, #max_time::Int64,
+                           0.5 #percentage::Float64
+                           )
+
+# Size 100
+block100 = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
+                           1, #population_index::Int64,
+                           1, #chr1_index::Int64,
+                           2, #chr2_index::Int64,
+                           (x, y) -> true, #distance_function::Function,
+                           100, #block_size::Int64,
+                           120, #max_time::Int64,
+                           0.5 #percentage::Float64
+                           )
+
+# Size 400
+block400 = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
+                           1, #population_index::Int64,
+                           1, #chr1_index::Int64,
+                           2, #chr2_index::Int64,
+                           (x, y) -> true, #distance_function::Function,
+                           400, #block_size::Int64,
+                           120, #max_time::Int64,
+                           0.5 #percentage::Float64
+                           )
+
+# Size 372
+block372 = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
+                           1, #population_index::Int64,
+                           1, #chr1_index::Int64,
+                           2, #chr2_index::Int64,
+                           (x, y) -> true, #distance_function::Function,
+                           372, #block_size::Int64,
+                           120, #max_time::Int64,
+                           0.5 #percentage::Float64
+                           )
+
+###############
+# Path sizes
+###############
+
+# Path 10%
+path10 = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
+                           1, #population_index::Int64,
+                           1, #chr1_index::Int64,
+                           2, #chr2_index::Int64,
+                           (x, y) -> true, #distance_function::Function,
+                           10, #block_size::Int64,
+                           120, #max_time::Int64,
+                           0.1 #percentage::Float64
+                           )
+
+# Path 30%
+path30 = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
+                           1, #population_index::Int64,
+                           1, #chr1_index::Int64,
+                           2, #chr2_index::Int64,
+                           (x, y) -> true, #distance_function::Function,
+                           10, #block_size::Int64,
+                           120, #max_time::Int64,
+                           0.3 #percentage::Float64
+                           )
+
+# Path 50%
+path50 = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
+                           1, #population_index::Int64,
+                           1, #chr1_index::Int64,
+                           2, #chr2_index::Int64,
+                           (x, y) -> true, #distance_function::Function,
+                           10, #block_size::Int64,
+                           120, #max_time::Int64,
+                           0.50 #percentage::Float64
+                           )
+
+# Path 100%
+path100 = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
+                           1, #population_index::Int64,
+                           1, #chr1_index::Int64,
+                           2, #chr2_index::Int64,
+                           (x, y) -> true, #distance_function::Function,
+                           10, #block_size::Int64,
+                           120, #max_time::Int64,
+                           1.0 #percentage::Float64
+                           )
+
+##############################
+# Simple distance function
+##############################
+
+# x < y
+xy = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
+                           1, #population_index::Int64,
+                           1, #chr1_index::Int64,
+                           2, #chr2_index::Int64,
+                           (x, y) -> x[1] < y[2], #distance_function::Function,
+                           10, #block_size::Int64,
+                           120, #max_time::Int64,
+                           0.5 #percentage::Float64
+                           )
+
+# x > y
+yx = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
+                           1, #population_index::Int64,
+                           1, #chr1_index::Int64,
+                           2, #chr2_index::Int64,
+                           (x, y) -> x[1] > y[2], #distance_function::Function,
+                           10, #block_size::Int64,
+                           120, #max_time::Int64,
+                           0.5 #percentage::Float64
+                           )
+
+save("brkga_data_files/best_solutions_direct_pr.jld",
+     "block1", block1,
+     "block10", block10,
+     "block100", block100,
+     "block400", block400,
+     "block372", block372,
+     "path10", path10,
+     "path30", path30,
+     "path50", path50,
+     "path100", path100,
+     "xy", xy,
+     "yx", yx
 )
