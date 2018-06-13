@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 24, 2018 by ceandrade
-# Last update: Mar 31, 2018 by ceandrade
+# Last update: Jun 13, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -31,6 +31,26 @@
     @test parse(BrkgaMpIpr.BiasFunction, "QuAdRaTiC") == QUADRATIC
     @test parse(BrkgaMpIpr.BiasFunction, "Custom") == CUSTOM
     @test_throws ArgumentError parse(BrkgaMpIpr.BiasFunction, "invalid")
+end
+
+################################################################################
+
+@testset "Parsing PathRelinkingType" begin
+    @test parse(BrkgaMpIpr.PathRelinkingType, "DIRECT") == DIRECT
+    @test parse(BrkgaMpIpr.PathRelinkingType, "direct") == DIRECT
+    @test parse(BrkgaMpIpr.PathRelinkingType, "PERMUTATION") == PERMUTATION
+    @test parse(BrkgaMpIpr.PathRelinkingType, "permutation") == PERMUTATION
+    @test_throws ArgumentError parse(BrkgaMpIpr.PathRelinkingType, "invalid")
+end
+
+################################################################################
+
+@testset "Parsing PathRelinkingSelection" begin
+    @test parse(BrkgaMpIpr.PathRelinkingSelection, "BESTSOLUTION") == BESTSOLUTION
+    @test parse(BrkgaMpIpr.PathRelinkingSelection, "bestsolution") == BESTSOLUTION
+    @test parse(BrkgaMpIpr.PathRelinkingSelection, "RANDOMELITE") == RANDOMELITE
+    @test parse(BrkgaMpIpr.PathRelinkingSelection, "randomelite") == RANDOMELITE
+    @test_throws ArgumentError parse(BrkgaMpIpr.PathRelinkingSelection, "invalid")
 end
 
 ################################################################################

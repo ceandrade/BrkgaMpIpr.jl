@@ -100,7 +100,7 @@ bounds check is disregarded due to performance reasons.
 end
 
 ################################################################################
-# Main direct path relinking method
+# Direct path relinking method
 ################################################################################
 
 """
@@ -323,7 +323,7 @@ function direct_path_relink!(brkga_data::BrkgaData,
 end
 
 ################################################################################
-# Main permutation-based path relinking method
+# Permutation-based path relinking method
 ################################################################################
 
 """
@@ -543,4 +543,88 @@ function permutation_based_path_relink!(brkga_data::BrkgaData,
         best_chr_found = Array{Float64, 1}()
     end
     return (best_fitness_found, best_chr_found)
+end
+
+################################################################################
+# Main path relinking method
+################################################################################
+
+"""
+    function permutation_based_path_relink!(brkga_data::BrkgaData,
+                                            population_index::Int64,
+                                            chr1_index::Int64,
+                                            chr2_index::Int64,
+                                            affect_solution::Function,
+                                            block_size::Int64,
+                                            max_time::Int64,
+                                            percentage::Float64
+        )::Tuple{Float64, Array{Float64, 1}}
+
+Performs the permutation-based path relinking. In this method, the permutation
+induced by the keys in the guide solution is used to change the order of the
+keys in the permutation induced by the base solution.
+
+The API will call `decode!()` function, in `BrkgaData`, always with 
+`writeback = false`. The reason is that if the decoder rewrites the chromosome,
+the path between solutions is lost and inadvertent results may come up. 
+Note that at the end of the path relinking, the method calls the decoder with 
+`writeback = true` in the best chromosome found to guarantee that this
+chromosome is re-written to reflect the best solution found.
+
+This method is a multi-thread implementation. Instead of to build and
+decode each chromosome one at a time, the method builds a list of
+candidates, altering the alleles/keys according to the guide solution,
+and then decode all candidates in parallel. Note that
+`O(chromosome_size^2 / block_size)` additional memory is necessary to build
+the candidates, which can be costly if the `chromosome_size` is very large.
+
+**NOTE:** as it is in `evolve()`, the decoding is done in parallel using
+threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
+If such property cannot be held, we suggest using single thread by setting the
+environmental variable `JULIA_NUM_THREADS = 1`
+(see https://docs.julialang.org/en/stable/manual/parallel-computing).
+
+**THIS IS AN INTERNAL METHOD AND IT IS NOT MEANT TO BE USED DIRECTLY. IT IS
+CALLED FROM THE `path_relink()` FUNCTION.** Due to this reason, this method
+**DOES NOT** perform health checks on the arguments.
+
+# Arguments
+- `brkga_data::BrkgaData`: the BRKGA data.
+
+- `population_index::Int64`: the population from where the chromosomes will be
+  analized.
+
+- `chr1_index::Int64` and `chr2_index::Int64`: two valid indices from
+  chromosomes of the given population.
+
+- `affect_solution::Function`: not used in this function but kept to API 
+  compatibility.
+
+- `block_size::Int64`: not used in this function but kept to API compatibility.
+
+- `max_time::Int64`: abort path-relinking when reach `max_time`.
+       If `max_time <= 0`, no limit is imposed. Given in seconds.
+
+- `percentage::Float64`: define the size, in percentage, of the path to
+       build. Range [0, 1].
+
+# Returns 
+
+- `Tuple{Float64, Array{Float64, 1}}`: the best pair (fitness,   chromosome)
+  found during the relinking. If the relink is not possible due to homogeneity,
+  `-Inf` returns in case of maximization, and `Inf` in case of minimization.
+
+"""
+function path_relink!(brkga_data::BrkgaData,
+                      compute_distance::Function,
+                      affect_solution::Function,
+                      minimum_distance::Float64,
+                      pr_type::PathRelinkingType,
+                      pr_selection::PathRelinkingSelection,
+                      block_size::Int64,
+                      max_time::Int64, 
+                      percentage::Float64
+    )::Bool
+
+    return true
 end

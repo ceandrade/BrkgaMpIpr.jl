@@ -1,12 +1,12 @@
 ################################################################################
-# types.jl: Definitions of internal data strucutures and external API.
+# types.jl: Definitions of internal data structures and external API.
 #
 # (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
 #
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Mar 31, 2018 by ceandrade
+# Last update: Jun 13, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -68,6 +68,46 @@ rank r, we have the following functions:
 #     ...
 # end
 @enum BiasFunction CONSTANT=0 CUBIC=1 EXPONENTIAL=2 LINEAR=3 LOGINVERSE=4 QUADRATIC=5 CUSTOM=6
+
+################################################################################
+
+"""
+    @enum PathRelinkingType
+
+Specifies type of path relinking:
+
+    - DIRECT: changes each key for the correspondent in the other chromosome.
+
+    - PERMUTATION: switches the order of a key for that in the other chromosome.
+"""
+# TODO (ceandrade): to avoid long declarations as below, implement using
+# `begin...end` block in future Julia versions:
+# @enum PathRelinkingType begin
+#     DIRECT = 0
+#     PERMUTATION = 1
+#     ...
+# end
+@enum PathRelinkingType DIRECT=0 PERMUTATION=1
+
+################################################################################
+
+"""
+    @enum PathRelinkingSelection
+
+Specifies which individuals used to build the path:
+
+    - BESTSOLUTION: selects, in the order, the best solution of each population.
+
+    - RANDOMELITE: chooses uniformly random solutions from the elite sets.
+"""
+# TODO (ceandrade): to avoid long declarations as below, implement using
+# `begin...end` block in future Julia versions:
+# @enum PathRelinkingSelection begin
+#     BESTSOLUTION = 0
+#     RANDOMELITE = 1
+#     ...
+# end
+@enum PathRelinkingSelection BESTSOLUTION=0 RANDOMELITE=1
 
 ################################################################################
 # Data structures

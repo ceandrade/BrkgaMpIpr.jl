@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Jun 12, 2018 by ceandrade
+# Last update: Jun 13, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -33,24 +33,23 @@ include("path_relink.jl")
 # TODO (ceandrade): exporting of each item of the enums is weird.
 # If Julia change these in the future, remove the items from exporting.
 export Sense, MINIMIZE, MAXIMIZE
-
-# TODO (ceandrade): exporting of each item of the enums is weird.
-# If Julia change these in the future, remove the items from exporting.
 export BiasFunction
 export CONSTANT, CUBIC, EXPONENTIAL, LINEAR, LOGINVERSE, QUADRATIC, CUSTOM
+export PathRelinkingType, DIRECT, PERMUTATION
+export PathRelinkingSelection, BESTSOLUTION, RANDOMELITE
 
 export parse, write_configuration
 
 export BrkgaData, AbstractInstance, ExternalControlParams
-export empty_function
+
 export build_brkga, set_bias_custom_function!, set_initial_population!
-export initialize!, reset!, exchange_elite!
+export initialize!, reset!, exchange_elite!, inject_chromosome!
+
 export get_best_fitness, get_best_chromosome
 export get_chromosome, get_current_population
-export inject_chromosome!
 
-export evolve!, evolve_population!
+export evolve!
 
-export direct_path_relink!, permutation_based_path_relink!
+export path_relink!
 
 end

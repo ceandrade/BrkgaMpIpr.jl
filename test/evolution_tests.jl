@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Apr 19, 2018 by ceandrade
-# Last update: Jun 11, 2018 by ceandrade
+# Last update: Jun 13, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -32,13 +32,13 @@ include("util.jl")
     brkga_data = build_brkga(param_values...)
 
     # Not initialized
-    @test_throws ErrorException evolve_population!(brkga_data, 1)
+    @test_throws ErrorException BrkgaMpIpr.evolve_population!(brkga_data, 1)
 
     initialize!(brkga_data)
 
-    @test_throws ArgumentError evolve_population!(brkga_data, 0)
-    @test_throws ArgumentError evolve_population!(brkga_data, -1)
-    @test_throws ArgumentError evolve_population!(brkga_data,
+    @test_throws ArgumentError BrkgaMpIpr.evolve_population!(brkga_data, 0)
+    @test_throws ArgumentError BrkgaMpIpr.evolve_population!(brkga_data, -1)
+    @test_throws ArgumentError BrkgaMpIpr.evolve_population!(brkga_data,
         brkga_data.num_independent_populations + 1)
 
     # Save previous and current populations locally
@@ -50,7 +50,7 @@ include("util.jl")
     ########################
 
     for i in 1:brkga_data.num_independent_populations
-        evolve_population!(brkga_data, i)
+        BrkgaMpIpr.evolve_population!(brkga_data, i)
 
         @test current[i].chromosomes == brkga_data.previous[i].chromosomes
         @test current[i].fitness == brkga_data.previous[i].fitness
@@ -72,16 +72,16 @@ include("util.jl")
     load_brkga_data(joinpath(data_path, "data1.jld"), brkga_data)
     results = load(joinpath(data_path, "best_solution1.jld"))
 
-    evolve_population!(brkga_data, 1)
+    BrkgaMpIpr.evolve_population!(brkga_data, 1)
     @test get_best_fitness(brkga_data) ≈ results["fitness1"]
     @test get_best_chromosome(brkga_data) ≈ results["chromosome1"]
 
-    evolve_population!(brkga_data, 1)
+    BrkgaMpIpr.evolve_population!(brkga_data, 1)
     @test get_best_fitness(brkga_data) ≈ results["fitness2"]
     @test get_best_chromosome(brkga_data) ≈ results["chromosome2"]
 
     for _ in 1:100
-        evolve_population!(brkga_data, 1)
+        BrkgaMpIpr.evolve_population!(brkga_data, 1)
     end
     @test get_best_fitness(brkga_data) ≈ results["fitness102"]
     @test get_best_chromosome(brkga_data) ≈ results["chromosome102"]
@@ -91,17 +91,17 @@ include("util.jl")
     load_brkga_data(joinpath(data_path, "data2.jld"), brkga_data)
     results = load(joinpath(data_path, "best_solution2.jld"))
 
-    evolve_population!(brkga_data, 1)
+    BrkgaMpIpr.evolve_population!(brkga_data, 1)
     @test get_best_fitness(brkga_data) ≈ results["fitness1"]
     @test get_best_chromosome(brkga_data) ≈ results["chromosome1"]
 
-    evolve_population!(brkga_data, 2)
+    BrkgaMpIpr.evolve_population!(brkga_data, 2)
     @test get_best_fitness(brkga_data) ≈ results["fitness2"]
     @test get_best_chromosome(brkga_data) ≈ results["chromosome2"]
 
     for _ in 1:100
-        evolve_population!(brkga_data, 1)
-        evolve_population!(brkga_data, 2)
+        BrkgaMpIpr.evolve_population!(brkga_data, 1)
+        BrkgaMpIpr.evolve_population!(brkga_data, 2)
     end
     @test get_best_fitness(brkga_data) ≈ results["fitness102"]
     @test get_best_chromosome(brkga_data) ≈ results["chromosome102"]
@@ -111,19 +111,19 @@ include("util.jl")
     load_brkga_data(joinpath(data_path, "data3.jld"), brkga_data)
     results = load(joinpath(data_path, "best_solution3.jld"))
 
-    evolve_population!(brkga_data, 1)
+    BrkgaMpIpr.evolve_population!(brkga_data, 1)
     @test get_best_fitness(brkga_data) ≈ results["fitness1"]
     @test get_best_chromosome(brkga_data) ≈ results["chromosome1"]
 
     for _ in 2:brkga_data.num_independent_populations
-        evolve_population!(brkga_data, 2)
+        BrkgaMpIpr.evolve_population!(brkga_data, 2)
     end
     @test get_best_fitness(brkga_data) ≈ results["fitness2"]
     @test get_best_chromosome(brkga_data) ≈ results["chromosome2"]
 
     for _ in 1:100
         for i in 1:brkga_data.num_independent_populations
-            evolve_population!(brkga_data, i)
+            BrkgaMpIpr.evolve_population!(brkga_data, i)
         end
     end
     @test get_best_fitness(brkga_data) ≈ results["fitness102"]
@@ -137,18 +137,18 @@ include("util.jl")
     rho = 0.75
     set_bias_custom_function!(brkga_data, x -> x ≈ 1.0 ? rho : 1.0 - rho)
 
-    evolve_population!(brkga_data, 1)
+    BrkgaMpIpr.evolve_population!(brkga_data, 1)
     @test get_best_fitness(brkga_data) ≈ results["fitness1"]
     @test get_best_chromosome(brkga_data) ≈ results["chromosome1"]
 
-    evolve_population!(brkga_data, 2)
-    evolve_population!(brkga_data, 3)
+    BrkgaMpIpr.evolve_population!(brkga_data, 2)
+    BrkgaMpIpr.evolve_population!(brkga_data, 3)
     @test get_best_fitness(brkga_data) ≈ results["fitness2"]
     @test get_best_chromosome(brkga_data) ≈ results["chromosome2"]
 
     for _ in 1:100
         for i in 1:brkga_data.num_independent_populations
-            evolve_population!(brkga_data, i)
+            BrkgaMpIpr.evolve_population!(brkga_data, i)
         end
     end
     @test get_best_fitness(brkga_data) ≈ results["fitness102"]

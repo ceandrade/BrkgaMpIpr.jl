@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 24, 2018 by ceandrade
-# Last update: Mar 31, 2018 by ceandrade
+# Last update: Jun 13, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -28,7 +28,7 @@ import Base: parse
 """
     parse(::Type{BiasFunction}, value::String)::BiasFunction
 
-Parse `value` and return a valid `BiasFunction` enumeration.
+Parse `value` returning a valid `BiasFunction` enumeration.
 
 # Throws
 - `ArgumentError`: in case the bias description does not match.
@@ -57,6 +57,49 @@ end
 ################################################################################
 
 """
+    parse(::Type{PathRelinkingType}, value::String)::PathRelinkingType
+
+Parse `value` returning a valid `PathRelinkingType` enumeration.
+
+# Throws
+- `ArgumentError`: in case the type description does not match.
+"""
+function parse(::Type{PathRelinkingType}, value::String)::PathRelinkingType
+    value = uppercase(strip(value))
+    if value == "DIRECT"
+        return DIRECT
+    elseif value == "PERMUTATION"
+        return PERMUTATION
+    end
+
+    throw(ArgumentError("cannot parse $value as PathRelinkingType"))
+end
+
+################################################################################
+
+"""
+    parse(::Type{PathRelinkingSelection}, value::String)::PathRelinkingSelection
+
+Parse `value` returning a valid `PathRelinkingSelection` enumeration.
+
+# Throws
+- `ArgumentError`: in case the selection description does not match.
+"""
+function parse(::Type{PathRelinkingSelection}, 
+               value::String)::PathRelinkingSelection
+    value = uppercase(strip(value))
+    if value == "BESTSOLUTION"
+        return BESTSOLUTION
+    elseif value == "RANDOMELITE"
+        return RANDOMELITE
+    end
+
+    throw(ArgumentError("cannot parse $value as PathRelinkingSelection"))
+end
+
+################################################################################
+
+"""
     write_configuration(filename::String, brkga_data::BrkgaData,
             external_params::ExternalControlParams = ExternalControlParams())
 
@@ -74,7 +117,6 @@ function write_configuration(filename::String, brkga_data::BrkgaData,
     mutants_percentage = brkga_data.num_mutants / brkga_data.population_size;
 
     # TODO (ceandrade): implement the path relink parameters.
-# independent_populations $(brkga_data.num_independent_populations)
 # pr_minimum_distance $(brkga_data.pr_minimum_distance)
 # pr_type $(brkga_data.pr_type)
 # alpha_block_size $(brkga_data.alpha_block_size)

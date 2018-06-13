@@ -40,7 +40,7 @@ const CHROMOSOME_SIZE = 100
 
 instance = Instance(CHROMOSOME_SIZE)
 
-# Makes easy to change espeficif position on the parameters vector below.
+# Makes easy to change specific position on the parameters vector below.
 const param_names = ["instance", "decode!", "opt_sense", "seed", "chr_size",
                      "pop_size", "elite_percentage", "mutants_percentage",
                      "evolutionary_mechanism_on", "num_elite_parents",
@@ -78,15 +78,15 @@ const default_param_values = copy(param_values)
     print(">> Testing types and their I/O operations...\n")
     include("types_io_tests.jl")
     
-    print("\n>> Testing BRKGA data building and initialization...\n")
-    include("building_tests.jl")
+    # print("\n>> Testing BRKGA data building and initialization...\n")
+    # include("building_tests.jl")
     
-    print("\n>> Testing support methods...\n")
-    include("support_tests.jl")
+    # print("\n>> Testing support methods...\n")
+    # include("support_tests.jl")
     
-    print("\n>> Testing evolutionary methods (it may take a while)...\n")
-    include("evolution_tests.jl")
+    # print("\n>> Testing evolutionary methods (it may take a while)...\n")
+    # include("evolution_tests.jl")
 
-    print("\n>> Testing path relink methods (it may take a while)...\n")
-    include("path_relink_tests.jl")
+    # print("\n>> Testing path relink methods (it may take a while)...\n")
+    # include("path_relink_tests.jl")
 end
