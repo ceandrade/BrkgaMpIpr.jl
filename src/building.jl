@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Apr 20, 2018 by ceandrade
+# Last update: Nov 08, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -96,7 +96,7 @@ function build_brkga(problem_instance::AbstractInstance,
     elite_size = evolutionary_mechanism_on ?
             floor(Int64, elite_percentage * population_size) : 1
 
-    num_mutants = evolutionary_mechanism_on?
+    num_mutants = evolutionary_mechanism_on ?
             floor(Int64, mutants_percentage * population_size) :
             population_size - 1
 
@@ -143,13 +143,13 @@ function build_brkga(problem_instance::AbstractInstance,
         # TODO (ceandrade): list the IPR parameters here.
         problem_instance,
         decode_function!,
-        MersenneTwister(seed),
+        Random.MersenneTwister(seed),
         Array{Population, 1}(),                            # previous pop
         Array{Population, 1}(),                            # current pop
         empty_function,                                    # bias_function
         0.0,                                               # total_bias_weight
-        Array{Int64, 1}(population_size),                  # shuffled_inds
-        Array{Tuple{Float64, Int64}, 1}(total_parents),    # parents_ordered
+        Array{Int64, 1}(undef, population_size),               # shuffled_inds
+        Array{Tuple{Float64, Int64}, 1}(undef, total_parents), # parents_ordered
         false,                                             # initialized
         false                                              # reset_phase
     )
@@ -232,7 +232,7 @@ function build_brkga(
 
     # TODO (ceandrade) add the path relink parameters.
 
-    const param_names_types = [
+    param_names_types = [
         ("POPULATION_SIZE", Int64),
         ("ELITE_PERCENTAGE", Float64),
         ("MUTANTS_PERCENTAGE", Float64),
@@ -250,10 +250,10 @@ function build_brkga(
         ("RESET_INTERVAL", Int64),
     ]
 
-    const param_index = Dict(
+    param_index = Dict(
         [v[1] => i for (i, v) in enumerate(param_names_types)])
 
-    param_values = Array{Any}(length(param_names_types))
+    param_values = Array{Any}(undef, length(param_names_types))
     param_given = falses(length(param_names_types))
 
     lines = Array{String,1}()
@@ -360,12 +360,14 @@ function initialize!(brkga_data::BrkgaData)
         for i = (length(population.chromosomes) + 1):bd.population_size
             push!(population.chromosomes, rand(bd.rng, bd.chromosome_size))
         end
-        population.fitness = Array{Tuple{Float64, Int64}, 1}(bd.population_size)
+        population.fitness =
+            Array{Tuple{Float64, Int64}, 1}(undef, bd.population_size)
         pop_start = 2
 
     elseif length(bd.current) == 0
-        bd.current = Array{Population, 1}(bd.num_independent_populations)
-        bd.previous = Array{Population, 1}(bd.num_independent_populations)
+        bd.current = Array{Population, 1}(undef, bd.num_independent_populations)
+        bd.previous = Array{Population, 1}(undef,
+                                           bd.num_independent_populations)
     end
 
     # Build the remaining populations and associated data structures.
@@ -377,7 +379,7 @@ function initialize!(brkga_data::BrkgaData)
                 push!(population.chromosomes, rand(bd.rng, bd.chromosome_size))
             end
             population.fitness =
-                Array{Tuple{Float64, Int64}, 1}(bd.population_size)
+                Array{Tuple{Float64, Int64}, 1}(undef, bd.population_size)
             brkga_data.current[i] = population
 
         else
@@ -471,7 +473,7 @@ function set_initial_population!(brkga_data::BrkgaData,
     end
 
     # Clean up the current population.
-    current = Array{Population, 1}(brkga_data.num_independent_populations)
+    current = Array{Population, 1}(undef, brkga_data.num_independent_populations)
     current[1] = Population()
 
     for (i, chr) in enumerate(chromosomes)

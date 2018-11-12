@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Apr 19, 2018 by ceandrade
-# Last update: Jun 13, 2018 by ceandrade
+# Last update: Nov 09, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE

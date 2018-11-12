@@ -7,7 +7,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Jun 12, 2018 by ceandrade
+# Last update: Nov 12, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -24,7 +24,8 @@
 
 using BrkgaMpIpr
 using JLD
-using Base.Test
+using Test
+using Random
 
 ################################################################################
 # General fixtures for testing
@@ -32,9 +33,6 @@ using Base.Test
 
 include("TestInstance.jl")
 include("TestDecoder.jl")
-
-using TestInstance
-using TestDecoder
 
 const CHROMOSOME_SIZE = 100
 
@@ -50,25 +48,22 @@ const param_names = ["instance", "decode!", "opt_sense", "seed", "chr_size",
 const param_index = Dict([v => i for (i, v) in enumerate(param_names)])
 
 # Holds the parameters to build new BrkgaData.
-param_values = Array{Any, 1}(length(param_names))
+const default_param_values = Array{Any, 1}(undef, length(param_names))
 
 # Some default parameters.
-param_values[param_index["instance"]] = instance
-param_values[param_index["decode!"]] = decode!
-param_values[param_index["opt_sense"]] = MAXIMIZE
-param_values[param_index["seed"]] = 2700001
-param_values[param_index["chr_size"]] = CHROMOSOME_SIZE
-param_values[param_index["pop_size"]] = 10
-param_values[param_index["elite_percentage"]] = 0.3
-param_values[param_index["mutants_percentage"]] = 0.1
-param_values[param_index["evolutionary_mechanism_on"]] = true
-param_values[param_index["num_elite_parents"]] = 1
-param_values[param_index["total_parents"]] = 2
-param_values[param_index["bias"]] = LOGINVERSE
-param_values[param_index["num_independent_populations"]] = 3
-
-# Used to restore original param_values.
-const default_param_values = copy(param_values)
+default_param_values[param_index["instance"]] = instance
+default_param_values[param_index["decode!"]] = decode!
+default_param_values[param_index["opt_sense"]] = MAXIMIZE
+default_param_values[param_index["seed"]] = 2700001
+default_param_values[param_index["chr_size"]] = CHROMOSOME_SIZE
+default_param_values[param_index["pop_size"]] = 10
+default_param_values[param_index["elite_percentage"]] = 0.3
+default_param_values[param_index["mutants_percentage"]] = 0.1
+default_param_values[param_index["evolutionary_mechanism_on"]] = true
+default_param_values[param_index["num_elite_parents"]] = 1
+default_param_values[param_index["total_parents"]] = 2
+default_param_values[param_index["bias"]] = LOGINVERSE
+default_param_values[param_index["num_independent_populations"]] = 3
 
 ################################################################################
 # Functions
@@ -77,16 +72,16 @@ const default_param_values = copy(param_values)
 @time begin
     print(">> Testing types and their I/O operations...\n")
     include("types_io_tests.jl")
-    
-    # print("\n>> Testing BRKGA data building and initialization...\n")
-    # include("building_tests.jl")
-    
-    # print("\n>> Testing support methods...\n")
-    # include("support_tests.jl")
-    
-    # print("\n>> Testing evolutionary methods (it may take a while)...\n")
-    # include("evolution_tests.jl")
 
-    # print("\n>> Testing path relink methods (it may take a while)...\n")
-    # include("path_relink_tests.jl")
+    print("\n>> Testing BRKGA data building and initialization...\n")
+    include("building_tests.jl")
+
+    print("\n>> Testing support methods...\n")
+    include("support_tests.jl")
+
+    print("\n>> Testing evolutionary methods (it may take a while)...\n")
+    include("evolution_tests.jl")
+
+    print("\n>> Testing path relink methods (it may take a while)...\n")
+    include("path_relink_tests.jl")
 end

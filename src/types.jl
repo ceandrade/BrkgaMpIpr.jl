@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Jun 13, 2018 by ceandrade
+# Last update: Nov 08, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -30,13 +30,10 @@
 
 Specifies the objective function as minimization (0) or maximization (1).
 """
-# TODO (ceandrade): implement using `begin...end` block in future Julia
-# versions:
-# @enum Sense begin
-#    MINIMIZE = 0
-#    MAXIMIZE = 1
-# end
-@enum Sense MINIMIZE=0 MAXIMIZE=1
+@enum Sense begin
+   MINIMIZE = 0
+   MAXIMIZE = 1
+end
 
 ################################################################################
 
@@ -60,14 +57,15 @@ rank r, we have the following functions:
 
     - QUADRATIC: r^-2
 """
-# TODO (ceandrade): to avoid long declarations as below, implement using
-# `begin...end` block in future Julia versions:
-# @enum BiasFunction begin
-#     CONSTANT = 0
-#     CUBIC = 1
-#     ...
-# end
-@enum BiasFunction CONSTANT=0 CUBIC=1 EXPONENTIAL=2 LINEAR=3 LOGINVERSE=4 QUADRATIC=5 CUSTOM=6
+@enum BiasFunction begin
+    CONSTANT = 0
+    CUBIC = 1
+    EXPONENTIAL = 2
+    LINEAR = 3
+    LOGINVERSE = 4
+    QUADRATIC = 5
+    CUSTOM = 6
+end
 
 ################################################################################
 
@@ -80,14 +78,10 @@ Specifies type of path relinking:
 
     - PERMUTATION: switches the order of a key for that in the other chromosome.
 """
-# TODO (ceandrade): to avoid long declarations as below, implement using
-# `begin...end` block in future Julia versions:
-# @enum PathRelinkingType begin
-#     DIRECT = 0
-#     PERMUTATION = 1
-#     ...
-# end
-@enum PathRelinkingType DIRECT=0 PERMUTATION=1
+@enum PathRelinkingType begin
+    DIRECT = 0
+    PERMUTATION = 1
+end
 
 ################################################################################
 
@@ -100,14 +94,10 @@ Specifies which individuals used to build the path:
 
     - RANDOMELITE: chooses uniformly random solutions from the elite sets.
 """
-# TODO (ceandrade): to avoid long declarations as below, implement using
-# `begin...end` block in future Julia versions:
-# @enum PathRelinkingSelection begin
-#     BESTSOLUTION = 0
-#     RANDOMELITE = 1
-#     ...
-# end
-@enum PathRelinkingSelection BESTSOLUTION=0 RANDOMELITE=1
+@enum PathRelinkingSelection begin
+    BESTSOLUTION = 0
+    RANDOMELITE = 1
+end
 
 ################################################################################
 # Data structures
@@ -290,7 +280,7 @@ mutable struct BrkgaData
     The internal random generator number. DON'T USE FOR ANYTHING OUTSIDE.
     If you need a RNG, create a new generator.
     """
-    rng::MersenneTwister
+    rng::Random.MersenneTwister
 
     """
     (Internal data)

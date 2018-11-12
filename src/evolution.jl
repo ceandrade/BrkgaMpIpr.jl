@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Apr 19, 2018 by ceandrade
-# Last update: Apr 23, 2018 by ceandrade
+# Last update: Nov 09, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -101,9 +101,9 @@ function evolve_population!(brkga_data::BrkgaData, population_index::Int64)
         # and non-elite individuals.
 
         bd.shuffled_individuals[1:bd.elite_size] =
-            shuffle(bd.rng, 1:bd.elite_size)
+            Random.shuffle(bd.rng, 1:bd.elite_size)
         bd.shuffled_individuals[(bd.elite_size + 1):bd.population_size] =
-            shuffle(bd.rng, (bd.elite_size + 1):bd.population_size)
+            Random.shuffle(bd.rng, (bd.elite_size + 1):bd.population_size)
 
         # Take the elite parents.
         @inbounds for i in 1:bd.num_elite_parents

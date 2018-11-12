@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 24, 2018 by ceandrade
-# Last update: Jun 13, 2018 by ceandrade
+# Last update: Nov 08, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -62,7 +62,7 @@ end
 
     config_path = joinpath(@__DIR__, "configuration_files")
 
-    const local_param_values = [
+    local_param_values = [
         default_param_values[param_index["instance"]],
         default_param_values[param_index["decode!"]],
         default_param_values[param_index["opt_sense"]],
@@ -81,7 +81,7 @@ end
 
     result = ""
     open(temp_filename) do file
-        result = lowercase(readstring(file))
+        result = lowercase(read(file, String))
     end
     rm(temp_filename)
 
@@ -112,7 +112,7 @@ reset_interval 600
 
     result = ""
     open(temp_filename) do file
-        result = lowercase(readstring(file))
+        result = lowercase(read(file, String))
     end
     rm(temp_filename)
 
@@ -143,7 +143,7 @@ reset_interval 0
 
     result = ""
     open(temp_filename) do file
-        result = lowercase(readstring(file))
+        result = lowercase(read(file, String))
     end
     rm(temp_filename)
 

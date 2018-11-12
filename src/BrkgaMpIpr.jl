@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Jun 13, 2018 by ceandrade
+# Last update: Nov 08, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -22,6 +22,8 @@
 ################################################################################
 
 module BrkgaMpIpr
+
+import Random
 
 include("types.jl")
 include("types_io.jl")

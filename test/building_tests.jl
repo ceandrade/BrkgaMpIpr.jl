@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Apr 23, 2018 by ceandrade
+# Last update: Nov 08, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -183,7 +183,7 @@ end
 @testset "Config. file build_brkga()" begin
     config_path = joinpath(@__DIR__, "configuration_files")
 
-    const local_param_values = [
+    local_param_values = [
         default_param_values[param_index["instance"]],
         default_param_values[param_index["decode!"]],
         default_param_values[param_index["opt_sense"]],
@@ -239,7 +239,7 @@ end
     ########################
 
     config_path = joinpath(@__DIR__, "configuration_files")
-    const local_param_values = [
+    local_param_values = [
         default_param_values[param_index["instance"]],
         default_param_values[param_index["decode!"]],
         default_param_values[param_index["opt_sense"]],
@@ -445,37 +445,37 @@ end
     brkga_data = build_brkga(param_values...)
     local_rng = MersenneTwister(param_values[param_index["seed"]])
 
-    chromosomes = Array{Array{Float64, 1}, 1}(
+    chromosomes = Array{Array{Float64, 1}, 1}(undef,
         param_values[param_index["pop_size"]] + 1
     )
     @test_throws ArgumentError set_initial_population!(brkga_data, chromosomes)
 
-    chromosomes = Array{Array{Float64, 1}, 1}(1)
+    chromosomes = Array{Array{Float64, 1}, 1}(undef, 1)
     chromosomes[1] = rand(local_rng, param_values[param_index["chr_size"]] + 1)
     @test_throws ArgumentError set_initial_population!(brkga_data, chromosomes)
 
     chromosomes[1] = rand(local_rng, param_values[param_index["chr_size"]] - 1)
     @test_throws ArgumentError set_initial_population!(brkga_data, chromosomes)
 
-    chromosomes = Array{Array{Float64, 1}, 1}(3)
+    chromosomes = Array{Array{Float64, 1}, 1}(undef, 3)
     chromosomes[1] = rand(local_rng, param_values[param_index["chr_size"]] + 1)
     chromosomes[2] = rand(local_rng, param_values[param_index["chr_size"]])
     chromosomes[3] = rand(local_rng, param_values[param_index["chr_size"]])
     @test_throws ArgumentError set_initial_population!(brkga_data, chromosomes)
 
-    chromosomes = Array{Array{Float64, 1}, 1}(3)
+    chromosomes = Array{Array{Float64, 1}, 1}(undef, 3)
     chromosomes[1] = rand(local_rng, param_values[param_index["chr_size"]])
     chromosomes[2] = rand(local_rng, param_values[param_index["chr_size"]] + 1)
     chromosomes[3] = rand(local_rng, param_values[param_index["chr_size"]])
     @test_throws ArgumentError set_initial_population!(brkga_data, chromosomes)
 
-    chromosomes = Array{Array{Float64, 1}, 1}(3)
+    chromosomes = Array{Array{Float64, 1}, 1}(undef, 3)
     chromosomes[1] = rand(local_rng, param_values[param_index["chr_size"]])
     chromosomes[2] = rand(local_rng, param_values[param_index["chr_size"]])
     chromosomes[3] = rand(local_rng, param_values[param_index["chr_size"]] + 1)
     @test_throws ArgumentError set_initial_population!(brkga_data, chromosomes)
 
-    chromosomes = Array{Array{Float64, 1}, 1}(1)
+    chromosomes = Array{Array{Float64, 1}, 1}(undef, 1)
     chromosomes[1] = rand(local_rng, param_values[param_index["chr_size"]])
     set_initial_population!(brkga_data, chromosomes)
 
@@ -486,7 +486,7 @@ end
     chromosomes[1] = [0.1111, 0.2222, 0.3333]
     @test brkga_data.current[1].chromosomes != chromosomes
 
-    chromosomes = Array{Array{Float64, 1}, 1}(3)
+    chromosomes = Array{Array{Float64, 1}, 1}(undef, 3)
     chromosomes[1] = rand(local_rng, param_values[param_index["chr_size"]])
     chromosomes[2] = rand(local_rng, param_values[param_index["chr_size"]])
     chromosomes[3] = rand(local_rng, param_values[param_index["chr_size"]])
