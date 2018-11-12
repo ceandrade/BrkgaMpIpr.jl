@@ -76,276 +76,276 @@ function write_data(filename::String, data::BrkgaData)
     )
 end
 
-################################################################################
-# Configuration 1
-################################################################################
+# ################################################################################
+# # Configuration 1
+# ################################################################################
 
-chromosome_size = 100
-instance = Instance(chromosome_size)
-param_values[param_index["instance"]] = instance
-param_values[param_index["decode!"]] = decode!
-param_values[param_index["opt_sense"]] = MAXIMIZE
-param_values[param_index["seed"]] = 3979164113692134205
-param_values[param_index["chr_size"]] = chromosome_size
-param_values[param_index["pop_size"]] = 100
-param_values[param_index["elite_percentage"]] = 0.3
-param_values[param_index["mutants_percentage"]] = 0.1
-param_values[param_index["evolutionary_mechanism_on"]] = true
-param_values[param_index["num_elite_parents"]] = 1
-param_values[param_index["total_parents"]] = 2
-param_values[param_index["bias"]] = LOGINVERSE
-param_values[param_index["num_independent_populations"]] = 1
+# chromosome_size = 100
+# instance = Instance(chromosome_size)
+# param_values[param_index["instance"]] = instance
+# param_values[param_index["decode!"]] = decode!
+# param_values[param_index["opt_sense"]] = MAXIMIZE
+# param_values[param_index["seed"]] = 3979164113692134205
+# param_values[param_index["chr_size"]] = chromosome_size
+# param_values[param_index["pop_size"]] = 100
+# param_values[param_index["elite_percentage"]] = 0.3
+# param_values[param_index["mutants_percentage"]] = 0.1
+# param_values[param_index["evolutionary_mechanism_on"]] = true
+# param_values[param_index["num_elite_parents"]] = 1
+# param_values[param_index["total_parents"]] = 2
+# param_values[param_index["bias"]] = LOGINVERSE
+# param_values[param_index["num_independent_populations"]] = 1
 
-print("\n\n> Building configuration 1")
-brkga_data = build_brkga(param_values...)
-initialize!(brkga_data)
+# print("\n\n> Building configuration 1")
+# brkga_data = build_brkga(param_values...)
+# initialize!(brkga_data)
 
-print("\n> Writing configuration 1")
-write_data("brkga_data_files/data1.jld", brkga_data)
+# print("\n> Writing configuration 1")
+# write_data("brkga_data_files/data1.jld", brkga_data)
 
-print("\n> Evolving population 1")
+# print("\n> Evolving population 1")
 
-BrkgaMpIpr.evolve_population!(brkga_data, 1)
-fitness1 = get_best_fitness(brkga_data)
-chromosome1 = get_best_chromosome(brkga_data)
+# BrkgaMpIpr.evolve_population!(brkga_data, 1)
+# fitness1 = get_best_fitness(brkga_data)
+# chromosome1 = get_best_chromosome(brkga_data)
 
-BrkgaMpIpr.evolve_population!(brkga_data, 1)
-fitness2 = get_best_fitness(brkga_data)
-chromosome2 = get_best_chromosome(brkga_data)
+# BrkgaMpIpr.evolve_population!(brkga_data, 1)
+# fitness2 = get_best_fitness(brkga_data)
+# chromosome2 = get_best_chromosome(brkga_data)
 
-for _ in 1:100
-    BrkgaMpIpr.evolve_population!(brkga_data, 1)
-end
-fitness102 = get_best_fitness(brkga_data)
-chromosome102 = get_best_chromosome(brkga_data)
+# for _ in 1:100
+#     BrkgaMpIpr.evolve_population!(brkga_data, 1)
+# end
+# fitness102 = get_best_fitness(brkga_data)
+# chromosome102 = get_best_chromosome(brkga_data)
 
-save("brkga_data_files/best_solution1.jld",
-    "fitness1", fitness1,
-    "chromosome1", chromosome1,
-    "fitness2", fitness2,
-    "chromosome2", chromosome2,
-    "fitness102", fitness102,
-    "chromosome102", chromosome102,
-)
+# save("brkga_data_files/best_solution1.jld",
+#     "fitness1", fitness1,
+#     "chromosome1", chromosome1,
+#     "fitness2", fitness2,
+#     "chromosome2", chromosome2,
+#     "fitness102", fitness102,
+#     "chromosome102", chromosome102,
+# )
 
-################################################################################
-# Configuration 2
-################################################################################
+# ################################################################################
+# # Configuration 2
+# ################################################################################
 
-chromosome_size = 1000
-instance = Instance(chromosome_size)
-param_values[param_index["instance"]] = instance
-param_values[param_index["decode!"]] = decode!
-param_values[param_index["opt_sense"]] = MINIMIZE
-param_values[param_index["seed"]] = 1297832326904308
-param_values[param_index["chr_size"]] = chromosome_size
-param_values[param_index["pop_size"]] = 500
-param_values[param_index["elite_percentage"]] = 0.25
-param_values[param_index["mutants_percentage"]] = 0.25
-param_values[param_index["evolutionary_mechanism_on"]] = true
-param_values[param_index["num_elite_parents"]] = 5
-param_values[param_index["total_parents"]] = 50
-param_values[param_index["bias"]] = QUADRATIC
-param_values[param_index["num_independent_populations"]] = 2
+# chromosome_size = 1000
+# instance = Instance(chromosome_size)
+# param_values[param_index["instance"]] = instance
+# param_values[param_index["decode!"]] = decode!
+# param_values[param_index["opt_sense"]] = MINIMIZE
+# param_values[param_index["seed"]] = 1297832326904308
+# param_values[param_index["chr_size"]] = chromosome_size
+# param_values[param_index["pop_size"]] = 500
+# param_values[param_index["elite_percentage"]] = 0.25
+# param_values[param_index["mutants_percentage"]] = 0.25
+# param_values[param_index["evolutionary_mechanism_on"]] = true
+# param_values[param_index["num_elite_parents"]] = 5
+# param_values[param_index["total_parents"]] = 50
+# param_values[param_index["bias"]] = QUADRATIC
+# param_values[param_index["num_independent_populations"]] = 2
 
-print("\n\n> Building configuration 2")
-brkga_data = build_brkga(param_values...)
-initialize!(brkga_data)
+# print("\n\n> Building configuration 2")
+# brkga_data = build_brkga(param_values...)
+# initialize!(brkga_data)
 
-print("\n> Writing configuration 2")
-write_data("brkga_data_files/data2.jld", brkga_data)
+# print("\n> Writing configuration 2")
+# write_data("brkga_data_files/data2.jld", brkga_data)
 
-print("\n> Evolving population 2")
+# print("\n> Evolving population 2")
 
-BrkgaMpIpr.evolve_population!(brkga_data, 1)
-fitness1 = get_best_fitness(brkga_data)
-chromosome1 = get_best_chromosome(brkga_data)
+# BrkgaMpIpr.evolve_population!(brkga_data, 1)
+# fitness1 = get_best_fitness(brkga_data)
+# chromosome1 = get_best_chromosome(brkga_data)
 
-BrkgaMpIpr.evolve_population!(brkga_data, 2)
-fitness2 = get_best_fitness(brkga_data)
-chromosome2 = get_best_chromosome(brkga_data)
+# BrkgaMpIpr.evolve_population!(brkga_data, 2)
+# fitness2 = get_best_fitness(brkga_data)
+# chromosome2 = get_best_chromosome(brkga_data)
 
-for _ in 1:100
-    BrkgaMpIpr.evolve_population!(brkga_data, 1)
-    BrkgaMpIpr.evolve_population!(brkga_data, 2)
-end
-fitness102 = get_best_fitness(brkga_data)
-chromosome102 = get_best_chromosome(brkga_data)
+# for _ in 1:100
+#     BrkgaMpIpr.evolve_population!(brkga_data, 1)
+#     BrkgaMpIpr.evolve_population!(brkga_data, 2)
+# end
+# fitness102 = get_best_fitness(brkga_data)
+# chromosome102 = get_best_chromosome(brkga_data)
 
-save("brkga_data_files/best_solution2.jld",
-    "fitness1", fitness1,
-    "chromosome1", chromosome1,
-    "fitness2", fitness2,
-    "chromosome2", chromosome2,
-    "fitness102", fitness102,
-    "chromosome102", chromosome102,
-)
+# save("brkga_data_files/best_solution2.jld",
+#     "fitness1", fitness1,
+#     "chromosome1", chromosome1,
+#     "fitness2", fitness2,
+#     "chromosome2", chromosome2,
+#     "fitness102", fitness102,
+#     "chromosome102", chromosome102,
+# )
 
-################################################################################
-# Configuration 3
-################################################################################
+# ################################################################################
+# # Configuration 3
+# ################################################################################
 
-chromosome_size = 500
-instance = Instance(chromosome_size)
-param_values[param_index["instance"]] = instance
-param_values[param_index["decode!"]] = decode!
-param_values[param_index["opt_sense"]] = MINIMIZE
-param_values[param_index["seed"]] = 2536246074066680359
-param_values[param_index["chr_size"]] = chromosome_size
-param_values[param_index["pop_size"]] = 100
-param_values[param_index["elite_percentage"]] = 0.35
-param_values[param_index["mutants_percentage"]] = 0.17
-param_values[param_index["evolutionary_mechanism_on"]] = true
-param_values[param_index["num_elite_parents"]] = 3
-param_values[param_index["total_parents"]] = 5
-param_values[param_index["bias"]] = EXPONENTIAL
-param_values[param_index["num_independent_populations"]] = 5
+# chromosome_size = 500
+# instance = Instance(chromosome_size)
+# param_values[param_index["instance"]] = instance
+# param_values[param_index["decode!"]] = decode!
+# param_values[param_index["opt_sense"]] = MINIMIZE
+# param_values[param_index["seed"]] = 2536246074066680359
+# param_values[param_index["chr_size"]] = chromosome_size
+# param_values[param_index["pop_size"]] = 100
+# param_values[param_index["elite_percentage"]] = 0.35
+# param_values[param_index["mutants_percentage"]] = 0.17
+# param_values[param_index["evolutionary_mechanism_on"]] = true
+# param_values[param_index["num_elite_parents"]] = 3
+# param_values[param_index["total_parents"]] = 5
+# param_values[param_index["bias"]] = EXPONENTIAL
+# param_values[param_index["num_independent_populations"]] = 5
 
-print("\n\n> Building configuration 3")
-brkga_data = build_brkga(param_values...)
-initialize!(brkga_data)
+# print("\n\n> Building configuration 3")
+# brkga_data = build_brkga(param_values...)
+# initialize!(brkga_data)
 
-print("\n> Writing configuration 3")
-write_data("brkga_data_files/data3.jld", brkga_data)
+# print("\n> Writing configuration 3")
+# write_data("brkga_data_files/data3.jld", brkga_data)
 
-print("\n> Evolving population 3")
+# print("\n> Evolving population 3")
 
-BrkgaMpIpr.evolve_population!(brkga_data, 1)
-fitness1 = get_best_fitness(brkga_data)
-chromosome1 = get_best_chromosome(brkga_data)
+# BrkgaMpIpr.evolve_population!(brkga_data, 1)
+# fitness1 = get_best_fitness(brkga_data)
+# chromosome1 = get_best_chromosome(brkga_data)
 
-for _ in 2:brkga_data.num_independent_populations
-    BrkgaMpIpr.evolve_population!(brkga_data, 2)
-end
+# for _ in 2:brkga_data.num_independent_populations
+#     BrkgaMpIpr.evolve_population!(brkga_data, 2)
+# end
 
-fitness2 = get_best_fitness(brkga_data)
-chromosome2 = get_best_chromosome(brkga_data)
+# fitness2 = get_best_fitness(brkga_data)
+# chromosome2 = get_best_chromosome(brkga_data)
 
-for _ in 1:100
-    for i in 1:brkga_data.num_independent_populations
-        BrkgaMpIpr.evolve_population!(brkga_data, i)
-    end
-end
-fitness102 = get_best_fitness(brkga_data)
-chromosome102 = get_best_chromosome(brkga_data)
+# for _ in 1:100
+#     for i in 1:brkga_data.num_independent_populations
+#         BrkgaMpIpr.evolve_population!(brkga_data, i)
+#     end
+# end
+# fitness102 = get_best_fitness(brkga_data)
+# chromosome102 = get_best_chromosome(brkga_data)
 
-save("brkga_data_files/best_solution3.jld",
-    "fitness1", fitness1,
-    "chromosome1", chromosome1,
-    "fitness2", fitness2,
-    "chromosome2", chromosome2,
-    "fitness102", fitness102,
-    "chromosome102", chromosome102,
-)
+# save("brkga_data_files/best_solution3.jld",
+#     "fitness1", fitness1,
+#     "chromosome1", chromosome1,
+#     "fitness2", fitness2,
+#     "chromosome2", chromosome2,
+#     "fitness102", fitness102,
+#     "chromosome102", chromosome102,
+# )
 
-################################################################################
-# Configuration 4 (traditional BRKGA)
-################################################################################
+# ################################################################################
+# # Configuration 4 (traditional BRKGA)
+# ################################################################################
 
-chromosome_size = 500
-instance = Instance(chromosome_size)
-param_values[param_index["instance"]] = instance
-param_values[param_index["decode!"]] = decode!
-param_values[param_index["opt_sense"]] = MINIMIZE
-param_values[param_index["seed"]] = 2947804214766190222
-param_values[param_index["chr_size"]] = chromosome_size
-param_values[param_index["pop_size"]] = 100
-param_values[param_index["elite_percentage"]] = 0.30
-param_values[param_index["mutants_percentage"]] = 0.15
-param_values[param_index["evolutionary_mechanism_on"]] = true
-param_values[param_index["num_elite_parents"]] = 1
-param_values[param_index["total_parents"]] = 2
-param_values[param_index["bias"]] = LOGINVERSE
-param_values[param_index["num_independent_populations"]] = 3
+# chromosome_size = 500
+# instance = Instance(chromosome_size)
+# param_values[param_index["instance"]] = instance
+# param_values[param_index["decode!"]] = decode!
+# param_values[param_index["opt_sense"]] = MINIMIZE
+# param_values[param_index["seed"]] = 2947804214766190222
+# param_values[param_index["chr_size"]] = chromosome_size
+# param_values[param_index["pop_size"]] = 100
+# param_values[param_index["elite_percentage"]] = 0.30
+# param_values[param_index["mutants_percentage"]] = 0.15
+# param_values[param_index["evolutionary_mechanism_on"]] = true
+# param_values[param_index["num_elite_parents"]] = 1
+# param_values[param_index["total_parents"]] = 2
+# param_values[param_index["bias"]] = LOGINVERSE
+# param_values[param_index["num_independent_populations"]] = 3
 
-print("\n\n> Building configuration 4")
-brkga_data = build_brkga(param_values...)
+# print("\n\n> Building configuration 4")
+# brkga_data = build_brkga(param_values...)
 
-rho = 0.75
-set_bias_custom_function!(brkga_data, x -> x ≈ 1.0 ? rho : 1.0 - rho)
-initialize!(brkga_data)
+# rho = 0.75
+# set_bias_custom_function!(brkga_data, x -> x ≈ 1.0 ? rho : 1.0 - rho)
+# initialize!(brkga_data)
 
-print("\n> Writing configuration 4")
-write_data("brkga_data_files/data4.jld", brkga_data)
+# print("\n> Writing configuration 4")
+# write_data("brkga_data_files/data4.jld", brkga_data)
 
-print("\n> Evolving population 4")
+# print("\n> Evolving population 4")
 
-BrkgaMpIpr.evolve_population!(brkga_data, 1)
-fitness1 = get_best_fitness(brkga_data)
-chromosome1 = get_best_chromosome(brkga_data)
+# BrkgaMpIpr.evolve_population!(brkga_data, 1)
+# fitness1 = get_best_fitness(brkga_data)
+# chromosome1 = get_best_chromosome(brkga_data)
 
-BrkgaMpIpr.evolve_population!(brkga_data, 2)
-BrkgaMpIpr.evolve_population!(brkga_data, 3)
-fitness2 = get_best_fitness(brkga_data)
-chromosome2 = get_best_chromosome(brkga_data)
+# BrkgaMpIpr.evolve_population!(brkga_data, 2)
+# BrkgaMpIpr.evolve_population!(brkga_data, 3)
+# fitness2 = get_best_fitness(brkga_data)
+# chromosome2 = get_best_chromosome(brkga_data)
 
-for _ in 1:100
-    for i in 1:brkga_data.num_independent_populations
-        BrkgaMpIpr.evolve_population!(brkga_data, i)
-    end
-end
+# for _ in 1:100
+#     for i in 1:brkga_data.num_independent_populations
+#         BrkgaMpIpr.evolve_population!(brkga_data, i)
+#     end
+# end
 
-fitness102 = get_best_fitness(brkga_data)
-chromosome102 = get_best_chromosome(brkga_data)
+# fitness102 = get_best_fitness(brkga_data)
+# chromosome102 = get_best_chromosome(brkga_data)
 
-save("brkga_data_files/best_solution4.jld",
-    "fitness1", fitness1,
-    "chromosome1", chromosome1,
-    "fitness2", fitness2,
-    "chromosome2", chromosome2,
-    "fitness102", fitness102,
-    "chromosome102", chromosome102,
-)
+# save("brkga_data_files/best_solution4.jld",
+#     "fitness1", fitness1,
+#     "chromosome1", chromosome1,
+#     "fitness2", fitness2,
+#     "chromosome2", chromosome2,
+#     "fitness102", fitness102,
+#     "chromosome102", chromosome102,
+# )
 
-################################################################################
-# Configuration 5 for evolve!
-################################################################################
+# ################################################################################
+# # Configuration 5 for evolve!
+# ################################################################################
 
-chromosome_size = 100
-instance = Instance(chromosome_size)
-param_values[param_index["instance"]] = instance
-param_values[param_index["decode!"]] = decode!
-param_values[param_index["opt_sense"]] = MINIMIZE
-param_values[param_index["seed"]] = 4659930950303615118
-param_values[param_index["chr_size"]] = chromosome_size
-param_values[param_index["pop_size"]] = 100
-param_values[param_index["elite_percentage"]] = 0.30
-param_values[param_index["mutants_percentage"]] = 0.20
-param_values[param_index["evolutionary_mechanism_on"]] = true
-param_values[param_index["num_elite_parents"]] = 2
-param_values[param_index["total_parents"]] = 3
-param_values[param_index["bias"]] = LOGINVERSE
-param_values[param_index["num_independent_populations"]] = 3
+# chromosome_size = 100
+# instance = Instance(chromosome_size)
+# param_values[param_index["instance"]] = instance
+# param_values[param_index["decode!"]] = decode!
+# param_values[param_index["opt_sense"]] = MINIMIZE
+# param_values[param_index["seed"]] = 4659930950303615118
+# param_values[param_index["chr_size"]] = chromosome_size
+# param_values[param_index["pop_size"]] = 100
+# param_values[param_index["elite_percentage"]] = 0.30
+# param_values[param_index["mutants_percentage"]] = 0.20
+# param_values[param_index["evolutionary_mechanism_on"]] = true
+# param_values[param_index["num_elite_parents"]] = 2
+# param_values[param_index["total_parents"]] = 3
+# param_values[param_index["bias"]] = LOGINVERSE
+# param_values[param_index["num_independent_populations"]] = 3
 
-print("\n\n> Building configuration 5")
-brkga_data = build_brkga(param_values...)
-initialize!(brkga_data)
+# print("\n\n> Building configuration 5")
+# brkga_data = build_brkga(param_values...)
+# initialize!(brkga_data)
 
-print("\n> Writing configuration 5")
-write_data("brkga_data_files/data5.jld", brkga_data)
+# print("\n> Writing configuration 5")
+# write_data("brkga_data_files/data5.jld", brkga_data)
 
-print("\n> Evolving population 5")
+# print("\n> Evolving population 5")
 
-evolve!(brkga_data, 1)
-fitness1 = get_best_fitness(brkga_data)
-chromosome1 = get_best_chromosome(brkga_data)
+# evolve!(brkga_data, 1)
+# fitness1 = get_best_fitness(brkga_data)
+# chromosome1 = get_best_chromosome(brkga_data)
 
-evolve!(brkga_data, 10)
-fitness2 = get_best_fitness(brkga_data)
-chromosome2 = get_best_chromosome(brkga_data)
+# evolve!(brkga_data, 10)
+# fitness2 = get_best_fitness(brkga_data)
+# chromosome2 = get_best_chromosome(brkga_data)
 
-evolve!(brkga_data, 100)
-fitness102 = get_best_fitness(brkga_data)
-chromosome102 = get_best_chromosome(brkga_data)
+# evolve!(brkga_data, 100)
+# fitness102 = get_best_fitness(brkga_data)
+# chromosome102 = get_best_chromosome(brkga_data)
 
-save("brkga_data_files/best_solution5.jld",
-    "fitness1", fitness1,
-    "chromosome1", chromosome1,
-    "fitness2", fitness2,
-    "chromosome2", chromosome2,
-    "fitness102", fitness102,
-    "chromosome102", chromosome102,
-)
+# save("brkga_data_files/best_solution5.jld",
+#     "fitness1", fitness1,
+#     "chromosome1", chromosome1,
+#     "fitness2", fitness2,
+#     "chromosome2", chromosome2,
+#     "fitness102", fitness102,
+#     "chromosome102", chromosome102,
+# )
 
 ################################################################################
 # Configuration for path relink
@@ -375,7 +375,6 @@ print("\n> Writing path relink")
 write_data("brkga_data_files/data_path_relink.jld", brkga_data)
 
 # Create some test data for path relink methods.
-
 for (func, name) in [(BrkgaMpIpr.direct_path_relink!, "direct"),
                      (BrkgaMpIpr.permutation_based_path_relink!, "permutation_based")]
 

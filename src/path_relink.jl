@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 06, 2018 by ceandrade
-# Last update: Nov 09, 2018 by ceandrade
+# Last update: Nov 12, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -89,7 +89,7 @@ end
 Swap the value in position `pos1` with the value in position `pos2` in
 vector `x`.
 
-**Note:** this function only accept positive numbers, and all sanity and
+**NOTE:** this function only accept positive numbers, and all sanity and
 bounds check is disregarded due to performance reasons.
 
 **THIS IS AN INTERNAL FUNCTION AND IT IS NOT MEANT TO BE USED DIRECTLY.**
@@ -216,10 +216,17 @@ function direct_path_relink!(brkga_data::BrkgaData,
 
     # **NOTE:** two loops are faster than one according to `@benchmark`,
     # probably because of cache racing.
-    @inbounds Threads.@threads for i in 1:NUM_BLOCKS
+    # @inbounds Threads.@threads for i in 1:NUM_BLOCKS
+    #     candidates_base[i] = Triple(copy(base))
+    # end
+    # @inbounds Threads.@threads for i in 1:NUM_BLOCKS
+    #     candidates_guide[i] = Triple(copy(guide))
+    # end
+
+    for i in 1:NUM_BLOCKS
         candidates_base[i] = Triple(copy(base))
     end
-    @inbounds Threads.@threads for i in 1:NUM_BLOCKS
+    for i in 1:NUM_BLOCKS
         candidates_guide[i] = Triple(copy(guide))
     end
 
@@ -241,6 +248,9 @@ function direct_path_relink!(brkga_data::BrkgaData,
 
             if !affect_solution(BLOCK1, BLOCK2)
                 deleteat!(remaining_blocks, it_block_idx)
+                if it_block_idx > length(remaining_blocks)
+                    state = nothing
+                end
                 continue
             end
 
@@ -467,6 +477,9 @@ function permutation_based_path_relink!(brkga_data::BrkgaData,
 
             if position_in_base == position_in_guide
                 deleteat!(remaining_indices, it_idx)
+                if it_idx > length(remaining_indices)
+                    state = nothing
+                end
                 continue
             end
 

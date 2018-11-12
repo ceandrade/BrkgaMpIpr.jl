@@ -4,7 +4,11 @@ authors = ["Carlos Eduardo de Andrade <ce.andrade@gmail.com>"]
 version = "1.0.0"
 
 [deps]
+JLD = "4138dd39-2aa7-5051-a626-17a0bb65d9c8"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+
+[compat]
+julia = "1.0"
 
 [extras]
 JLD = "4138dd39-2aa7-5051-a626-17a0bb65d9c8"
@@ -12,6 +16,3 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Test", "JLD"]
-
-[compat]
-julia = "1.0"

@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Mar 27, 2018 by ceandrade
+# Last update: Nov 12, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -21,11 +21,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
 
+push!(LOAD_PATH, "..")
 push!(LOAD_PATH, ".")
 
-import TestInstance
-import TestDecoder
 using BrkgaMpIpr
+
+include("TestInstance.jl")
+include("TestDecoder.jl")
 
 chr_size = 10000
 pop_size = 10
@@ -38,10 +40,10 @@ bias = BrkgaMpIpr.LOGINVERSE
 num_independent_populations = 2
 
 print("\n\n>> Building instance\n")
-instance = TestInstance.Instance(chr_size)
+instance = Instance(chr_size)
 
 print("\n\n>> Building BRKGA data\n")
-brkga_data = BrkgaMpIpr.build_brkga(instance, TestDecoder.decode!,
+brkga_data = BrkgaMpIpr.build_brkga(instance, decode!,
                              BrkgaMpIpr.MAXIMIZE, 2700001, chr_size, pop_size,
                              elite_percentage, mutants_percentage,
                              evolutionary_mechanism_on, num_elite_parents,
@@ -55,9 +57,7 @@ brkga_data = BrkgaMpIpr.build_brkga(instance, TestDecoder.decode!,
 print("\n\n>> Initializing BRKGA\n")
 BrkgaMpIpr.initialize!(brkga_data)
 
-
 print("\n\n>> Path relinking\n")
-
 @time tmp = BrkgaMpIpr.direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
                               1, #population_index::Int64,
                               1, #chr1_index::Int64,
