@@ -70,17 +70,17 @@ default_param_values[param_index["num_independent_populations"]] = 3
 ################################################################################
 
 @time begin
-    print(">> Testing types and their I/O operations...\n")
-    include("types_io_tests.jl")
+    # print(">> Testing types and their I/O operations...\n")
+    # include("types_io_tests.jl")
 
-    print("\n>> Testing BRKGA data building and initialization...\n")
-    include("building_tests.jl")
+    # print("\n>> Testing BRKGA data building and initialization...\n")
+    # include("building_tests.jl")
 
-    print("\n>> Testing support methods...\n")
-    include("support_tests.jl")
+    # print("\n>> Testing support methods...\n")
+    # include("support_tests.jl")
 
-    print("\n>> Testing evolutionary methods (it may take a while)...\n")
-    include("evolution_tests.jl")
+    # print("\n>> Testing evolutionary methods (it may take a while)...\n")
+    # include("evolution_tests.jl")
 
     print("\n>> Testing path relink methods (it may take a while)...\n")
     include("path_relink_tests.jl")

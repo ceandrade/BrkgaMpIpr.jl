@@ -152,11 +152,11 @@ CALLED FROM THE `path_relink()` FUNCTION.** Due to this reason, this method
   chromosomes of the given population.
 
 - `affect_solution::Function`: function that takes two partial chromosomes /
-  block of genes `BLOCK1` and `BLOCK2` and checks whether changing the keys from
-  `BLOCK1` to `BLOCK2` affects the solution. For instance, suppose that the
+  block of genes `block1` and `block2` and checks whether changing the keys from
+  `block1` to `block2` affects the solution. For instance, suppose that the
   alleles/keys are used as threshold such that values > 0.5 activate a feature.
-  Suppose we have `BLOCK1 = [0.3, 0.4, 0.1]` and `BLOCK2 = [0.4, 0.1, 0.2]`.
-  Since all values are below 0.5, changing the keys from `BLOCK1` to `BLOCK2`
+  Suppose we have `block1 = [0.3, 0.4, 0.1]` and `block2 = [0.4, 0.1, 0.2]`.
+  Since all values are below 0.5, changing the keys from `block1` to `block2`
   does not chage the solution, and therefore, we can drop such change (and
   subsequentely decoding). The blocks can hold only one key/allele, sequential
   key blocks, of even the whole chromosome. `affect_solution` takes two
@@ -173,10 +173,10 @@ CALLED FROM THE `path_relink()` FUNCTION.** Due to this reason, this method
   performed.
 
 - `max_time::Int64`: abort path-relinking when reach `max_time`.
-       If `max_time <= 0`, no limit is imposed. Given in seconds.
+  If `max_time <= 0`, no limit is imposed. Given in seconds.
 
 - `percentage::Float64`: define the size, in percentage, of the path to
-       build. Range [0, 1].
+  build. Range [0, 1].
 
 # Returns
 
@@ -195,20 +195,20 @@ function direct_path_relink!(brkga_data::BrkgaData,
                              percentage::Float64
     )::Tuple{Float64, Array{Float64, 1}}
 
-    PR_START_TIME = time()
+    pr_start_time = time()
 
     bd = brkga_data
 
     best_chr_found = Array{Float64, 1}(undef, bd.chromosome_size)
     best_fitness_found::Float64 = (bd.opt_sense == MAXIMIZE) ? -Inf : Inf
 
-    NUM_BLOCKS = cld(bd.chromosome_size, block_size)
-    PATH_SIZE = Int64(floor(percentage * NUM_BLOCKS))
-    remaining_blocks = collect(1:NUM_BLOCKS)
+    num_blocks = cld(bd.chromosome_size, block_size)
+    path_size = Int64(floor(percentage * num_blocks))
+    remaining_blocks = collect(1:num_blocks)
 
     # Allocate memory for the candidates.
-    candidates_base = Array{Triple, 1}(undef, NUM_BLOCKS)
-    candidates_guide = Array{Triple, 1}(undef, NUM_BLOCKS)
+    candidates_base = Array{Triple, 1}(undef, num_blocks)
+    candidates_guide = Array{Triple, 1}(undef, num_blocks)
 
     # References for the base and guide chromosomes.
     base = bd.current[population_index].chromosomes[chr1_index]
@@ -216,24 +216,24 @@ function direct_path_relink!(brkga_data::BrkgaData,
 
     # **NOTE:** two loops are faster than one according to `@benchmark`,
     # probably because of cache racing.
-    # @inbounds Threads.@threads for i in 1:NUM_BLOCKS
+    # @inbounds Threads.@threads for i in 1:num_blocks
     #     candidates_base[i] = Triple(copy(base))
     # end
-    # @inbounds Threads.@threads for i in 1:NUM_BLOCKS
+    # @inbounds Threads.@threads for i in 1:num_blocks
     #     candidates_guide[i] = Triple(copy(guide))
     # end
 
-    for i in 1:NUM_BLOCKS
+    for i in 1:num_blocks
         candidates_base[i] = Triple(copy(base))
     end
-    for i in 1:NUM_BLOCKS
+    for i in 1:num_blocks
         candidates_guide[i] = Triple(copy(guide))
     end
 
     # Holds the original keys.
     old_keys = Array{Float64, 1}(undef, brkga_data.chromosome_size)
 
-    SENSE = (bd.opt_sense == MAXIMIZE)
+    sense = (bd.opt_sense == MAXIMIZE)
     iterations = 1
     while !isempty(remaining_blocks)
         state = iterate(remaining_blocks)
@@ -241,12 +241,12 @@ function direct_path_relink!(brkga_data::BrkgaData,
         i = 1
         while state !== nothing && !isempty(remaining_blocks)
             it_block_idx = state[2] - 1
-            BLOCK_RANGE = find_block_range(remaining_blocks[it_block_idx],
+            block_range = find_block_range(remaining_blocks[it_block_idx],
                                            block_size, length(guide))
-            BLOCK1 = view(candidates_base[i].chr, BLOCK_RANGE)
-            BLOCK2 = view(guide, BLOCK_RANGE)
+            block1 = view(candidates_base[i].chr, block_range)
+            block2 = view(guide, block_range)
 
-            if !affect_solution(BLOCK1, BLOCK2)
+            if !affect_solution(block1, block2)
                 deleteat!(remaining_blocks, it_block_idx)
                 if it_block_idx > length(remaining_blocks)
                     state = nothing
@@ -255,10 +255,10 @@ function direct_path_relink!(brkga_data::BrkgaData,
             end
 
             # Save the former keys before...
-            old_keys[BLOCK_RANGE] = candidates_base[i].chr[BLOCK_RANGE]
+            old_keys[block_range] = candidates_base[i].chr[block_range]
 
             # ... copy the keys from the guide solution.
-            candidates_base[i].chr[BLOCK_RANGE] = guide[BLOCK_RANGE]
+            candidates_base[i].chr[block_range] = guide[block_range]
 
             candidates_base[i].block_index = it_block_idx
             state = iterate(remaining_blocks, state[2])
@@ -270,8 +270,8 @@ function direct_path_relink!(brkga_data::BrkgaData,
         end
 
         Threads.@threads for i in 1:length(remaining_blocks)
-            candidates_base[i].fitness = (SENSE) ? -Inf : Inf
-            if time() - PR_START_TIME > max_time
+            candidates_base[i].fitness = (sense) ? -Inf : Inf
+            if time() - pr_start_time > max_time
                 continue
             end
 
@@ -323,7 +323,7 @@ function direct_path_relink!(brkga_data::BrkgaData,
         deleteat!(remaining_blocks, best_block_index)
 
         iterations += 1
-        if iterations == PATH_SIZE || time() - PR_START_TIME > max_time
+        if iterations == path_size || time() - pr_start_time > max_time
             break
         end
     end
@@ -392,7 +392,7 @@ CALLED FROM THE `path_relink()` FUNCTION.** Due to this reason, this method
 - `block_size::Int64`: not used in this function but kept to API compatibility.
 
 - `max_time::Int64`: abort path-relinking when reach `max_time`.
-       If `max_time <= 0`, no limit is imposed. Given in seconds.
+  If `max_time <= 0`, no limit is imposed. Given in seconds.
 
 - `percentage::Float64`: define the size, in percentage, of the path to
        build. Range [0, 1].
@@ -414,14 +414,13 @@ function permutation_based_path_relink!(brkga_data::BrkgaData,
                                         percentage::Float64
     )::Tuple{Float64, Array{Float64, 1}}
 
-     PR_START_TIME = time()
-
     bd = brkga_data
+    pr_start_time = time()
 
     best_chr_found = Array{Float64, 1}(undef, bd.chromosome_size)
     best_fitness_found::Float64 = (bd.opt_sense == MAXIMIZE) ? -Inf : Inf
 
-    PATH_SIZE = Int64(floor(percentage * bd.chromosome_size))
+    path_size = Int64(floor(percentage * bd.chromosome_size))
     remaining_indices = collect(1:bd.chromosome_size)
 
     # Allocate memory for the candidates.
@@ -499,7 +498,7 @@ function permutation_based_path_relink!(brkga_data::BrkgaData,
 
         # Decode the candidates.
         Threads.@threads for i in 1:length(remaining_indices)
-            if time() - PR_START_TIME > max_time
+            if time() - pr_start_time > max_time
                 continue
             end
 
@@ -552,7 +551,7 @@ function permutation_based_path_relink!(brkga_data::BrkgaData,
         deleteat!(remaining_indices, best_key_index)
 
         iterations += 1
-        if iterations == PATH_SIZE || time() - PR_START_TIME > max_time
+        if iterations == path_size || time() - pr_start_time > max_time
             break
         end
     end
@@ -568,19 +567,37 @@ end
 ################################################################################
 
 """
-    function permutation_based_path_relink!(brkga_data::BrkgaData,
-                                            population_index::Int64,
-                                            chr1_index::Int64,
-                                            chr2_index::Int64,
-                                            affect_solution::Function,
-                                            block_size::Int64,
-                                            max_time::Int64,
-                                            percentage::Float64
-        )::Tuple{Float64, Array{Float64, 1}}
+    function path_relink!(brkga_data::BrkgaData,
+                          compute_distance::Function,
+                          affect_solution::Function,
+                          minimum_distance::Float64,
+                          pr_type::PathRelinkingType,
+                          pr_selection::PathRelinkingSelection,
+                          block_size::Int64,
+                          max_time::Int64,
+                          percentage::Float64
+    )::Bool
 
-Performs the permutation-based path relinking. In this method, the permutation
-induced by the keys in the guide solution is used to change the order of the
-keys in the permutation induced by the base solution.
+Performs path relinking between elite solutions that are, at least, a given
+minimum distance between themselves. In this method, the local/loaded
+parameters are ignored in favor to the supplied ones.
+
+In the presence of multiple populations, the path relinking is performed
+between elite chromosomes from different populations, in a circular fashion.
+For example, suppose we have 3 populations. The framework performs 3 path
+relinkings: the first between individuals from populations 1 and 2, the
+second between populations 2 and 3, and the third between populations 3 and 1.
+In the case of just one population, both base and guiding individuals are
+sampled from the elite set of that population.
+
+Note that the algorithm tries to find a pair of base and guiding solutions
+with a minimum distance given by the distance function. If this is not
+possible, a new pair of solutions are sampled (without replacement) and
+tested against the distance. In case it is not possible to find such pairs
+for the given populations, the algorithm skips to the next pair of
+populations (in a circular fashion, as described above). Yet, if such pairs
+are not found in any case, the algorithm declares failure. This indicates
+that the populations are very homogeneous.
 
 The API will call `decode!()` function, in `BrkgaData`, always with
 `writeback = false`. The reason is that if the decoder rewrites the chromosome,
@@ -602,47 +619,173 @@ If such property cannot be held, we suggest using single thread by setting the
 environmental variable `JULIA_NUM_THREADS = 1`
 (see https://docs.julialang.org/en/stable/manual/parallel-computing).
 
-**THIS IS AN INTERNAL METHOD AND IT IS NOT MEANT TO BE USED DIRECTLY. IT IS
-CALLED FROM THE `path_relink()` FUNCTION.** Due to this reason, this method
-**DOES NOT** perform health checks on the arguments.
-
 # Arguments
 - `brkga_data::BrkgaData`: the BRKGA data.
 
-- `population_index::Int64`: the population from where the chromosomes will be
-  analized.
+- `compute_distance::Function`: the function used to compute the distance
+  between two chromosomes. The function **must have** the following signature
 
-- `chr1_index::Int64` and `chr2_index::Int64`: two valid indices from
-  chromosomes of the given population.
+        `**TODO:** put the function signature here.`
 
-- `affect_solution::Function`: not used in this function but kept to API
-  compatibility.
+- `affect_solution::Function`: function that takes two partial chromosomes /
+  block of genes `block1` and `block2` and checks whether changing the keys from
+  `block1` to `block2` affects the solution. For instance, suppose that the
+  alleles/keys are used as threshold such that values > 0.5 activate a feature.
+  Suppose we have `block1 = [0.3, 0.4, 0.1]` and `block2 = [0.4, 0.1, 0.2]`.
+  Since all values are below 0.5, changing the keys from `block1` to `block2`
+  does not chage the solution, and therefore, we can drop such change (and
+  subsequentely decoding). The blocks can hold only one key/allele, sequential
+  key blocks, of even the whole chromosome. `affect_solution` takes two
+  views/subarrays. The function **must have** the following signature
 
-- `block_size::Int64`: not used in this function but kept to API compatibility.
+      `affect_solution(block_1::SubArray{Float64, 1},
+                       block_2::SubArray{Float64, 1})::Float64`
 
-- `max_time::Int64`: abort path-relinking when reach `max_time`.
-       If `max_time <= 0`, no limit is imposed. Given in seconds.
+  **Note: this function depends on the problem structure and how the
+  keys/alleles are used.**
 
-- `percentage::Float64`: define the size, in percentage, of the path to
-       build. Range [0, 1].
+ - `number_pairs::Int64`: number of chromosome pairs to be tested.
+   If `number_pairs < 1`, all pairs are tested.
+
+- `minimum_distance`: minimum distance between two chromosomes computed
+  by `compute_distance`.
+
+- `pr_type::PathRelinkingType`: type of path relinking to be performed.
+  Either `DIRECT` or `PERMUTATION`-based.
+
+- `pr_selection::PathRelinkingSelection`: selection of which individuals use
+  to path relinking. Either `BESTSOLUTION` or `RANDOMELITE`.
+
+- `block_size::Int64 = 1`: number of alleles to be exchanged at once in each
+  iteration. If one, the traditional path relinking is performed.
+  It must be ≥ 1.
+
+- `max_time::Int64 = 0`: abort path-relinking when reach `max_time`.
+  If `max_time ≤ 0`, no limit is imposed. Given in seconds.
+
+- `percentage::Float64 = 1.0`: define the size, in percentage, of the path to
+  build. Range [0, 1].
 
 # Returns
 
-- `Tuple{Float64, Array{Float64, 1}}`: the best pair (fitness,   chromosome)
-  found during the relinking. If the relink is not possible due to homogeneity,
-  `-Inf` returns in case of maximization, and `Inf` in case of minimization.
+- Returns `true` if the path relink was possible/performed.
 
+# Throws
+- `ErrorException`: if `initialize!()` was not called before.
+- `ArgumentError`: when `percentage < 1e-6 || percentage > 1.0` and
+  `block_size < 1`.
 """
 function path_relink!(brkga_data::BrkgaData,
                       compute_distance::Function,
                       affect_solution::Function,
+                      number_pairs::Int64,
                       minimum_distance::Float64,
                       pr_type::PathRelinkingType,
                       pr_selection::PathRelinkingSelection,
-                      block_size::Int64,
-                      max_time::Int64,
-                      percentage::Float64
+                      block_size::Int64 = 1,
+                      max_time::Int64 = 0,
+                      percentage::Float64 = 1.0
     )::Bool
+
+    if !brkga_data.initialized
+        error("the algorithm hasn't been initialized. Call initialize!() before path_relink!()")
+    end
+
+    if percentage < 1e-6 || percentage > 1.0
+        throw(ArgumentError("Percentage/size of path relinking invalid: " *
+                            "$(percentage)"))
+    end
+
+    if block_size < 1
+        throw(ArgumentError("Invalid block size: $(block_size)"))
+    end
+
+    if max_time <= 0
+        max_time = Inf
+    end
+
+    bd = brkga_data
+    initial_solution = Array{Float64, 1}(undef, bd.chromosome_size)
+    guiding_solution = Array{Float64, 1}(undef, bd.chromosome_size)
+
+    # Perform path relinking between elite chromosomes from different
+    # populations. This is done in a circular fashion.
+
+    path_relinking_possible::Bool = false
+    pr_start_time = time()
+    pop_count = 1
+    while pop_count <= bd.num_independent_populations
+        elapsed_seconds = time() - pr_start_time
+        if elapsed_seconds > max_time
+            break
+        end
+
+        pop_base = pop_count
+        pop_count += 1
+        pop_guide = pop_count
+        found_pair = false
+
+        # If we have just one population, we take the both solution from it.
+        if bd.num_independent_populations == 1
+            pop_base = pop_guide = 1
+            pop_count = Inf
+
+        # If we have two populations, perform just one path relinking.
+        elseif bd.num_independent_populations == 2
+            pop_count = Inf
+        end
+
+        # Do the circular thing.
+        if pop_guide == bd.num_independent_populations + 1
+            pop_guide = 1
+        end
+
+        index_pairs = Array{Pair{Int64, Int64}}(undef,
+                                                bd.elite_size * bd.elite_size)
+
+        @inbounds for i in 1:bd.elite_size, j in 1:bd.elite_size
+            index_pairs[(i - 1) * bd.elite_size + j] = Pair(i, j)
+        end
+
+        tested_pairs_count = 0
+        if number_pairs == 0
+            number_pairs = length(index_pairs)
+        end
+
+        print("\n\n time: ", time())
+        flush(stdout)
+
+        while !isempty(index_pairs) && tested_pairs_count < number_pairs &&
+              elapsed_seconds < max_time
+
+            index = (pr_selection == BESTSOLUTION) ? 0 :
+                    rand(bd.rng, 1:length(index_pairs))
+            (pos1, pos2) = index_pairs[index]
+
+            print("\npos1, pos2: ", pos1, " ", pos2, "\n")
+            print("\npop_base: ", pop_base)
+            flush(stdout)
+
+            tmp = bd.current[pop_base]
+            chr1 = tmp.chromosomes[tmp.fitness[pos1][2]]
+
+            tmp = bd.current[pop_guide]
+            chr2 = tmp.chromosomes[tmp.fitness[pos1][2]]
+
+            if compute_distance(chr1, chr2) >= minimum_distance
+                copyto!(initial_solution, chr1)
+                copyto!(guiding_solution, chr2)
+            end
+
+            tested_pairs_count += 1
+            elapsed_seconds = time() - pr_start_time
+            break
+        end
+        print("\n\n time: ", time())
+        print("\n tested_pairs_count: ", tested_pairs_count)
+        flush(stdout)
+
+    end
 
     return true
 end
