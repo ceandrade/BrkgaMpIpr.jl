@@ -635,20 +635,37 @@ include("util.jl")
                                             )
 
     ########################
+    # Test fake homogeneity
+    ########################
+
+    @test false == path_relink!(
+        brkga_data, #::BrkgaData,
+        (x, y) -> 0.0, #compute_distance::Function,
+        (x, y) -> true, #affect_solution::Function,
+        10, #number_pairs::Int64,
+        1.0, #minimum_distance::Float64,
+        DIRECT, #::PathRelinkingType,
+        RANDOMELITE, # PathRelinkingSelection
+        1, #block_size::Int64,
+        2, #max_time::Int64,
+        1.0, #percentage::Float64
+    )
+
+    ########################
     # Test the path relink
     ########################
 
-    res = path_relink!(brkga_data, #::BrkgaData,
-                       (x, y) -> 1.0, #compute_distance::Function,
-                       (x, y) -> true, #affect_solution::Function,
-                       10, #number_pairs::Int64,
-                       0.5, #minimum_distance::Float64,
-                       DIRECT, #::PathRelinkingType,
-                       RANDOMELITE, # PathRelinkingSelection
-                       1, #block_size::Int64,
-                       2, #max_time::Int64,
-                       1.0, #percentage::Float64
-                    )
+    # res = path_relink!(brkga_data, #::BrkgaData,
+    #                    (x, y) -> 1.0, #compute_distance::Function,
+    #                    (x, y) -> true, #affect_solution::Function,
+    #                    10, #number_pairs::Int64,
+    #                    0.5, #minimum_distance::Float64,
+    #                    DIRECT, #::PathRelinkingType,
+    #                    RANDOMELITE, # PathRelinkingSelection
+    #                    1, #block_size::Int64,
+    #                    2, #max_time::Int64,
+    #                    1.0, #percentage::Float64
+    #                 )
 
     # res = path_relink!(brkga_data, #::BrkgaData,
     #                 (x, y) -> 1.0, #compute_distance::Function,
@@ -663,5 +680,5 @@ include("util.jl")
     #              )
 
 
-    @test res == true
+    # @test res == true
 end

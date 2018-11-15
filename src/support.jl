@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 26, 2018 by ceandrade
-# Last update: Nov 08, 2018 by ceandrade
+# Last update: Nov 15, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -286,7 +286,7 @@ function inject_chromosome!(brkga_data::BrkgaData,
 
     pop = bd.current[population_index]
     idx = pop.fitness[position][2]
-    unsafe_copyto!(pop.chromosomes[idx], 1, chromosome, 1, bd.chromosome_size)
+    pop.chromosomes[idx] .= chromosome
 
     if fitness == Inf
         fitness = bd.decode!(pop.chromosomes[idx], bd.problem_instance)

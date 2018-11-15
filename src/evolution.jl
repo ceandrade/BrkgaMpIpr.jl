@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Apr 19, 2018 by ceandrade
-# Last update: Nov 09, 2018 by ceandrade
+# Last update: Nov 15, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -78,19 +78,9 @@ function evolve_population!(brkga_data::BrkgaData, population_index::Int64)
     next = bd.previous[population_index]
 
     # First, we copy the elite chromosomes to the next generation.
-    for chr in 1:bd.elite_size
-        # **NOTE:** the following comment assigments are too slow; it is better
-        # do it manually:
-        # next.chromosomes[chr] = copy(curr.chromosomes[curr.fitness[chr][2]])
-        # next.chromosomes[chr][:] = curr.chromosomes[curr.fitness[chr][2]][:]
-
-        tmp1 = next.chromosomes[chr]
-        tmp2 = curr.chromosomes[curr.fitness[chr][2]]
-        @inbounds for i in 1:bd.chromosome_size
-            tmp1[i] = tmp2[i]
-        end
-
-        next.fitness[chr] = (curr.fitness[chr][1], chr);
+    @inbounds for chr in 1:bd.elite_size
+        next.chromosomes[chr] .= curr.chromosomes[curr.fitness[chr][2]]
+        next.fitness[chr] = (curr.fitness[chr][1], chr)
     end
 
     # Second, we mate 'pop_size - elite_size - num_mutants' pairs.

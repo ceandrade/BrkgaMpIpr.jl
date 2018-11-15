@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Nov 08, 2018 by ceandrade
+# Last update: Nov 15, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -30,6 +30,7 @@ include("types_io.jl")
 include("building.jl")
 include("support.jl")
 include("evolution.jl")
+include("distance_functions.jl")
 include("path_relink.jl")
 
 # TODO (ceandrade): exporting of each item of the enums is weird.
@@ -51,6 +52,9 @@ export get_best_fitness, get_best_chromosome
 export get_chromosome, get_current_population
 
 export evolve!
+
+export hamming_distance, affect_solution_hamming_distance
+export kendall_tau_distance, affect_solution_kendall_tau
 
 export path_relink!
 

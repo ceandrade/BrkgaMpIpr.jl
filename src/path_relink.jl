@@ -163,7 +163,7 @@ CALLED FROM THE `path_relink()` FUNCTION.** Due to this reason, this method
   views/subarrays. The function **must have** the following signature
 
         `affect_solution(block_1::SubArray{Float64, 1},
-                         block_2::SubArray{Float64, 1})::Float64`
+                         block_2::SubArray{Float64, 1})::Bool`
 
   **Note: this function depends on the problem structure and how the
   keys/alleles are used.**
@@ -762,10 +762,6 @@ function path_relink!(brkga_data::BrkgaData,
                     rand(bd.rng, 1:length(index_pairs))
             (pos1, pos2) = index_pairs[index]
 
-            print("\npos1, pos2: ", pos1, " ", pos2, "\n")
-            print("\npop_base: ", pop_base)
-            flush(stdout)
-
             tmp = bd.current[pop_base]
             chr1 = tmp.chromosomes[tmp.fitness[pos1][2]]
 
@@ -773,19 +769,35 @@ function path_relink!(brkga_data::BrkgaData,
             chr2 = tmp.chromosomes[tmp.fitness[pos1][2]]
 
             if compute_distance(chr1, chr2) >= minimum_distance
-                copyto!(initial_solution, chr1)
-                copyto!(guiding_solution, chr2)
+                initial_solution .= chr1
+                guiding_solution .= chr2
+                found_pair = true
+                break
             end
 
             tested_pairs_count += 1
             elapsed_seconds = time() - pr_start_time
-            break
         end
         print("\n\n time: ", time())
         print("\n tested_pairs_count: ", tested_pairs_count)
+
+        print("\npath_relinking_possible ", path_relinking_possible)
+        print("\nfound_pair ", found_pair)
+
+        path_relinking_possible |= found_pair
+
+        print("\npath_relinking_possible ", path_relinking_possible)
+        print("\nfound_pair ", found_pair)
+
+        print("\n\n")
         flush(stdout)
 
+        # The elite sets are too homogeneous, we cannot do
+        #  a good path relinking. Let's try other populations.
+        if !found_pair
+            continue
+        end
     end
 
-    return true
+    return path_relinking_possible
 end

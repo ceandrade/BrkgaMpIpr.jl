@@ -7,7 +7,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Nov 12, 2018 by ceandrade
+# Last update: Nov 15, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -70,18 +70,21 @@ default_param_values[param_index["num_independent_populations"]] = 3
 ################################################################################
 
 @time begin
-    # print(">> Testing types and their I/O operations...\n")
-    # include("types_io_tests.jl")
+    print(">> Testing types and their I/O operations...\n")
+    include("types_io_tests.jl")
 
-    # print("\n>> Testing BRKGA data building and initialization...\n")
-    # include("building_tests.jl")
+    print("\n>> Testing BRKGA data building and initialization...\n")
+    include("building_tests.jl")
 
-    # print("\n>> Testing support methods...\n")
-    # include("support_tests.jl")
+    print("\n>> Testing support methods...\n")
+    include("support_tests.jl")
 
-    # print("\n>> Testing evolutionary methods (it may take a while)...\n")
-    # include("evolution_tests.jl")
+    print("\n>> Testing distance functions...\n")
+    include("distance_functions_tests.jl")
 
-    print("\n>> Testing path relink methods (it may take a while)...\n")
-    include("path_relink_tests.jl")
+    print("\n>> Testing evolutionary methods (it may take a while)...\n")
+    include("evolution_tests.jl")
+
+    # print("\n>> Testing path relink methods (it may take a while)...\n")
+    # include("path_relink_tests.jl")
 end
