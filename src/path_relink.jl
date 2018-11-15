@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 06, 2018 by ceandrade
-# Last update: Nov 12, 2018 by ceandrade
+# Last update: Nov 15, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -162,8 +162,8 @@ CALLED FROM THE `path_relink()` FUNCTION.** Due to this reason, this method
   key blocks, of even the whole chromosome. `affect_solution` takes two
   views/subarrays. The function **must have** the following signature
 
-        `affect_solution(block_1::SubArray{Float64, 1},
-                         block_2::SubArray{Float64, 1})::Bool`
+        `affect_solution(block1::SubArray{Float64, 1},
+                         block2::SubArray{Float64, 1})::Bool`
 
   **Note: this function depends on the problem structure and how the
   keys/alleles are used.**
@@ -625,7 +625,8 @@ environmental variable `JULIA_NUM_THREADS = 1`
 - `compute_distance::Function`: the function used to compute the distance
   between two chromosomes. The function **must have** the following signature
 
-        `**TODO:** put the function signature here.`
+        `compute_distance(vector1::Array{Float64, 1},
+                          vector2::Array{Float64, 1}::Float64`
 
 - `affect_solution::Function`: function that takes two partial chromosomes /
   block of genes `block1` and `block2` and checks whether changing the keys from
@@ -638,8 +639,8 @@ environmental variable `JULIA_NUM_THREADS = 1`
   key blocks, of even the whole chromosome. `affect_solution` takes two
   views/subarrays. The function **must have** the following signature
 
-      `affect_solution(block_1::SubArray{Float64, 1},
-                       block_2::SubArray{Float64, 1})::Float64`
+        `affect_solution(block1::SubArray{Float64, 1},
+                         block2::SubArray{Float64, 1})::Float64`
 
   **Note: this function depends on the problem structure and how the
   keys/alleles are used.**

@@ -27,7 +27,7 @@
 ################################################################################
 
 """
-    hamming_distance(x::Array{Float64, 1}, y::Array{Float64, 1},
+    hamming_distance(vector1::Array{Float64, 1}, vector2::Array{Float64, 1},
                      threshold::Float64 = 0.5)::Float64
 
 Compute the [Hamming distance](https://en.wikipedia.org/wiki/Hamming_distance)
@@ -39,22 +39,23 @@ to 0.7 will be considerd `1.0`, otherwise `0.0`.
 chromosome representations.
 
 # Arguments
-- `x::Array{Float64, 1}`: the first vector.
-- `y::Array{Float64, 1}`: the second vector.
+- `vector1::Array{Float64, 1}`: the first vector.
+- `vector2::Array{Float64, 1}`: the second vector.
 - `threshold::Float64 = 0.5`: the threshold for binarization.
 
 # Throws
-- `ArgumentError`: if `x` and `y` have different sizes.
+- `ArgumentError`: if `vector1` and `vector2` have different sizes.
 """
-function hamming_distance(x::Array{Float64, 1}, y::Array{Float64, 1};
+function hamming_distance(vector1::Array{Float64, 1},
+                          vector2::Array{Float64, 1};
                           threshold::Float64 = 0.5)::Float64
-    if length(x) != length(y)
+    if length(vector1) != length(vector2)
         throw(ArgumentError("Input vectors have different sizes."))
     end
 
     dist::Int64 = 0
-    @inbounds for i in 1:length(x)
-        if (x[i] < threshold) != (y[i] < threshold)
+    @inbounds for i in 1:length(vector1)
+        if (vector1[i] < threshold) != (vector2[i] < threshold)
             dist += 1
         end
     end
@@ -64,34 +65,34 @@ end
 ################################################################################
 
 """
-    affect_solution_hamming_distance(block_1::SubArray{Float64, 1},
-                                     block_2::SubArray{Float64, 1},
+    affect_solution_hamming_distance(block1::SubArray{Float64, 1},
+                                     block2::SubArray{Float64, 1},
                                      threshold::Float64 = 0.5)::Bool
 
-Return `true` the the changing of the blocks of keys `block_1` by the
-blocks of keys `block_2` affects the solution, based on the
+Return `true` the the changing of the blocks of keys `block1` by the
+blocks of keys `block2` affects the solution, based on the
 [Hamming distance](https://en.wikipedia.org/wiki/Hamming_distance).
 
 **Note 1:** this function may be more appropriated to threshold/direct
 chromosome representations.
 
-**NOTE 2:** `block_1` and `block_2` must have the same size. No bounds checking
+**NOTE 2:** `block1` and `block2` must have the same size. No bounds checking
 is done due to performance reasons.
 
 **NOTE 3:** this function is annotated with `@inline` due to performance
 reasons too.
 
 # Arguments
-- `block_1::SubArray{Float64, 1}`: the first vector.
-- `block_2::SubArray{Float64, 1}`: the second vector.
+- `block1::SubArray{Float64, 1}`: the first vector.
+- `block2::SubArray{Float64, 1}`: the second vector.
 - `threshold::Float64 = 0.5`: the threshold for binarization.
 """
 @inline function affect_solution_hamming_distance(
-            block_1::SubArray{Float64, 1},
-            block_2::SubArray{Float64, 1};
+            block1::SubArray{Float64, 1},
+            block2::SubArray{Float64, 1};
             threshold::Float64 = 0.5)::Bool
-    for i in 1:length(block_1)
-        if (block_1[i] < threshold) != (block_2[i] < threshold)
+    for i in 1:length(block1)
+        if (block1[i] < threshold) != (block2[i] < threshold)
             return true
         end
     end
@@ -103,12 +104,12 @@ end
 ################################################################################
 
 """
-    kendall_tau_distance(x::Array{Float64, 1},
-                         y::Array{Float64, 1};
+    kendall_tau_distance(vector1::Array{Float64, 1},
+                         vector2::Array{Float64, 1};
                          stop_immediately::Bool = false)::Float64
 
-    kendall_tau_distance(x::SubArray{Float64, 1},
-                         y::SubArray{Float64, 1};
+    kendall_tau_distance(vector1::SubArray{Float64, 1},
+                         vector2::SubArray{Float64, 1};
                          stop_immediately::Bool = false)::Float64
 
 Compute the [Kendall Tau distance](https://en.wikipedia.org/wiki/Kendall_tau_distance)
@@ -118,43 +119,43 @@ between two vectors.
 representations.
 
 # Arguments
-- `x::Array{Float64, 1}`: the first vector.
-- `y::Array{Float64, 1}`: the second vector.
+- `vector1::Array{Float64, 1}`: the first vector.
+- `vector2::Array{Float64, 1}`: the second vector.
 - `stop_immediately::Bool = false`: if `true`, stop the computation
   immediately after find a difference.
 
 # Throws
-- `ArgumentError`: if `x` and `y` have different sizes.
+- `ArgumentError`: if `vector1` and `vector2` have different sizes.
 """
-function kendall_tau_distance(x::Array{Float64, 1},
-                              y::Array{Float64, 1};
+function kendall_tau_distance(vector1::Array{Float64, 1},
+                              vector2::Array{Float64, 1};
                               stop_immediately::Bool = false)::Float64
-    return kendall_tau_distance(view(x, 1:length(x)),
-                                view(y, 1:length(y)),
+    return kendall_tau_distance(view(vector1, 1:length(vector1)),
+                                view(vector2, 1:length(vector2)),
                                 stop_immediately = stop_immediately)
 end
 
-function kendall_tau_distance(x::SubArray{Float64, 1},
-                              y::SubArray{Float64, 1};
+function kendall_tau_distance(vector1::SubArray{Float64, 1},
+                              vector2::SubArray{Float64, 1};
                               stop_immediately::Bool = false)::Float64
-    if length(x) != length(y)
+    if length(vector1) != length(vector2)
         throw(ArgumentError("Input vectors have different sizes."))
     end
 
-    pairs_v1 = Array{Tuple{Float64, Int64}}(undef, length(x))
-    @inbounds for (rank, key) in enumerate(x)
+    pairs_v1 = Array{Tuple{Float64, Int64}}(undef, length(vector1))
+    @inbounds for (rank, key) in enumerate(vector1)
         pairs_v1[rank] = (key, rank)
     end
     sort!(pairs_v1)
 
-    pairs_v2 = Array{Tuple{Float64, Int64}}(undef, length(y))
-    @inbounds for (rank, key) in enumerate(y)
+    pairs_v2 = Array{Tuple{Float64, Int64}}(undef, length(vector2))
+    @inbounds for (rank, key) in enumerate(vector2)
         pairs_v2[rank] = (key, rank)
     end
     sort!(pairs_v2)
 
     disagreements::Int64 = 0
-    for i in 1:(length(x) - 1), j in (i + 1):length(x)
+    for i in 1:(length(vector1) - 1), j in (i + 1):length(vector1)
         if ((pairs_v1[i][2] < pairs_v1[j][2]
             && pairs_v2[i][2] > pairs_v2[j][2])) ||
            (pairs_v1[i][2] > pairs_v1[j][2] && pairs_v2[i][2] < pairs_v2[j][2])
@@ -172,28 +173,27 @@ end
 ################################################################################
 
 """
-    affect_solution_kendall_tau(block_1::SubArray{Float64, 1},
-                                block_2::SubArray{Float64, 1})::Bool
+    affect_solution_kendall_tau(block1::SubArray{Float64, 1},
+                                block2::SubArray{Float64, 1})::Bool
 
-Return `true` the the changing of the blocks of keys `block_1` by the
-blocks of keys `block_2` affects the solution, based on the
+Return `true` the the changing of the blocks of keys `block1` by the
+blocks of keys `block2` affects the solution, based on the
 [Kendall Tau distance.](https://en.wikipedia.org/wiki/Kendall_tau_distance)
 
-**NOTE:** `block_1` and `block_2` must have the same size. No bounds checking
+**NOTE:** `block1` and `block2` must have the same size. No bounds checking
 is done due to performance reasons.
 
 # Arguments
-- `block_1::SubArray{Float64, 1}`: the first vector.
-- `block_2::SubArray{Float64, 1}`: the second vector.
+- `block1::SubArray{Float64, 1}`: the first vector.
+- `block2::SubArray{Float64, 1}`: the second vector.
 """
 function affect_solution_kendall_tau(
-            block_1::SubArray{Float64, 1},
-            block_2::SubArray{Float64, 1})::Bool
+            block1::SubArray{Float64, 1},
+            block2::SubArray{Float64, 1})::Bool
 
-    if length(block_1) == 1
-        return abs(block_1[1] - block_2[1]) > 1e-6
+    if length(block1) == 1
+        return abs(block1[1] - block2[1]) > 1e-6
     end
 
-    return kendall_tau_distance(block_1, block_2,
-                                stop_immediately = true) > 1e-6
+    return kendall_tau_distance(block1, block2, stop_immediately = true) > 1e-6
 end
