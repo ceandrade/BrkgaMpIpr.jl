@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 11, 2018 by ceandrade
-# Last update: Nov 12, 2018 by ceandrade
+# Last update: Dec 17, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -21,6 +21,45 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
 
+using JLD
+using FileIO
+
+################################################################################
+# Write data file
+################################################################################
+
+function write_data(filename::String, data::BrkgaData)
+    save(File(format"JLD", filename),
+        "opt_sense", brkga_data.opt_sense,
+        "chromosome_size", brkga_data.chromosome_size,
+        "population_size", brkga_data.population_size,
+        "elite_size", brkga_data.elite_size,
+        "num_mutants", brkga_data.num_mutants,
+        "num_elite_parents", brkga_data.num_elite_parents,
+        "total_parents", brkga_data.total_parents,
+        "bias", brkga_data.bias,
+        "num_independent_populations", brkga_data.num_independent_populations,
+        "evolutionary_mechanism_on", brkga_data.evolutionary_mechanism_on,
+        # TODO (ceandrade): list the path relink parameters here.
+        "problem_instance", brkga_data.problem_instance,
+        # NOTE (ceandrade): currently, JLD cannot save functions.
+        # decode!::Function
+        "rng", brkga_data.rng,
+        "previous", brkga_data.previous,
+        "current", brkga_data.current,
+        # NOTE (ceandrade): currently, JLD cannot save functions.
+        # "bias_function", brkga_data.bias_function,
+        "total_bias_weight", brkga_data.total_bias_weight,
+        "shuffled_individuals", brkga_data.shuffled_individuals,
+        "parents_ordered", brkga_data.parents_ordered,
+        "initialized", brkga_data.initialized,
+        "reset_phase", brkga_data.reset_phase
+    )
+    nothing
+end
+
+################################################################################
+# Load data file
 ################################################################################
 
 function load_brkga_data(filename::String, brkga_data::BrkgaData)
@@ -42,8 +81,7 @@ function load_brkga_data(filename::String, brkga_data::BrkgaData)
     # FIXME (ceandrade): the following doesn't work because it tries to
     # load the decoder function from the file. So, we rebuild the instance.
     # brkga_data.problem_instance = tmp["problem_instance"],
-    brkga_data.problem_instance =
-        Instance(brkga_data.chromosome_size)
+    brkga_data.problem_instance = Instance(brkga_data.chromosome_size)
 
     # NOTE (ceandrade): currently, JLD cannot save functions.
     brkga_data.decode! = decode!
