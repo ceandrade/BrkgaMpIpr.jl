@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Apr 19, 2018 by ceandrade
-# Last update: Nov 15, 2018 by ceandrade
+# Last update: Dec 27, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -127,7 +127,7 @@ function evolve_population!(brkga_data::BrkgaData, population_index::Int64)
 
     # To finish, we fill up the remaining spots with mutants.
     for chr in (bd.population_size - bd.num_mutants + 1):bd.population_size
-        next.chromosomes[chr] .= rand(bd.rng, length(bd.chromosome_size))
+        next.chromosomes[chr] .= rand(bd.rng, bd.chromosome_size)
     end
 
     # Perform the decoding on the offpring and mutants.
