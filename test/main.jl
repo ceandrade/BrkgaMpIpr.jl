@@ -27,7 +27,7 @@ push!(LOAD_PATH, ".")
 using BrkgaMpIpr
 
 include("TestInstance.jl")
-include("TestDecoder.jl")
+include("TestDecoders.jl")
 
 chr_size = 10000
 pop_size = 10
@@ -42,29 +42,31 @@ num_independent_populations = 2
 print("\n\n>> Building instance\n")
 instance = Instance(chr_size)
 
-print("\n\n>> Building BRKGA data\n")
-brkga_data = BrkgaMpIpr.build_brkga(instance, decode!,
-                             BrkgaMpIpr.MAXIMIZE, 2700001, chr_size, pop_size,
-                             elite_percentage, mutants_percentage,
-                             evolutionary_mechanism_on, num_elite_parents,
-                             total_parents, bias, num_independent_populations)
+# print("\n\n>> Building BRKGA data\n")
+# brkga_data = BrkgaMpIpr.build_brkga(instance, sum_decode!,
+#                              BrkgaMpIpr.MAXIMIZE, 2700001, chr_size, pop_size,
+#                              elite_percentage, mutants_percentage,
+#                              evolutionary_mechanism_on, num_elite_parents,
+#                              total_parents, bias, num_independent_populations)
 
-# (brkga_data, control_params) =
-#     BrkgaMpIpr.build_brkga(instance, TestDecoder.decode!,
-#                            BrkgaMpIpr.MAXIMIZE, 2700001, chr_size,
-#                            "configuration_files/regular.conf")
+(brkga_data, control_params) =
+    BrkgaMpIpr.build_brkga(instance, sum_decode!,
+                           BrkgaMpIpr.MAXIMIZE, 2700001, chr_size,
+                           "configuration_files/regular.conf")
 
 print("\n\n>> Initializing BRKGA\n")
 BrkgaMpIpr.initialize!(brkga_data)
 
-print("\n\n>> Path relinking\n")
-@time tmp = BrkgaMpIpr.direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
-                              1, #population_index::Int64,
-                              1, #chr1_index::Int64,
-                              2, #chr2_index::Int64,
-                              (x, y) -> true, #distance_function::Function,
-                              1, #block_size::Int64,
-                              10, #max_time::Int64,
-                              1.0 #percentage::Float64
-                              )
-@show tmp[1]
+BrkgaMpIpr.write_configuration("ze.txt", brkga_data, control_params)
+
+# print("\n\n>> Path relinking\n")
+# @time tmp = BrkgaMpIpr.direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
+#                               1, #population_index::Int64,
+#                               1, #chr1_index::Int64,
+#                               2, #chr2_index::Int64,
+#                               (x, y) -> true, #distance_function::Function,
+#                               1, #block_size::Int64,
+#                               10, #max_time::Int64,
+#                               1.0 #percentage::Float64
+#                               )
+# @show tmp[1]

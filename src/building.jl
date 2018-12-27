@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Nov 08, 2018 by ceandrade
+# Last update: Dec 27, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -20,6 +20,17 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
+
+"""
+    const empty_function() = nothing
+
+Represent an empty function to be used as flag during data and bias function
+setups.
+"""
+const empty_function() = nothing
+
+################################################################################
+
 
 ################################################################################
 
@@ -78,6 +89,23 @@ tuning purposes.
 
 - `num_independent_populations::Int64 = 1`: number of independent populations
   (island model).
+
+- `pr_number_pairs::Int64 = 0`: number of pairs of chromosomes to be tested to
+  path relinking. When set to 0, tests all pairs.
+
+- `pr_minimum_distance::Float64 = 0.0`: mininum distance between chromosomes
+  selected to path-relinking.
+
+- `pr_type::PathRelinkingType = DIRECT`: path relinking type.
+
+- `pr_selection::PathRelinkingSelection = BESTSOLUTION`: individual selection
+  to path-relinking
+
+- `alpha_block_size::Float64 = 1.0`: defines the block size based on the size
+  of the population.
+
+- `pr_percentage::Float64 = 1.0`: percentage / path size to be computed.
+  Value in (0.0, 1.0].
 """
 function build_brkga(problem_instance::AbstractInstance,
         decode_function!::Function,
@@ -91,7 +119,14 @@ function build_brkga(problem_instance::AbstractInstance,
         num_elite_parents::Int64 = 1,
         total_parents::Int64 = 2,
         bias::BiasFunction = LOGINVERSE,
-        num_independent_populations::Int64 = 1)::BrkgaData
+        num_independent_populations::Int64 = 1,
+        pr_number_pairs::Int64 = 0,
+        pr_minimum_distance::Float64 = 0.0,
+        pr_type::PathRelinkingType = DIRECT,
+        pr_selection::PathRelinkingSelection = BESTSOLUTION,
+        alpha_block_size::Float64 = 1.0,
+        pr_percentage::Float64 = 1.0
+        )::BrkgaData
 
     elite_size = evolutionary_mechanism_on ?
             floor(Int64, elite_percentage * population_size) : 1
@@ -125,8 +160,10 @@ function build_brkga(problem_instance::AbstractInstance,
         throw(ArgumentError("num_elite_parents ($num_elite_parents) is greater than elite set ($elite_size)"))
     elseif num_independent_populations < 1
         throw(ArgumentError("number of parallel populations must be larger than zero: $num_independent_populations"))
-
-    # TODO (ceandrade): check path relink params here
+    elseif alpha_block_size <= 0.0
+        throw(ArgumentError("alpha_block_size must be larger than zero: $alpha_block_size"))
+    elseif pr_percentage <= 0.0 || pr_percentage > 1.0
+        throw(ArgumentError("percentage / path size must be in (0, 1]: $pr_percentage"))
     end
 
     brkga_data = BrkgaData(
@@ -140,7 +177,12 @@ function build_brkga(problem_instance::AbstractInstance,
         bias,
         num_independent_populations,
         evolutionary_mechanism_on,
-        # TODO (ceandrade): list the IPR parameters here.
+        pr_number_pairs,
+        pr_minimum_distance,
+        pr_type,
+        pr_selection,
+        alpha_block_size,
+        pr_percentage,
         problem_instance,
         decode_function!,
         Random.MersenneTwister(seed),
@@ -230,8 +272,6 @@ function build_brkga(
         evolutionary_mechanism_on::Bool = true
     )::Tuple{BrkgaData, ExternalControlParams}
 
-    # TODO (ceandrade) add the path relink parameters.
-
     param_names_types = [
         ("POPULATION_SIZE", Int64),
         ("ELITE_PERCENTAGE", Float64),
@@ -240,11 +280,12 @@ function build_brkga(
         ("TOTAL_PARENTS", Int64),
         ("BIAS_FUNCTION", BiasFunction),
         ("INDEPENDENT_POPULATIONS", Int64),
-        # ("PR_MINIMUM_DISTANCE", Float64),
-        # ("PR_TYPE", ),
-        # ("PR_SELECTION", ),
-        # ("ALPHA_BLOCK_SIZE", Float64),
-        # ("PR_PERCENTAGE", Float64),
+        ("PR_NUMBER_PAIRS", Int64),
+        ("PR_MINIMUM_DISTANCE", Float64),
+        ("PR_TYPE", PathRelinkingType),
+        ("PR_SELECTION", PathRelinkingSelection),
+        ("ALPHA_BLOCK_SIZE", Float64),
+        ("PR_PERCENTAGE", Float64),
         ("EXCHANGE_INTERVAL", Int64),
         ("NUM_EXCHANGE_INDIVUDUALS", Int64),
         ("RESET_INTERVAL", Int64),
@@ -316,7 +357,14 @@ function build_brkga(
                     param_values[param_index["ELITE_PARENTS"]],
                     param_values[param_index["TOTAL_PARENTS"]],
                     param_values[param_index["BIAS_FUNCTION"]],
-                    param_values[param_index["INDEPENDENT_POPULATIONS"]])
+                    param_values[param_index["INDEPENDENT_POPULATIONS"]],
+                    param_values[param_index["PR_NUMBER_PAIRS"]],
+                    param_values[param_index["PR_MINIMUM_DISTANCE"]],
+                    param_values[param_index["PR_TYPE"]],
+                    param_values[param_index["PR_SELECTION"]],
+                    param_values[param_index["ALPHA_BLOCK_SIZE"]],
+                    param_values[param_index["PR_PERCENTAGE"]]
+    )
 
     return (brkga_data, external_params)
 end

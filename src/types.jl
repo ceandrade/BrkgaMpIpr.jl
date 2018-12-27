@@ -129,16 +129,6 @@ end
 ################################################################################
 
 """
-    const empty_function() = nothing
-
-Represent an empty function to be used as flag during data and bias function
-setups.
-"""
-const empty_function() = nothing
-
-################################################################################
-
-"""
     abstract type AbstractInstance
 
 The required interface for external data to be provided to the decoder. The
@@ -269,7 +259,41 @@ mutable struct BrkgaData
     # Path Relinking parameters
     ########################################
 
-    # TODO (ceandrade): list the path relink parameters here.
+    """
+    (Path-relink Hyper-parameter)
+    Number of pairs of chromosomes to be tested to path relinking.
+    """
+    pr_number_pairs::Int64
+
+    """
+    (Path-relink Hyper-parameter)
+    Mininum distance between chromosomes selected to path-relinking.
+    """
+    pr_minimum_distance::Float64
+
+    """
+    (Path-relink Hyper-parameter)
+    Path relinking type.
+    """
+    pr_type::PathRelinkingType
+
+    """
+    (Path-relink Hyper-parameter)
+    Individual selection to path-relinking.
+    """
+    pr_selection::PathRelinkingSelection
+
+    """
+    (Path-relink Hyper-parameter)
+    Defines the block size based on the size of the population.
+    """
+    alpha_block_size::Float64
+
+    """
+    (Path-relink Hyper-parameter)
+    Percentage / path size to be computed. Value in (0, 1].
+    """
+    pr_percentage::Float64
 
     ########################################
     # Internal data
@@ -294,7 +318,7 @@ mutable struct BrkgaData
 
     Note that if `rewrite == true`, `decode!` can change `chromosome`.
     """
-    # TODO (ceandrade): the current Julia version (0.6) doesn't support
+    # TODO (ceandrade): the current Julia version (1.0) doesn't support
     # strong typing function signatures, as defined above. When such cabability
     # be available in Julia, the definition below must be changed for a
     # strong typed version.

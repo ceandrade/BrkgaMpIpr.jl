@@ -173,7 +173,23 @@
 
     param_values = copy(default_param_values)
 
-    # TODO (ceandrade): check path relink params here
+    # alpha_block_size.
+    param_values[param_index["alpha_block_size"]] = 0.0
+    @test_throws ArgumentError build_brkga(param_values...)
+
+    param_values = copy(default_param_values)
+
+    # percentage / path size.
+    param_values[param_index["pr_percentage"]] = 0.0
+    @test_throws ArgumentError build_brkga(param_values...)
+
+    param_values = copy(default_param_values)
+
+    # percentage / path size.
+    param_values[param_index["pr_percentage"]] = 1.001
+    @test_throws ArgumentError build_brkga(param_values...)
+
+    param_values = copy(default_param_values)
 end
 
 ################################################################################
@@ -204,8 +220,12 @@ end
     @test brkga_data.total_parents == 3
     @test brkga_data.bias == LOGINVERSE
     @test brkga_data.num_independent_populations == 3
-    # TODO (ceandrade): test path relink parameters
-
+    @test brkga_data.pr_number_pairs == 0
+    @test brkga_data.pr_minimum_distance == 0.15
+    @test brkga_data.pr_type == PERMUTATION
+    @test brkga_data.pr_selection == RANDOMELITE
+    @test brkga_data.alpha_block_size == 1.0
+    @test brkga_data.pr_percentage == 1.0
     @test external_params.exchange_interval == 200
     @test external_params.num_exchange_indivuduals == 2
     @test external_params.reset_interval == 600
@@ -226,6 +246,10 @@ end
                     joinpath(config_path, "missing_param.conf"))
     @test_throws LoadError build_brkga(local_param_values...,
                     joinpath(config_path, "wrong_bias_function.conf"))
+    @test_throws LoadError build_brkga(local_param_values...,
+                    joinpath(config_path, "wrong_pr_type.conf"))
+    @test_throws LoadError build_brkga(local_param_values...,
+                    joinpath(config_path, "wrong_pr_selection.conf"))
 end
 
 ################################################################################

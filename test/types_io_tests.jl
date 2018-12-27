@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 24, 2018 by ceandrade
-# Last update: Nov 08, 2018 by ceandrade
+# Last update: Dec 27, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -85,7 +85,6 @@ end
     end
     rm(temp_filename)
 
-    # TODO (ceandrade): add the path relink parameters.
     standard = """
 population_size 500
 elite_percentage 0.3
@@ -95,6 +94,12 @@ elite_parents 2
 total_parents 3
 bias_function loginverse
 independent_populations 3
+pr_number_pairs 0
+pr_minimum_distance 0.15
+pr_type permutation
+pr_selection randomelite
+alpha_block_size 1.0
+pr_percentage 1.0
 exchange_interval 200
 num_exchange_indivuduals 2
 reset_interval 600
@@ -125,6 +130,12 @@ elite_parents 1
 total_parents 2
 bias_function loginverse
 independent_populations 3
+pr_number_pairs 0
+pr_minimum_distance 0.0
+pr_type direct
+pr_selection bestsolution
+alpha_block_size 1.0
+pr_percentage 1.0
 exchange_interval 0
 num_exchange_indivuduals 0
 reset_interval 0
@@ -156,10 +167,15 @@ elite_parents 1
 total_parents 2
 bias_function custom
 independent_populations 3
+pr_number_pairs 0
+pr_minimum_distance 0.0
+pr_type direct
+pr_selection bestsolution
+alpha_block_size 1.0
+pr_percentage 1.0
 exchange_interval 0
 num_exchange_indivuduals 0
 reset_interval 0
 """
     @test result == standard
-
 end

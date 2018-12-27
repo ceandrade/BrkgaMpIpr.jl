@@ -35,7 +35,9 @@ include("util.jl")
 const param_names = ["instance", "decode!", "opt_sense", "seed", "chr_size",
                      "pop_size", "elite_percentage", "mutants_percentage",
                      "evolutionary_mechanism_on", "num_elite_parents",
-                     "total_parents", "bias", "num_independent_populations"]
+                     "total_parents", "bias", "num_independent_populations",
+                     "pr_number_pairs", "pr_minimum_distance", "pr_type",
+                     "pr_selection", "alpha_block_size", "pr_percentage"]
 
 # Reverse index.
 const param_index = Dict([v => i for (i, v) in enumerate(param_names)])
@@ -62,6 +64,12 @@ param_values[param_index["num_elite_parents"]] = 1
 param_values[param_index["total_parents"]] = 2
 param_values[param_index["bias"]] = LOGINVERSE
 param_values[param_index["num_independent_populations"]] = 1
+param_values[param_index["pr_number_pairs"]] = 0
+param_values[param_index["pr_minimum_distance"]] = 0.0
+param_values[param_index["pr_type"]] = DIRECT
+param_values[param_index["pr_selection"]] = BESTSOLUTION
+param_values[param_index["alpha_block_size"]] = 1.0
+param_values[param_index["pr_percentage"]] = 1.0
 
 print("\n\n> Building configuration 1")
 brkga_data = build_brkga(param_values...)
@@ -114,6 +122,12 @@ param_values[param_index["num_elite_parents"]] = 5
 param_values[param_index["total_parents"]] = 50
 param_values[param_index["bias"]] = QUADRATIC
 param_values[param_index["num_independent_populations"]] = 2
+param_values[param_index["pr_number_pairs"]] = 0
+param_values[param_index["pr_minimum_distance"]] = 0.0
+param_values[param_index["pr_type"]] = DIRECT
+param_values[param_index["pr_selection"]] = BESTSOLUTION
+param_values[param_index["alpha_block_size"]] = 1.0
+param_values[param_index["pr_percentage"]] = 1.0
 
 print("\n\n> Building configuration 2")
 brkga_data = build_brkga(param_values...)
@@ -167,6 +181,12 @@ param_values[param_index["num_elite_parents"]] = 3
 param_values[param_index["total_parents"]] = 5
 param_values[param_index["bias"]] = EXPONENTIAL
 param_values[param_index["num_independent_populations"]] = 5
+param_values[param_index["pr_number_pairs"]] = 0
+param_values[param_index["pr_minimum_distance"]] = 0.0
+param_values[param_index["pr_type"]] = DIRECT
+param_values[param_index["pr_selection"]] = BESTSOLUTION
+param_values[param_index["alpha_block_size"]] = 1.0
+param_values[param_index["pr_percentage"]] = 1.0
 
 print("\n\n> Building configuration 3")
 brkga_data = build_brkga(param_values...)
@@ -224,6 +244,12 @@ param_values[param_index["num_elite_parents"]] = 1
 param_values[param_index["total_parents"]] = 2
 param_values[param_index["bias"]] = LOGINVERSE
 param_values[param_index["num_independent_populations"]] = 3
+param_values[param_index["pr_number_pairs"]] = 0
+param_values[param_index["pr_minimum_distance"]] = 0.0
+param_values[param_index["pr_type"]] = DIRECT
+param_values[param_index["pr_selection"]] = BESTSOLUTION
+param_values[param_index["alpha_block_size"]] = 1.0
+param_values[param_index["pr_percentage"]] = 1.0
 
 print("\n\n> Building configuration 4")
 brkga_data = build_brkga(param_values...)
@@ -283,6 +309,12 @@ param_values[param_index["num_elite_parents"]] = 2
 param_values[param_index["total_parents"]] = 3
 param_values[param_index["bias"]] = LOGINVERSE
 param_values[param_index["num_independent_populations"]] = 3
+param_values[param_index["pr_number_pairs"]] = 0
+param_values[param_index["pr_minimum_distance"]] = 0.0
+param_values[param_index["pr_type"]] = DIRECT
+param_values[param_index["pr_selection"]] = BESTSOLUTION
+param_values[param_index["alpha_block_size"]] = 1.0
+param_values[param_index["pr_percentage"]] = 1.0
 
 print("\n\n> Building configuration 5")
 brkga_data = build_brkga(param_values...)
@@ -333,6 +365,12 @@ param_values[param_index["num_elite_parents"]] = 2
 param_values[param_index["total_parents"]] = 3
 param_values[param_index["bias"]] = QUADRATIC
 param_values[param_index["num_independent_populations"]] = 1
+param_values[param_index["pr_number_pairs"]] = 0
+param_values[param_index["pr_minimum_distance"]] = 0.0
+param_values[param_index["pr_type"]] = DIRECT
+param_values[param_index["pr_selection"]] = BESTSOLUTION
+param_values[param_index["alpha_block_size"]] = 1.0
+param_values[param_index["pr_percentage"]] = 1.0
 
 print("\n\n> Building configuration for path relink")
 brkga_data = build_brkga(param_values...)

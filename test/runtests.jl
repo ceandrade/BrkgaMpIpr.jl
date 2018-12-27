@@ -41,7 +41,9 @@ instance = Instance(CHROMOSOME_SIZE)
 const param_names = ["instance", "decode!", "opt_sense", "seed", "chr_size",
                      "pop_size", "elite_percentage", "mutants_percentage",
                      "evolutionary_mechanism_on", "num_elite_parents",
-                     "total_parents", "bias", "num_independent_populations"]
+                     "total_parents", "bias", "num_independent_populations",
+                     "pr_number_pairs", "pr_minimum_distance", "pr_type",
+                     "pr_selection", "alpha_block_size", "pr_percentage"]
 
 # Reverse index.
 const param_index = Dict([v => i for (i, v) in enumerate(param_names)])
@@ -63,6 +65,12 @@ default_param_values[param_index["num_elite_parents"]] = 1
 default_param_values[param_index["total_parents"]] = 2
 default_param_values[param_index["bias"]] = LOGINVERSE
 default_param_values[param_index["num_independent_populations"]] = 3
+default_param_values[param_index["pr_number_pairs"]] = 0
+default_param_values[param_index["pr_minimum_distance"]] = 0.0
+default_param_values[param_index["pr_type"]] = DIRECT
+default_param_values[param_index["pr_selection"]] = BESTSOLUTION
+default_param_values[param_index["alpha_block_size"]] = 1.0
+default_param_values[param_index["pr_percentage"]] = 1.0
 
 ################################################################################
 # Functions

@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 24, 2018 by ceandrade
-# Last update: Jun 13, 2018 by ceandrade
+# Last update: Dec 27, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -85,7 +85,7 @@ Parse `value` returning a valid `PathRelinkingSelection` enumeration.
 # Throws
 - `ArgumentError`: in case the selection description does not match.
 """
-function parse(::Type{PathRelinkingSelection}, 
+function parse(::Type{PathRelinkingSelection},
                value::String)::PathRelinkingSelection
     value = uppercase(strip(value))
     if value == "BESTSOLUTION"
@@ -116,13 +116,6 @@ function write_configuration(filename::String, brkga_data::BrkgaData,
     elite_percentage = brkga_data.elite_size / brkga_data.population_size;
     mutants_percentage = brkga_data.num_mutants / brkga_data.population_size;
 
-    # TODO (ceandrade): implement the path relink parameters.
-# pr_minimum_distance $(brkga_data.pr_minimum_distance)
-# pr_type $(brkga_data.pr_type)
-# alpha_block_size $(brkga_data.alpha_block_size)
-# pr_percentage $(brkga_data.pr_percentage)
-# exchange_interval $(external_params.exchange_interval)
-
     output_string = """
 population_size $(brkga_data.population_size)
 elite_percentage $(elite_percentage)
@@ -132,6 +125,12 @@ elite_parents $(brkga_data.num_elite_parents)
 total_parents $(brkga_data.total_parents)
 bias_function $(brkga_data.bias)
 independent_populations $(brkga_data.num_independent_populations)
+pr_number_pairs $(brkga_data.pr_number_pairs)
+pr_minimum_distance $(brkga_data.pr_minimum_distance)
+pr_type $(brkga_data.pr_type)
+pr_selection $(brkga_data.pr_selection)
+alpha_block_size $(brkga_data.alpha_block_size)
+pr_percentage $(brkga_data.pr_percentage)
 exchange_interval $(external_params.exchange_interval)
 num_exchange_indivuduals $(external_params.num_exchange_indivuduals)
 reset_interval $(external_params.reset_interval)

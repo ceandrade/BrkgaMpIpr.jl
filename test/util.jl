@@ -40,7 +40,12 @@ function write_data(filename::String, data::BrkgaData)
         "bias", brkga_data.bias,
         "num_independent_populations", brkga_data.num_independent_populations,
         "evolutionary_mechanism_on", brkga_data.evolutionary_mechanism_on,
-        # TODO (ceandrade): list the path relink parameters here.
+        "pr_number_pairs", brkga_data.pr_number_pairs,
+        "pr_minimum_distance", brkga_data.pr_minimum_distance,
+        "pr_type", brkga_data.pr_type,
+        "pr_selection", brkga_data.pr_selection,
+        "alpha_block_size", brkga_data.alpha_block_size,
+        "pr_percentage", brkga_data.pr_percentage,
         "problem_instance", brkga_data.problem_instance,
         # NOTE (ceandrade): currently, JLD cannot save functions.
         # decode!::Function
@@ -75,8 +80,12 @@ function load_brkga_data(filename::String, brkga_data::BrkgaData)
     brkga_data.bias = tmp["bias"]
     brkga_data.num_independent_populations = tmp["num_independent_populations"]
     brkga_data.evolutionary_mechanism_on = tmp["evolutionary_mechanism_on"]
-
-    # TODO (ceandrade): list the path relink parameters here.
+    brkga_data.pr_number_pairs = tmp["pr_number_pairs"]
+    brkga_data.pr_minimum_distance = tmp["pr_minimum_distance"]
+    brkga_data.pr_type = tmp["pr_type"]
+    brkga_data.pr_selection = tmp["pr_selection"]
+    brkga_data.alpha_block_size = tmp["alpha_block_size"]
+    brkga_data.pr_percentage = tmp["pr_percentage"]
 
     # FIXME (ceandrade): the following doesn't work because it tries to
     # load the decoder function from the file. So, we rebuild the instance.
