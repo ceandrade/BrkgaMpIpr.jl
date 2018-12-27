@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Nov 08, 2018 by ceandrade
+# Last update: Dec 27, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -30,8 +30,6 @@
     brkga_data = build_brkga(param_values...)
     @test brkga_data.elite_size == 3
     @test brkga_data.num_mutants == 1
-    # @test length(brkga_data.previous) == param_values[param_index["num_independent_populations"]]
-    # @test length(brkga_data.current) == param_values[param_index["num_independent_populations"]]
     @test length(brkga_data.shuffled_individuals) == param_values[param_index["pop_size"]]
     @test length(brkga_data.parents_ordered) == param_values[param_index["total_parents"]]
 
@@ -333,14 +331,14 @@ end
         @test brkga_data.current[i].fitness !== brkga_data.previous[i].fitness
     end
 
-    decode!(chromosomes[1], instance)
+    sum_decode!(chromosomes[1], instance)
     @test brkga_data.current[1].chromosomes[1] == chromosomes[1]
 
     # Create a local chromosome and applied the decoder on it.
     local_rng = MersenneTwister(param_values[param_index["seed"]])
     rand(local_rng, 1000)
     local_chr = rand(local_rng, param_values[param_index["chr_size"]])
-    decode!(local_chr, instance)
+    sum_decode!(local_chr, instance)
 
     # 4th chromosome must be the 1st generated due to the warmstart.
     @test brkga_data.current[1].chromosomes[4] == local_chr
@@ -368,7 +366,7 @@ end
 
     # Create a local chromosome and applied the decoder on it.
     local_chr = rand(local_rng, param_values[param_index["chr_size"]])
-    decode!(local_chr, instance)
+    sum_decode!(local_chr, instance)
 
     @test brkga_data.current[1].chromosomes[1] == local_chr
 end

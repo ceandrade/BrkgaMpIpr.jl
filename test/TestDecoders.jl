@@ -21,7 +21,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
 
-function decode!(chromosome::Array{Float64}, instance::Instance,
+function sum_decode!(chromosome::Array{Float64}, instance::Instance,
                  rewrite::Bool = true)::Float64
     tmp = chromosome + instance.data
     tmp /= maximum(tmp)

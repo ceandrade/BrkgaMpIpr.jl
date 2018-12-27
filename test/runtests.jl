@@ -7,7 +7,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Nov 15, 2018 by ceandrade
+# Last update: Dec 27, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -51,7 +51,7 @@ const default_param_values = Array{Any, 1}(undef, length(param_names))
 
 # Some default parameters.
 default_param_values[param_index["instance"]] = instance
-default_param_values[param_index["decode!"]] = decode!
+default_param_values[param_index["decode!"]] = sum_decode!
 default_param_values[param_index["opt_sense"]] = MAXIMIZE
 default_param_values[param_index["seed"]] = 2700001
 default_param_values[param_index["chr_size"]] = CHROMOSOME_SIZE

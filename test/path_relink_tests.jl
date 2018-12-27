@@ -104,7 +104,7 @@ end
     param_values[param_index["opt_sense"]] = MINIMIZE
     param_values[param_index["chr_size"]] = 10
     param_values[param_index["instance"]] = Instance(10)
-    param_values[param_index["decode!"]] = decode!
+    param_values[param_index["decode!"]] = sum_decode!
     brkga_data = build_brkga(param_values...)
     initialize!(brkga_data)
 
@@ -181,7 +181,7 @@ end
 
     load_brkga_data(joinpath(data_path, "data_path_relink.jld"), brkga_data)
     results = load(joinpath(data_path, "best_solutions_pr_direct.jld"))
-    brkga_data.decode! = decode!
+    brkga_data.decode! = sum_decode!
     chr1 = 0
     chr2 = 0
 
@@ -872,7 +872,7 @@ end
     param_values[param_index["chr_size"]] = 10
     param_values[param_index["instance"]] = Instance(10)
     param_values[param_index["num_independent_populations"]] = 5
-    param_values[param_index["decode!"]] = decode!
+    param_values[param_index["decode!"]] = sum_decode!
     brkga_data = build_brkga(param_values...)
     initialize!(brkga_data)
 

@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 26, 2018 by ceandrade
-# Last update: Apr 24, 2018 by ceandrade
+# Last update: Dec 27, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -41,7 +41,7 @@
 
     # Create a local chromosome and applied the decoder on it.
     local_chr = rand(local_rng, param_values[param_index["chr_size"]])
-    decode!(local_chr, instance)
+    sum_decode!(local_chr, instance)
 
     # Reset and test the first individual.
     reset!(brkga_data)
@@ -194,7 +194,7 @@ end
     best_value = -Inf
     for i in 1:num_individuals
         local_chr = rand(local_rng, param_values[param_index["chr_size"]])
-        best_value = max(best_value, decode!(local_chr, instance))
+        best_value = max(best_value, sum_decode!(local_chr, instance))
     end
 
     # Assert the both generators are in the same state.
@@ -218,7 +218,7 @@ end
     best_value = Inf
     for i in 1:num_individuals
         local_chr = rand(local_rng, param_values[param_index["chr_size"]])
-        best_value = min(best_value, decode!(local_chr, instance))
+        best_value = min(best_value, sum_decode!(local_chr, instance))
     end
 
     # Assert the both generators are in the same state.
@@ -257,7 +257,7 @@ end
     best_chr = Array{Float64, 1}()
     for i in 1:num_individuals
         local_chr = rand(local_rng, param_values[param_index["chr_size"]])
-        value = decode!(local_chr, instance)
+        value = sum_decode!(local_chr, instance)
 
         if value > best_value
             best_value = value
@@ -287,7 +287,7 @@ end
     best_chr = Array{Float64, 1}()
     for i in 1:num_individuals
         local_chr = rand(local_rng, param_values[param_index["chr_size"]])
-        value = decode!(local_chr, instance)
+        value = sum_decode!(local_chr, instance)
         if value < best_value
             best_value = value
             best_chr = local_chr

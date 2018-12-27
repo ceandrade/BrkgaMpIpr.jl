@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 11, 2018 by ceandrade
-# Last update: Dec 17, 2018 by ceandrade
+# Last update: Dec 27, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -84,7 +84,7 @@ function load_brkga_data(filename::String, brkga_data::BrkgaData)
     brkga_data.problem_instance = Instance(brkga_data.chromosome_size)
 
     # NOTE (ceandrade): currently, JLD cannot save functions.
-    brkga_data.decode! = decode!
+    brkga_data.decode! = sum_decode!
 
     brkga_data.rng = tmp["rng"]
     brkga_data.previous = tmp["previous"]

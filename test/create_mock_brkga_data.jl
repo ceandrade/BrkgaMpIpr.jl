@@ -8,7 +8,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Apr 20, 2018 by ceandrade
-# Last update: Dec 17, 2018 by ceandrade
+# Last update: Dec 27, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -50,7 +50,7 @@ param_values = Array{Any, 1}(undef, length(param_names))
 chromosome_size = 100
 instance = Instance(chromosome_size)
 param_values[param_index["instance"]] = instance
-param_values[param_index["decode!"]] = decode!
+param_values[param_index["decode!"]] = sum_decode!
 param_values[param_index["opt_sense"]] = MAXIMIZE
 param_values[param_index["seed"]] = 3979164113692134205
 param_values[param_index["chr_size"]] = chromosome_size
@@ -102,7 +102,7 @@ save(File(format"JLD", "brkga_data_files/best_solution1.jld"),
 chromosome_size = 1000
 instance = Instance(chromosome_size)
 param_values[param_index["instance"]] = instance
-param_values[param_index["decode!"]] = decode!
+param_values[param_index["decode!"]] = sum_decode!
 param_values[param_index["opt_sense"]] = MINIMIZE
 param_values[param_index["seed"]] = 1297832326904308
 param_values[param_index["chr_size"]] = chromosome_size
@@ -155,7 +155,7 @@ save(File(format"JLD", "brkga_data_files/best_solution2.jld"),
 chromosome_size = 500
 instance = Instance(chromosome_size)
 param_values[param_index["instance"]] = instance
-param_values[param_index["decode!"]] = decode!
+param_values[param_index["decode!"]] = sum_decode!
 param_values[param_index["opt_sense"]] = MINIMIZE
 param_values[param_index["seed"]] = 2536246074066680359
 param_values[param_index["chr_size"]] = chromosome_size
@@ -212,7 +212,7 @@ save(File(format"JLD", "brkga_data_files/best_solution3.jld"),
 chromosome_size = 500
 instance = Instance(chromosome_size)
 param_values[param_index["instance"]] = instance
-param_values[param_index["decode!"]] = decode!
+param_values[param_index["decode!"]] = sum_decode!
 param_values[param_index["opt_sense"]] = MINIMIZE
 param_values[param_index["seed"]] = 2947804214766190222
 param_values[param_index["chr_size"]] = chromosome_size
@@ -271,7 +271,7 @@ save(File(format"JLD", "brkga_data_files/best_solution4.jld"),
 chromosome_size = 100
 instance = Instance(chromosome_size)
 param_values[param_index["instance"]] = instance
-param_values[param_index["decode!"]] = decode!
+param_values[param_index["decode!"]] = sum_decode!
 param_values[param_index["opt_sense"]] = MINIMIZE
 param_values[param_index["seed"]] = 4659930950303615118
 param_values[param_index["chr_size"]] = chromosome_size
@@ -321,7 +321,7 @@ save(File(format"JLD", "brkga_data_files/best_solution5.jld"),
 chromosome_size = 1000
 instance = Instance(chromosome_size)
 param_values[param_index["instance"]] = instance
-param_values[param_index["decode!"]] = decode!
+param_values[param_index["decode!"]] = sum_decode!
 param_values[param_index["opt_sense"]] = MAXIMIZE
 param_values[param_index["seed"]] = 16986526969459
 param_values[param_index["chr_size"]] = chromosome_size
@@ -345,7 +345,7 @@ next_pair(x::Int64) = (x + 1, x + 2)
 
 # Create some test data for path relink methods.
 for (func, decoder, name) in
-    [(BrkgaMpIpr.direct_path_relink!, decode!, "direct"),
+    [(BrkgaMpIpr.direct_path_relink!, sum_decode!, "direct"),
      (BrkgaMpIpr.permutation_based_path_relink!, rank_decode!, "permutation_based")]
 
     print("\n> Generating results for tests for " * name)
