@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 06, 2018 by ceandrade
-# Last update: Dec 26, 2018 by ceandrade
+# Last update: Dec 27, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -24,6 +24,16 @@
 include("util.jl")
 
 next_pair(x::Int64) = (x + 1, x + 2)
+
+function dist(x, y)
+    total = 0.0
+    for i in 1:length(x)
+        if x[i] != y[i]
+            total += 1.0
+        end
+    end
+    return total
+end
 
 ################################################################################
 
@@ -69,6 +79,21 @@ end
     a = ["a", "b", "c"]
     BrkgaMpIpr.swap!(a, 2, 1)
     @test a == ["b", "a", "c"]
+end
+
+################################################################################
+
+@testset "|(::PathRelinkingResult, ::PathRelinkingResult)" begin
+    @test (TOO_HOMOGENEOUS | TOO_HOMOGENEOUS) == TOO_HOMOGENEOUS
+    @test (TOO_HOMOGENEOUS | NO_IMPROVEMENT) == NO_IMPROVEMENT
+    @test (TOO_HOMOGENEOUS | ELITE_IMPROVEMENT) == ELITE_IMPROVEMENT
+    @test (TOO_HOMOGENEOUS | BEST_IMPROVEMENT) == BEST_IMPROVEMENT
+    @test (NO_IMPROVEMENT | NO_IMPROVEMENT) == NO_IMPROVEMENT
+    @test (NO_IMPROVEMENT | ELITE_IMPROVEMENT) == ELITE_IMPROVEMENT
+    @test (NO_IMPROVEMENT | BEST_IMPROVEMENT) == BEST_IMPROVEMENT
+    @test (ELITE_IMPROVEMENT | ELITE_IMPROVEMENT) == ELITE_IMPROVEMENT
+    @test (ELITE_IMPROVEMENT | BEST_IMPROVEMENT) == BEST_IMPROVEMENT
+    @test (BEST_IMPROVEMENT | BEST_IMPROVEMENT) == BEST_IMPROVEMENT
 end
 
 ################################################################################
@@ -818,16 +843,6 @@ end
         population.fitness[i] = (value, i)
     end
 
-    function dist(x, y)
-        total = 0.0
-        for i in 1:length(x)
-            if x[i] != y[i]
-                total += 1.0
-            end
-        end
-        return total
-    end
-
     original_brkga_data = deepcopy(brkga_data)
 
     @test BEST_IMPROVEMENT == path_relink!(
@@ -844,5 +859,63 @@ end
     )
 
     @test get_best_fitness(brkga_data) > get_best_fitness(original_brkga_data)
+    @test get_best_chromosome(brkga_data) != get_best_chromosome(original_brkga_data)
+
+    ########################
+    # Five populations
+    ########################
+
+    param_values = copy(default_param_values)
+    param_values[param_index["seed"]] = 2700001
+    param_values[param_index["pop_size"]] = 10
+    param_values[param_index["opt_sense"]] = MINIMIZE
+    param_values[param_index["chr_size"]] = 10
+    param_values[param_index["instance"]] = Instance(10)
+    param_values[param_index["num_independent_populations"]] = 5
+    param_values[param_index["decode!"]] = decode!
+    brkga_data = build_brkga(param_values...)
+    initialize!(brkga_data)
+
+    # First, create a homogeneous population and instance
+    brkga_data.problem_instance.data .=
+        ones(length(brkga_data.problem_instance.data))
+
+    for pop in brkga_data.current
+        for chr in pop.chromosomes
+            chr .= zeros(length(chr))
+        end
+    end
+
+    # Keep populations 1, 2, and 5. Change 3 and 4.
+    brkga_data.current[3].chromosomes[1] =
+        rand(brkga_data.rng, brkga_data.chromosome_size)
+    brkga_data.current[4].chromosomes[1] =
+        rand(brkga_data.rng, brkga_data.chromosome_size)
+
+    # Let's re-decode everything.
+    for pop in brkga_data.current
+        for i in 1:brkga_data.population_size
+            value = brkga_data.decode!(pop.chromosomes[i],
+                                       brkga_data.problem_instance, false)
+            pop.fitness[i] = (value, i)
+        end
+    end
+
+    original_brkga_data = deepcopy(brkga_data)
+
+    @test BEST_IMPROVEMENT == path_relink!(
+        brkga_data, #::BrkgaData,
+        dist, #compute_distance::Function,
+        (x, y) -> true, #affect_solution::Function,
+        0, #number_pairs::Int64,
+        1.0, #minimum_distance::Float64,
+        DIRECT, #::PathRelinkingType,
+        BESTSOLUTION, # PathRelinkingSelection
+        1, #block_size::Int64,
+        0, #max_time::Int64,
+        1.0, #percentage::Float64
+    )
+
+    @test get_best_fitness(brkga_data) < get_best_fitness(original_brkga_data)
     @test get_best_chromosome(brkga_data) != get_best_chromosome(original_brkga_data)
 end

@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 06, 2018 by ceandrade
-# Last update: Dec 26, 2018 by ceandrade
+# Last update: Dec 27, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -20,6 +20,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
+
+import Base
 
 ################################################################################
 # Auxiliary structures and functions
@@ -80,7 +82,6 @@ and all sanity check is disregarded due to performance reasons.
     return block_base:block_end
 end
 
-
 ################################################################################
 
 """
@@ -97,6 +98,33 @@ bounds check is disregarded due to performance reasons.
 @inline function swap!(x::Array{T, 1}, pos1::Int64, pos2::Int64) where T
     @inbounds x[pos1], x[pos2] = x[pos2], x[pos1]
     nothing
+end
+
+################################################################################
+
+"""
+    Base.:|(x::PathRelinkingResult,
+            y::PathRelinkingResult)::PathRelinkingResult
+
+Perform bitwise `OR` between two `PathRelinkingResult` returning the highest
+rank `PathRelinkingResult`.
+
+# Examples
+
+```julia-repl
+julia> TOO_HOMOGENEOUS | NO_IMPROVEMENT
+NO_IMPROVEMENT::PathRelinkingResult = 1
+
+julia> NO_IMPROVEMENT | ELITE_IMPROVEMENT
+ELITE_IMPROVEMENT::PathRelinkingResult = 3
+
+julia> ELITE_IMPROVEMENT | BEST_IMPROVEMENT
+BEST_IMPROVEMENT::PathRelinkingResult = 7
+```
+"""
+@inline function Base.:|(x::PathRelinkingResult,
+                         y::PathRelinkingResult)::PathRelinkingResult
+    return PathRelinkingResult(Int64(x) | Int64(y))
 end
 
 ################################################################################
@@ -772,7 +800,8 @@ function path_relink!(brkga_data::BrkgaData,
                           affect_solution, block_size,
                           max_time - Int64(ceil(elapsed_seconds)), percentage)
 
-        final_status = NO_IMPROVEMENT
+        final_status |= NO_IMPROVEMENT
+
         if (best_found[1] == Inf || best_found[1] == -Inf) &&
             length(best_found[2]) == 0
             continue
@@ -787,11 +816,13 @@ function path_relink!(brkga_data::BrkgaData,
 
         sense = bd.opt_sense == MAXIMIZE
         include_in_population =
-           (sense && best_found[1] > current.fitness[1][1]) ||
+           ( sense && best_found[1] > current.fitness[1][1]) ||
            (!sense && best_found[1] < current.fitness[1][1])
 
-        if include_in_population
-            final_status = BEST_IMPROVEMENT
+        best_overall = get_best_fitness(bd)
+        if ( sense && best_found[1] > best_overall) ||
+           (!sense && best_found[1] < best_overall)
+            final_status |= BEST_IMPROVEMENT
         end
 
         if (!include_in_population &&
@@ -804,7 +835,7 @@ function path_relink!(brkga_data::BrkgaData,
                                     current.chromosomes[current.fitness[i][2]]
                    ) < minimum_distance - 1e-6
                     include_in_population = false
-                    final_status = NO_IMPROVEMENT
+                    final_status |= NO_IMPROVEMENT
                     break
                 end
             end
@@ -813,13 +844,9 @@ function path_relink!(brkga_data::BrkgaData,
         if include_in_population
             current.chromosomes[current.fitness[end][2]] .= best_found[2]
             current.fitness[end] = (best_found[1], current.fitness[end][2])
-
             # Reorder the chromosomes.
             sort!(current.fitness, rev = sense)
-
-            if final_status != BEST_IMPROVEMENT
-                final_status = ELITE_IMPROVEMENT
-            end
+            final_status |= ELITE_IMPROVEMENT
         end
     end
 

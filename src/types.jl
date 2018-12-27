@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Dec 26, 2018 by ceandrade
+# Last update: Dec 27, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -120,8 +120,8 @@ Specifies the result type/status of path relink procedure:
 @enum PathRelinkingResult begin
     TOO_HOMOGENEOUS = 0
     NO_IMPROVEMENT = 1
-    ELITE_IMPROVEMENT = 2
-    BEST_IMPROVEMENT = 3
+    ELITE_IMPROVEMENT = 3
+    BEST_IMPROVEMENT = 7
 end
 
 ################################################################################
