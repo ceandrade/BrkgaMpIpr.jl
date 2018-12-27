@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 26, 2018 by ceandrade
-# Last update: Nov 15, 2018 by ceandrade
+# Last update: Dec 26, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -154,7 +154,7 @@ function get_best_chromosome(brkga_data::BrkgaData)::Array{Float64, 1}
     end
 
     best_population = 1
-    best_individual = 1
+    best_individual = brkga_data.current[1].fitness[1][2]
     for i in 2:brkga_data.num_independent_populations
         fitness, individual = brkga_data.current[i].fitness[1]
         if (fitness < brkga_data.current[best_population].fitness[1][1]) ==

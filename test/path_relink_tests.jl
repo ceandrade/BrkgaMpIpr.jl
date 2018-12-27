@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 06, 2018 by ceandrade
-# Last update: Dec 17, 2018 by ceandrade
+# Last update: Dec 26, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -95,7 +95,7 @@ end
                 120, #max_time::Int64,
                 0.1234 #percentage::Float64
     )
-    @test tmp == (Inf, Array{Float64, 1}())
+    @test tmp == [Inf, Array{Float64, 1}()]
 
     param_values[param_index["opt_sense"]] = MAXIMIZE
     brkga_data = build_brkga(param_values...)
@@ -110,7 +110,7 @@ end
                 120, #max_time::Int64,
                 0.1234 #percentage::Float64
     )
-    @test tmp == (-Inf, Array{Float64, 1}())
+    @test tmp == [-Inf, Array{Float64, 1}()]
 
     ########################
     # Test maximum time
@@ -355,7 +355,7 @@ end
                 120, #max_time::Int64,
                 0.1234 #percentage::Float64
     )
-    @test tmp == (-Inf, Array{Float64, 1}())
+    @test tmp == [-Inf, Array{Float64, 1}()]
 
     param_values[param_index["opt_sense"]] = MINIMIZE
     brkga_data = build_brkga(param_values...)
@@ -372,7 +372,7 @@ end
                 120, #max_time::Int64,
                 0.1234 #percentage::Float64
     )
-    @test tmp == (Inf, Array{Float64, 1}())
+    @test tmp == [Inf, Array{Float64, 1}()]
 
     ########################
     # Test maximum time
@@ -587,128 +587,262 @@ end
     @test yx[2] ≈ results["yx"][2]
 end
 
-################################################################################
+###############################################################################
 
-# @testset "path_relink!()" begin
-#     param_values = copy(default_param_values)
-#     param_values[param_index["seed"]] = 2700001
-#     param_values[param_index["opt_sense"]] = MAXIMIZE
-#     param_values[param_index["chr_size"]] = 10
-#     param_values[param_index["instance"]] = Instance(10)
-#     param_values[param_index["num_independent_populations"]] = 1
-#     brkga_data = build_brkga(param_values...)
+@testset "path_relink!()" begin
+    param_values = copy(default_param_values)
+    param_values[param_index["seed"]] = 2700001
+    param_values[param_index["opt_sense"]] = MAXIMIZE
+    param_values[param_index["chr_size"]] = 10
+    param_values[param_index["instance"]] = Instance(10)
+    param_values[param_index["num_independent_populations"]] = 1
+    brkga_data = build_brkga(param_values...)
 
-#     ########################
-#     # Test arguments
-#     ########################
+    ########################
+    # Test arguments
+    ########################
 
-#     @test_throws ErrorException path_relink!(brkga_data, #::BrkgaData,
-#                                             (x, y) -> 1.0, #compute_distance::Function,
-#                                             (x, y) -> true, #affect_solution::Function,
-#                                             10, #number_pairs::Int64,
-#                                             0.5, #minimum_distance::Float64,
-#                                             DIRECT, #::PathRelinkingType,
-#                                             BESTSOLUTION, # PathRelinkingSelection
-#                                             1, #block_size::Int64,
-#                                             120, #max_time::Int64,
-#                                             1.0 #percentage::Float64
-#                                             )
+    @test_throws ErrorException path_relink!(brkga_data, #::BrkgaData,
+                                            (x, y) -> 1.0, #compute_distance::Function,
+                                            (x, y) -> true, #affect_solution::Function,
+                                            10, #number_pairs::Int64,
+                                            0.5, #minimum_distance::Float64,
+                                            DIRECT, #::PathRelinkingType,
+                                            BESTSOLUTION, # PathRelinkingSelection
+                                            1, #block_size::Int64,
+                                            120, #max_time::Int64,
+                                            1.0 #percentage::Float64
+                                            )
 
-#     initialize!(brkga_data)
+    initialize!(brkga_data)
 
-#     @test_throws ArgumentError path_relink!(brkga_data, #::BrkgaData,
-#                                             (x, y) -> 1.0, #compute_distance::Function,
-#                                             (x, y) -> true, #affect_solution::Function,
-#                                             10, #number_pairs::Int64,
-#                                             0.5, #minimum_distance::Float64,
-#                                             DIRECT, #::PathRelinkingType,
-#                                             BESTSOLUTION, # PathRelinkingSelection
-#                                             1, #block_size::Int64,
-#                                             120, #max_time::Int64,
-#                                             -0.1 #percentage::Float64
-#                                             )
+    @test_throws ArgumentError path_relink!(brkga_data, #::BrkgaData,
+                                            (x, y) -> 1.0, #compute_distance::Function,
+                                            (x, y) -> true, #affect_solution::Function,
+                                            10, #number_pairs::Int64,
+                                            0.5, #minimum_distance::Float64,
+                                            DIRECT, #::PathRelinkingType,
+                                            BESTSOLUTION, # PathRelinkingSelection
+                                            1, #block_size::Int64,
+                                            120, #max_time::Int64,
+                                            -0.1 #percentage::Float64
+                                            )
 
-#     @test_throws ArgumentError path_relink!(brkga_data, #::BrkgaData,
-#                                             (x, y) -> 1.0, #compute_distance::Function,
-#                                             (x, y) -> true, #affect_solution::Function,
-#                                             10, #number_pairs::Int64,
-#                                             0.5, #minimum_distance::Float64,
-#                                             DIRECT, #::PathRelinkingType,
-#                                             BESTSOLUTION, # PathRelinkingSelection
-#                                             1, #block_size::Int64,
-#                                             120, #max_time::Int64,
-#                                             1.01 #percentage::Float64
-#                                             )
+    @test_throws ArgumentError path_relink!(brkga_data, #::BrkgaData,
+                                            (x, y) -> 1.0, #compute_distance::Function,
+                                            (x, y) -> true, #affect_solution::Function,
+                                            10, #number_pairs::Int64,
+                                            0.5, #minimum_distance::Float64,
+                                            DIRECT, #::PathRelinkingType,
+                                            BESTSOLUTION, # PathRelinkingSelection
+                                            1, #block_size::Int64,
+                                            120, #max_time::Int64,
+                                            1.01 #percentage::Float64
+                                            )
 
-#     @test_throws ArgumentError path_relink!(brkga_data, #::BrkgaData,
-#                                             (x, y) -> 1.0, #compute_distance::Function,
-#                                             (x, y) -> true, #affect_solution::Function,
-#                                             10, #number_pairs::Int64,
-#                                             0.5, #minimum_distance::Float64,
-#                                             DIRECT, #::PathRelinkingType,
-#                                             BESTSOLUTION, # PathRelinkingSelection
-#                                             0, #block_size::Int64,
-#                                             120, #max_time::Int64,
-#                                             1.0 #percentage::Float64
-#                                             )
+    @test_throws ArgumentError path_relink!(brkga_data, #::BrkgaData,
+                                            (x, y) -> 1.0, #compute_distance::Function,
+                                            (x, y) -> true, #affect_solution::Function,
+                                            10, #number_pairs::Int64,
+                                            0.5, #minimum_distance::Float64,
+                                            DIRECT, #::PathRelinkingType,
+                                            BESTSOLUTION, # PathRelinkingSelection
+                                            0, #block_size::Int64,
+                                            120, #max_time::Int64,
+                                            1.0 #percentage::Float64
+                                            )
 
-#     @test_throws ArgumentError path_relink!(brkga_data, #::BrkgaData,
-#                                             (x, y) -> 1.0, #compute_distance::Function,
-#                                             (x, y) -> true, #affect_solution::Function,
-#                                             10, #number_pairs::Int64,
-#                                             0.5, #minimum_distance::Float64,
-#                                             DIRECT, #::PathRelinkingType,
-#                                             BESTSOLUTION, # PathRelinkingSelection
-#                                             -10, #block_size::Int64,
-#                                             120, #max_time::Int64,
-#                                             1.0 #percentage::Float64
-#                                             )
+    @test_throws ArgumentError path_relink!(brkga_data, #::BrkgaData,
+                                            (x, y) -> 1.0, #compute_distance::Function,
+                                            (x, y) -> true, #affect_solution::Function,
+                                            10, #number_pairs::Int64,
+                                            0.5, #minimum_distance::Float64,
+                                            DIRECT, #::PathRelinkingType,
+                                            BESTSOLUTION, # PathRelinkingSelection
+                                            -10, #block_size::Int64,
+                                            120, #max_time::Int64,
+                                            1.0 #percentage::Float64
+                                            )
 
-#     ########################
-#     # Test fake homogeneity
-#     ########################
+    ########################
+    # Test fake homogeneity
+    ########################
 
-#     # @test false == path_relink!(
-#     #     brkga_data, #::BrkgaData,
-#     #     (x, y) -> 0.0, #compute_distance::Function,
-#     #     (x, y) -> true, #affect_solution::Function,
-#     #     10, #number_pairs::Int64,
-#     #     1.0, #minimum_distance::Float64,
-#     #     DIRECT, #::PathRelinkingType,
-#     #     RANDOMELITE, # PathRelinkingSelection
-#     #     1, #block_size::Int64,
-#     #     2, #max_time::Int64,
-#     #     1.0, #percentage::Float64
-#     # )
+    @test TOO_HOMOGENEOUS == path_relink!(
+        brkga_data, #::BrkgaData,
+        (x, y) -> 0.0, #compute_distance::Function,
+        (x, y) -> true, #affect_solution::Function,
+        10, #number_pairs::Int64,
+        1.0, #minimum_distance::Float64,
+        DIRECT, #::PathRelinkingType,
+        RANDOMELITE, # PathRelinkingSelection
+        1, #block_size::Int64,
+        2, #max_time::Int64,
+        1.0 #percentage::Float64
+    )
 
-#     ########################
-#     # Test the path relink
-#     ########################
+    #######################
+    # Test the direct path relink
+    #######################
 
-#     res = path_relink!(brkga_data, #::BrkgaData,
-#                        (x, y) -> 1.0, #compute_distance::Function,
-#                        (x, y) -> true, #affect_solution::Function,
-#                        10, #number_pairs::Int64,
-#                        0.5, #minimum_distance::Float64,
-#                        DIRECT, #::PathRelinkingType,
-#                        RANDOMELITE, # PathRelinkingSelection
-#                        1, #block_size::Int64,
-#                        2, #max_time::Int64,
-#                        1.0, #percentage::Float64
-#                     )
+    # Let's save the data to use after this.
+    original_brkga_data = deepcopy(brkga_data)
 
-#     # res = path_relink!(brkga_data, #::BrkgaData,
-#     #                 (x, y) -> 1.0, #compute_distance::Function,
-#     #                 (x, y) -> true, #affect_solution::Function,
-#     #                 10, #number_pairs::Int64,
-#     #                 0.5, #minimum_distance::Float64,
-#     #                 DIRECT, #::PathRelinkingType,
-#     #                 BESTSOLUTION, # PathRelinkingSelection
-#     #                 1, #block_size::Int64,
-#     #                 2, #max_time::Int64,
-#     #                 1.0, #percentage::Float64
-#     #              )
+    @test BEST_IMPROVEMENT == path_relink!(
+        brkga_data, #::BrkgaData,
+        (x, y) -> 1.0, #compute_distance::Function,
+        (x, y) -> true, #affect_solution::Function,
+        10, #number_pairs::Int64,
+        0.5, #minimum_distance::Float64,
+        DIRECT, #::PathRelinkingType,
+        RANDOMELITE, # PathRelinkingSelection
+        1, #block_size::Int64,
+        10, #max_time::Int64,
+        1.0, #percentage::Float64
+    )
 
+    # Do not change the best.
+    @test get_best_fitness(brkga_data) > get_best_fitness(original_brkga_data)
+    @test get_best_chromosome(brkga_data) != get_best_chromosome(original_brkga_data)
 
-#     # @test res == true
-# end
+    ########################
+    # Test the permutation path relink
+    ########################
+
+    ########################
+    # No improvement found
+    ########################
+
+    param_values = copy(default_param_values)
+    param_values[param_index["seed"]] = 2700001
+    param_values[param_index["opt_sense"]] = MAXIMIZE
+    param_values[param_index["chr_size"]] = 10
+    param_values[param_index["instance"]] = Instance(10)
+    param_values[param_index["num_independent_populations"]] = 1
+    param_values[param_index["decode!"]] = rank_decode!
+    brkga_data = build_brkga(param_values...)
+    initialize!(brkga_data)
+    original_brkga_data = deepcopy(brkga_data)
+
+    @test NO_IMPROVEMENT == path_relink!(
+            brkga_data, #::BrkgaData,
+            (x, y) -> 1.0, #compute_distance::Function,
+            (x, y) -> true, #affect_solution::Function,
+            10, #number_pairs::Int64,
+            0.5, #minimum_distance::Float64,
+            PERMUTATION, #::PathRelinkingType,
+            BESTSOLUTION, # PathRelinkingSelection
+            1, #block_size::Int64,
+            10, #max_time::Int64,
+            1.0, #percentage::Float64
+        )
+
+    # Do not change at all.
+    @test get_best_fitness(brkga_data) == get_best_fitness(original_brkga_data)
+    @test get_current_population(brkga_data, 1) !=
+          get_current_population(original_brkga_data, 1)
+
+    ########################
+    # Improvement found, but not in the best solution.
+    ########################
+
+    param_values = copy(default_param_values)
+    param_values[param_index["seed"]] = 2700001
+    param_values[param_index["pop_size"]] = 10
+    param_values[param_index["opt_sense"]] = MAXIMIZE
+    param_values[param_index["chr_size"]] = 100
+    param_values[param_index["instance"]] = Instance(100)
+    param_values[param_index["num_independent_populations"]] = 1
+    param_values[param_index["decode!"]] = rank_decode!
+    brkga_data = build_brkga(param_values...)
+    initialize!(brkga_data)
+    original_brkga_data = deepcopy(brkga_data)
+
+    @test ELITE_IMPROVEMENT == path_relink!(
+        brkga_data, #::BrkgaData,
+        (x, y) -> 1.0, #compute_distance::Function,
+        (x, y) -> true, #affect_solution::Function,
+        0, #number_pairs::Int64,
+        0.5, #minimum_distance::Float64,
+        PERMUTATION, #::PathRelinkingType,
+        RANDOMELITE, # PathRelinkingSelection
+        1, #block_size::Int64,
+        0, #max_time::Int64,
+        1.0, #percentage::Float64
+    )
+
+    # Do not change the best.
+    @test get_best_fitness(brkga_data) ≈ get_best_fitness(original_brkga_data)
+    @test get_best_chromosome(brkga_data) ≈ get_best_chromosome(original_brkga_data)
+
+    # But population changes.
+    @test get_current_population(brkga_data, 1) !=
+          get_current_population(original_brkga_data, 1)
+
+    ########################
+    # Improvement found
+    ########################
+
+    param_values = copy(default_param_values)
+    param_values[param_index["seed"]] = 2700001
+    param_values[param_index["pop_size"]] = 10
+    param_values[param_index["opt_sense"]] = MAXIMIZE
+    param_values[param_index["chr_size"]] = 10
+    param_values[param_index["instance"]] = Instance(10)
+    param_values[param_index["num_independent_populations"]] = 1
+    param_values[param_index["decode!"]] = rank_decode!
+    brkga_data = build_brkga(param_values...)
+    initialize!(brkga_data)
+
+    population = brkga_data.current[1]
+
+    # First, create a homogeneous population and instance
+    brkga_data.problem_instance.data .=
+        zeros(length(brkga_data.problem_instance.data))
+    for chr in population.chromosomes
+        chr .= zeros(length(chr))
+    end
+
+    # # Now, inject two chromossomes with partial permutations. These chromosomes
+    # should be selected during the path relink.
+    half = div(param_values[param_index["chr_size"]], 2)
+    for i in 1:half
+        population.chromosomes[1][i] = i / 10.0
+        population.chromosomes[2][i + half] = (i + half) / 10.0
+    end
+
+    # Let's re-decode everything.
+    for i in 1:brkga_data.population_size
+        value = brkga_data.decode!(population.chromosomes[i],
+                                   brkga_data.problem_instance, false)
+        population.fitness[i] = (value, i)
+    end
+
+    function dist(x, y)
+        total = 0.0
+        for i in 1:length(x)
+            if x[i] != y[i]
+                total += 1.0
+            end
+        end
+        return total
+    end
+
+    original_brkga_data = deepcopy(brkga_data)
+
+    @test BEST_IMPROVEMENT == path_relink!(
+        brkga_data, #::BrkgaData,
+        dist, #compute_distance::Function,
+        (x, y) -> true, #affect_solution::Function,
+        0, #number_pairs::Int64,
+        1.0, #minimum_distance::Float64,
+        PERMUTATION, #::PathRelinkingType,
+        RANDOMELITE, # PathRelinkingSelection
+        1, #block_size::Int64,
+        0, #max_time::Int64,
+        1.0, #percentage::Float64
+    )
+
+    @test get_best_fitness(brkga_data) > get_best_fitness(original_brkga_data)
+    @test get_best_chromosome(brkga_data) != get_best_chromosome(original_brkga_data)
+end

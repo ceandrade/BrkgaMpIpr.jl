@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Nov 15, 2018 by ceandrade
+# Last update: Dec 26, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -36,10 +36,15 @@ include("path_relink.jl")
 # TODO (ceandrade): exporting of each item of the enums is weird.
 # If Julia change these in the future, remove the items from exporting.
 export Sense, MINIMIZE, MAXIMIZE
+
 export BiasFunction
 export CONSTANT, CUBIC, EXPONENTIAL, LINEAR, LOGINVERSE, QUADRATIC, CUSTOM
+
 export PathRelinkingType, DIRECT, PERMUTATION
 export PathRelinkingSelection, BESTSOLUTION, RANDOMELITE
+
+export PathRelinkingResult
+export TOO_HOMOGENEOUS, NO_IMPROVEMENT, ELITE_IMPROVEMENT, BEST_IMPROVEMENT
 
 export parse, write_configuration
 

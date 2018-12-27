@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 06, 2018 by ceandrade
-# Last update: Dec 13, 2018 by ceandrade
+# Last update: Dec 26, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -176,7 +176,7 @@ CALLED FROM THE `path_relink()` FUNCTION.** Due to this reason, this method
 
 # Returns
 
-- `Tuple{Float64, Array{Float64, 1}}`: the best pair (fitness, chromosome)
+- `Array{Any, 1}`: the best pair [fitness, chromosome]
   found during the relinking. If the relink is not possible due to homogeneity,
   `-Inf` returns in case of maximization, and `Inf` in case of minimization.
 
@@ -188,10 +188,9 @@ function direct_path_relink!(brkga_data::BrkgaData,
                              block_size::Int64,
                              max_time::Int64,
                              percentage::Float64
-    )::Tuple{Float64, Array{Float64, 1}}
+    )::Array{Any, 1}
 
     pr_start_time = time()
-
     bd = brkga_data
 
     best_chr_found = Array{Float64, 1}(undef, bd.chromosome_size)
@@ -319,7 +318,7 @@ function direct_path_relink!(brkga_data::BrkgaData,
     if best_fitness_found == Inf || best_fitness_found == -Inf
         best_chr_found = Array{Float64, 1}()
     end
-    return (best_fitness_found, best_chr_found)
+    return [best_fitness_found, best_chr_found]
 end
 
 ################################################################################
@@ -383,10 +382,9 @@ CALLED FROM THE `path_relink()` FUNCTION.** Due to this reason, this method
 
 # Returns
 
-- `Tuple{Float64, Array{Float64, 1}}`: the best pair (fitness,   chromosome)
+- `Array{Any, 1}`: the best pair [fitness, chromosome]
   found during the relinking. If the relink is not possible due to homogeneity,
   `-Inf` returns in case of maximization, and `Inf` in case of minimization.
-
 """
 function permutation_based_path_relink!(brkga_data::BrkgaData,
                                         chromosome1::Array{Float64, 1},
@@ -395,7 +393,7 @@ function permutation_based_path_relink!(brkga_data::BrkgaData,
                                         block_size::Int64,
                                         max_time::Int64,
                                         percentage::Float64
-    )::Tuple{Float64, Array{Float64, 1}}
+    )::Array{Any, 1}
 
     bd = brkga_data
     pr_start_time = time()
@@ -539,7 +537,7 @@ function permutation_based_path_relink!(brkga_data::BrkgaData,
     if best_fitness_found == Inf || best_fitness_found == -Inf
         best_chr_found = Array{Float64, 1}()
     end
-    return (best_fitness_found, best_chr_found)
+    return [best_fitness_found, best_chr_found]
 end
 
 ################################################################################
@@ -649,7 +647,7 @@ environmental variable `JULIA_NUM_THREADS = 1`
 
 # Returns
 
-- Returns `true` if the path relink was possible/performed.
+- Returns `PathRelinkingResult` depending of the relink status.
 
 # Throws
 - `ErrorException`: if `initialize!()` was not called before.
@@ -666,7 +664,7 @@ function path_relink!(brkga_data::BrkgaData,
                       block_size::Int64 = 1,
                       max_time::Int64 = 0,
                       percentage::Float64 = 1.0
-    )::Bool
+    )::PathRelinkingResult
 
     if !brkga_data.initialized
         error("the algorithm hasn't been initialized. Call initialize!() before path_relink!()")
@@ -682,7 +680,7 @@ function path_relink!(brkga_data::BrkgaData,
     end
 
     if max_time <= 0
-        max_time = Inf
+        max_time = typemax(Int64)
     end
 
     bd = brkga_data
@@ -691,10 +689,10 @@ function path_relink!(brkga_data::BrkgaData,
 
     # Perform path relinking between elite chromosomes from different
     # populations. This is done in a circular fashion.
-
     path_relinking_possible::Bool = false
     pr_start_time = time()
     pop_count = 1
+    final_status = TOO_HOMOGENEOUS
     while pop_count <= bd.num_independent_populations
         elapsed_seconds = time() - pr_start_time
         if elapsed_seconds > max_time
@@ -736,7 +734,7 @@ function path_relink!(brkga_data::BrkgaData,
         while !isempty(index_pairs) && tested_pairs_count < number_pairs &&
               elapsed_seconds < max_time
 
-            index = (pr_selection == BESTSOLUTION) ? 0 :
+            index = (pr_selection == BESTSOLUTION) ? 1 :
                     rand(bd.rng, 1:length(index_pairs))
             (pos1, pos2) = index_pairs[index]
 
@@ -744,7 +742,7 @@ function path_relink!(brkga_data::BrkgaData,
             chr1 = tmp.chromosomes[tmp.fitness[pos1][2]]
 
             tmp = bd.current[pop_guide]
-            chr2 = tmp.chromosomes[tmp.fitness[pos1][2]]
+            chr2 = tmp.chromosomes[tmp.fitness[pos2][2]]
 
             if compute_distance(chr1, chr2) >= minimum_distance
                 initial_solution .= chr1
@@ -759,33 +757,71 @@ function path_relink!(brkga_data::BrkgaData,
 
         # The elite sets are too homogeneous, we cannot do
         #  a good path relinking. Let's try other populations.
+        path_relinking_possible |= found_pair
         if !found_pair
             continue
         end
 
+        # Perform the path relinking.
+        func = (pr_type == DIRECT) ? direct_path_relink! :
+                                     permutation_based_path_relink!
+
+        # best_found[1] -> fitness
+        # best_found[2] -> chromosome
+        best_found = func(bd, initial_solution, guiding_solution,
+                          affect_solution, block_size,
+                          max_time - Int64(ceil(elapsed_seconds)), percentage)
+
+        final_status = NO_IMPROVEMENT
+        if (best_found[1] == Inf || best_found[1] == -Inf) &&
+            length(best_found[2]) == 0
+            continue
+        end
+
+        # Re-decode and apply local search if the decoder are able to do it.
+        best_found[1] = bd.decode!(best_found[2], bd.problem_instance, true)
+
+        # Now, check if the best solution found is really good.
+        # If it is the best, overwrite the worse solution in the population.
+        current = bd.current[pop_base]
+
         sense = bd.opt_sense == MAXIMIZE
+        include_in_population =
+           (sense && best_found[1] > current.fitness[1][1]) ||
+           (!sense && best_found[1] < current.fitness[1][1])
 
-        best_found = Pair{Float64, Array{Float64, 1}}(
-            sense ? -Inf : Inf,
-            zeros(Float64, bd.chromosome_size)
-        )
+        if include_in_population
+            final_status = BEST_IMPROVEMENT
+        end
 
-        # if pr_type == DIRECT
-        #     best_found = direct_path_relink!(brkga_data, #brkga_data::BrkgaData,
-        #                     1, #population_index::Int64,
-        #                     1, #chr1_index::Int64,
-        #                     2, #chr2_index::Int64,
-        #                     (x, y) -> true, #distance_function::Function,
-        #                     10, #block_size::Int64,
-        #                     120, #max_time::Int64,
-        #                     1.0 #percentage::Float64
-        #                     )
-        # else
-        # end
+        if (!include_in_population &&
+            (( sense && best_found[1] > current.fitness[bd.elite_size][1]) ||
+             (!sense && best_found[1] < current.fitness[bd.elite_size][1])))
+
+            include_in_population = true
+            @inbounds for i in 1:bd.elite_size
+                if compute_distance(best_found[2],
+                                    current.chromosomes[current.fitness[i][2]]
+                   ) < minimum_distance - 1e-6
+                    include_in_population = false
+                    final_status = NO_IMPROVEMENT
+                    break
+                end
+            end
+        end
+
+        if include_in_population
+            current.chromosomes[current.fitness[end][2]] .= best_found[2]
+            current.fitness[end] = (best_found[1], current.fitness[end][2])
+
+            # Reorder the chromosomes.
+            sort!(current.fitness, rev = sense)
+
+            if final_status != BEST_IMPROVEMENT
+                final_status = ELITE_IMPROVEMENT
+            end
+        end
     end
 
-    print("\n\n")
-    flush(stdout)
-
-    return path_relinking_possible
+    return final_status
 end
