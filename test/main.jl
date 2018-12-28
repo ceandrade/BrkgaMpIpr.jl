@@ -26,8 +26,8 @@ push!(LOAD_PATH, ".")
 
 using BrkgaMpIpr
 
-include("TestInstance.jl")
-include("TestDecoders.jl")
+include("test_instance.jl")
+include("test_decoders.jl")
 
 chr_size = 10000
 pop_size = 10

@@ -1,5 +1,5 @@
 ################################################################################
-# TestInstance.jl: simple data container for tests.
+# test_instance.jl: simple data container for tests.
 #
 # (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
 #

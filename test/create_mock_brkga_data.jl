@@ -8,7 +8,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Apr 20, 2018 by ceandrade
-# Last update: Dec 27, 2018 by ceandrade
+# Last update: Dec 28, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -27,8 +27,8 @@ push!(LOAD_PATH, joinpath(@__DIR__, ".."))
 
 using BrkgaMpIpr
 
-include("TestInstance.jl")
-include("TestDecoders.jl")
+include("test_instance.jl")
+include("test_decoders.jl")
 include("util.jl")
 
 # Makes easy to change specific position on the parameters vector below.
