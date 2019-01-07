@@ -1,7 +1,7 @@
 ################################################################################
 # tsp_decoder.jl: simple permutation decoder for the Traveling Salesman Problem.
 #
-# (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
+# (c) Copyright 2019, Carlos Eduardo de Andrade. All Rights Reserved.
 #
 # This code is released under LICENSE.md.
 #

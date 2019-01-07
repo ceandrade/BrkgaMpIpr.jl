@@ -3,12 +3,12 @@
 # create_mock_brkga_data.jl: create BRKGA data mock object to be used in
 # the evolutionary tests.
 #
-# (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
+# (c) Copyright 2019, Carlos Eduardo de Andrade. All Rights Reserved.
 #
 # This code is released under LICENSE.md.
 #
 # Created on:  Apr 20, 2018 by ceandrade
-# Last update: Dec 28, 2018 by ceandrade
+# Last update: Jan 07, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -33,16 +33,13 @@ include("util.jl")
 
 # Makes easy to change specific position on the parameters vector below.
 const param_names = ["instance", "decode!", "opt_sense", "seed", "chr_size",
-                     "pop_size", "elite_percentage", "mutants_percentage",
-                     "evolutionary_mechanism_on", "num_elite_parents",
-                     "total_parents", "bias", "num_independent_populations",
-                     "pr_number_pairs", "pr_minimum_distance", "pr_type",
-                     "pr_selection", "alpha_block_size", "pr_percentage"]
+                     "brkga_params", "evolutionary_mechanism_on"]
 
 # Reverse index.
 const param_index = Dict([v => i for (i, v) in enumerate(param_names)])
 
 # Holds the parameters to build new BrkgaData.
+brkga_params = BrkgaParams()
 param_values = Array{Any, 1}(undef, length(param_names))
 
 ################################################################################
@@ -51,25 +48,29 @@ param_values = Array{Any, 1}(undef, length(param_names))
 
 chromosome_size = 100
 instance = Instance(chromosome_size)
+
+brkga_params = BrkgaParams()
+brkga_params.population_size = 100
+brkga_params.elite_percentage = 0.3
+brkga_params.mutants_percentage = 0.1
+brkga_params.num_elite_parents = 1
+brkga_params.total_parents = 2
+brkga_params.bias_type = LOGINVERSE
+brkga_params.num_independent_populations = 1
+brkga_params.pr_number_pairs = 0
+brkga_params.pr_minimum_distance = 0.0
+brkga_params.pr_type = DIRECT
+brkga_params.pr_selection = BESTSOLUTION
+brkga_params.alpha_block_size = 1.0
+brkga_params.pr_percentage = 1.0
+
 param_values[param_index["instance"]] = instance
 param_values[param_index["decode!"]] = sum_decode!
 param_values[param_index["opt_sense"]] = MAXIMIZE
 param_values[param_index["seed"]] = 3979164113692134205
 param_values[param_index["chr_size"]] = chromosome_size
-param_values[param_index["pop_size"]] = 100
-param_values[param_index["elite_percentage"]] = 0.3
-param_values[param_index["mutants_percentage"]] = 0.1
 param_values[param_index["evolutionary_mechanism_on"]] = true
-param_values[param_index["num_elite_parents"]] = 1
-param_values[param_index["total_parents"]] = 2
-param_values[param_index["bias"]] = LOGINVERSE
-param_values[param_index["num_independent_populations"]] = 1
-param_values[param_index["pr_number_pairs"]] = 0
-param_values[param_index["pr_minimum_distance"]] = 0.0
-param_values[param_index["pr_type"]] = DIRECT
-param_values[param_index["pr_selection"]] = BESTSOLUTION
-param_values[param_index["alpha_block_size"]] = 1.0
-param_values[param_index["pr_percentage"]] = 1.0
+param_values[param_index["brkga_params"]] = brkga_params
 
 print("\n\n> Building configuration 1")
 brkga_data = build_brkga(param_values...)
@@ -109,25 +110,29 @@ save(File(format"JLD", "brkga_data_files/best_solution1.jld"),
 
 chromosome_size = 1000
 instance = Instance(chromosome_size)
+
+brkga_params = BrkgaParams()
+brkga_params.population_size = 500
+brkga_params.elite_percentage = 0.25
+brkga_params.mutants_percentage = 0.25
+brkga_params.num_elite_parents = 5
+brkga_params.total_parents = 50
+brkga_params.bias_type = QUADRATIC
+brkga_params.num_independent_populations = 2
+brkga_params.pr_number_pairs = 0
+brkga_params.pr_minimum_distance = 0.0
+brkga_params.pr_type = DIRECT
+brkga_params.pr_selection = BESTSOLUTION
+brkga_params.alpha_block_size = 1.0
+brkga_params.pr_percentage = 1.0
+
 param_values[param_index["instance"]] = instance
 param_values[param_index["decode!"]] = sum_decode!
 param_values[param_index["opt_sense"]] = MINIMIZE
 param_values[param_index["seed"]] = 1297832326904308
 param_values[param_index["chr_size"]] = chromosome_size
-param_values[param_index["pop_size"]] = 500
-param_values[param_index["elite_percentage"]] = 0.25
-param_values[param_index["mutants_percentage"]] = 0.25
 param_values[param_index["evolutionary_mechanism_on"]] = true
-param_values[param_index["num_elite_parents"]] = 5
-param_values[param_index["total_parents"]] = 50
-param_values[param_index["bias"]] = QUADRATIC
-param_values[param_index["num_independent_populations"]] = 2
-param_values[param_index["pr_number_pairs"]] = 0
-param_values[param_index["pr_minimum_distance"]] = 0.0
-param_values[param_index["pr_type"]] = DIRECT
-param_values[param_index["pr_selection"]] = BESTSOLUTION
-param_values[param_index["alpha_block_size"]] = 1.0
-param_values[param_index["pr_percentage"]] = 1.0
+param_values[param_index["brkga_params"]] = brkga_params
 
 print("\n\n> Building configuration 2")
 brkga_data = build_brkga(param_values...)
@@ -168,25 +173,29 @@ save(File(format"JLD", "brkga_data_files/best_solution2.jld"),
 
 chromosome_size = 500
 instance = Instance(chromosome_size)
+
+brkga_params = BrkgaParams()
+brkga_params.population_size = 100
+brkga_params.elite_percentage = 0.35
+brkga_params.mutants_percentage = 0.17
+brkga_params.num_elite_parents = 3
+brkga_params.total_parents = 5
+brkga_params.bias_type = EXPONENTIAL
+brkga_params.num_independent_populations = 5
+brkga_params.pr_number_pairs = 0
+brkga_params.pr_minimum_distance = 0.0
+brkga_params.pr_type = DIRECT
+brkga_params.pr_selection = BESTSOLUTION
+brkga_params.alpha_block_size = 1.0
+brkga_params.pr_percentage = 1.0
+
 param_values[param_index["instance"]] = instance
 param_values[param_index["decode!"]] = sum_decode!
 param_values[param_index["opt_sense"]] = MINIMIZE
 param_values[param_index["seed"]] = 2536246074066680359
 param_values[param_index["chr_size"]] = chromosome_size
-param_values[param_index["pop_size"]] = 100
-param_values[param_index["elite_percentage"]] = 0.35
-param_values[param_index["mutants_percentage"]] = 0.17
 param_values[param_index["evolutionary_mechanism_on"]] = true
-param_values[param_index["num_elite_parents"]] = 3
-param_values[param_index["total_parents"]] = 5
-param_values[param_index["bias"]] = EXPONENTIAL
-param_values[param_index["num_independent_populations"]] = 5
-param_values[param_index["pr_number_pairs"]] = 0
-param_values[param_index["pr_minimum_distance"]] = 0.0
-param_values[param_index["pr_type"]] = DIRECT
-param_values[param_index["pr_selection"]] = BESTSOLUTION
-param_values[param_index["alpha_block_size"]] = 1.0
-param_values[param_index["pr_percentage"]] = 1.0
+param_values[param_index["brkga_params"]] = brkga_params
 
 print("\n\n> Building configuration 3")
 brkga_data = build_brkga(param_values...)
@@ -201,7 +210,7 @@ BrkgaMpIpr.evolve_population!(brkga_data, 1)
 fitness1 = get_best_fitness(brkga_data)
 chromosome1 = get_best_chromosome(brkga_data)
 
-for _ in 2:brkga_data.num_independent_populations
+for _ in 2:brkga_data.params.num_independent_populations
     BrkgaMpIpr.evolve_population!(brkga_data, 2)
 end
 
@@ -209,7 +218,7 @@ fitness2 = get_best_fitness(brkga_data)
 chromosome2 = get_best_chromosome(brkga_data)
 
 for _ in 1:100
-    for i in 1:brkga_data.num_independent_populations
+    for i in 1:brkga_data.params.num_independent_populations
         BrkgaMpIpr.evolve_population!(brkga_data, i)
     end
 end
@@ -231,25 +240,30 @@ save(File(format"JLD", "brkga_data_files/best_solution3.jld"),
 
 chromosome_size = 500
 instance = Instance(chromosome_size)
+
+brkga_params = BrkgaParams()
+brkga_params.population_size = 100
+brkga_params.elite_percentage = 0.30
+brkga_params.mutants_percentage = 0.15
+brkga_params.num_elite_parents = 1
+brkga_params.total_parents = 2
+brkga_params.bias_type = LOGINVERSE
+brkga_params.num_independent_populations = 3
+brkga_params.pr_number_pairs = 0
+brkga_params.pr_minimum_distance = 0.0
+brkga_params.pr_type = DIRECT
+brkga_params.pr_selection = BESTSOLUTION
+brkga_params.alpha_block_size = 1.0
+brkga_params.pr_percentage = 1.0
+
 param_values[param_index["instance"]] = instance
 param_values[param_index["decode!"]] = sum_decode!
 param_values[param_index["opt_sense"]] = MINIMIZE
 param_values[param_index["seed"]] = 2947804214766190222
 param_values[param_index["chr_size"]] = chromosome_size
-param_values[param_index["pop_size"]] = 100
-param_values[param_index["elite_percentage"]] = 0.30
-param_values[param_index["mutants_percentage"]] = 0.15
 param_values[param_index["evolutionary_mechanism_on"]] = true
-param_values[param_index["num_elite_parents"]] = 1
-param_values[param_index["total_parents"]] = 2
-param_values[param_index["bias"]] = LOGINVERSE
-param_values[param_index["num_independent_populations"]] = 3
-param_values[param_index["pr_number_pairs"]] = 0
-param_values[param_index["pr_minimum_distance"]] = 0.0
-param_values[param_index["pr_type"]] = DIRECT
-param_values[param_index["pr_selection"]] = BESTSOLUTION
-param_values[param_index["alpha_block_size"]] = 1.0
-param_values[param_index["pr_percentage"]] = 1.0
+param_values[param_index["brkga_params"]] = brkga_params
+
 
 print("\n\n> Building configuration 4")
 brkga_data = build_brkga(param_values...)
@@ -273,7 +287,7 @@ fitness2 = get_best_fitness(brkga_data)
 chromosome2 = get_best_chromosome(brkga_data)
 
 for _ in 1:100
-    for i in 1:brkga_data.num_independent_populations
+    for i in 1:brkga_data.params.num_independent_populations
         BrkgaMpIpr.evolve_population!(brkga_data, i)
     end
 end
@@ -296,25 +310,29 @@ save(File(format"JLD", "brkga_data_files/best_solution4.jld"),
 
 chromosome_size = 100
 instance = Instance(chromosome_size)
+
+brkga_params = BrkgaParams()
+brkga_params.population_size = 100
+brkga_params.elite_percentage = 0.30
+brkga_params.mutants_percentage = 0.20
+brkga_params.num_elite_parents = 2
+brkga_params.total_parents = 3
+brkga_params.bias_type = LOGINVERSE
+brkga_params.num_independent_populations = 3
+brkga_params.pr_number_pairs = 0
+brkga_params.pr_minimum_distance = 0.0
+brkga_params.pr_type = DIRECT
+brkga_params.pr_selection = BESTSOLUTION
+brkga_params.alpha_block_size = 1.0
+brkga_params.pr_percentage = 1.0
+
 param_values[param_index["instance"]] = instance
 param_values[param_index["decode!"]] = sum_decode!
 param_values[param_index["opt_sense"]] = MINIMIZE
 param_values[param_index["seed"]] = 4659930950303615118
 param_values[param_index["chr_size"]] = chromosome_size
-param_values[param_index["pop_size"]] = 100
-param_values[param_index["elite_percentage"]] = 0.30
-param_values[param_index["mutants_percentage"]] = 0.20
 param_values[param_index["evolutionary_mechanism_on"]] = true
-param_values[param_index["num_elite_parents"]] = 2
-param_values[param_index["total_parents"]] = 3
-param_values[param_index["bias"]] = LOGINVERSE
-param_values[param_index["num_independent_populations"]] = 3
-param_values[param_index["pr_number_pairs"]] = 0
-param_values[param_index["pr_minimum_distance"]] = 0.0
-param_values[param_index["pr_type"]] = DIRECT
-param_values[param_index["pr_selection"]] = BESTSOLUTION
-param_values[param_index["alpha_block_size"]] = 1.0
-param_values[param_index["pr_percentage"]] = 1.0
+param_values[param_index["brkga_params"]] = brkga_params
 
 print("\n\n> Building configuration 5")
 brkga_data = build_brkga(param_values...)
@@ -352,25 +370,29 @@ save(File(format"JLD", "brkga_data_files/best_solution5.jld"),
 
 chromosome_size = 1000
 instance = Instance(chromosome_size)
+
+brkga_params = BrkgaParams()
+brkga_params.population_size = 100
+brkga_params.elite_percentage = 0.25
+brkga_params.mutants_percentage = 0.25
+brkga_params.num_elite_parents = 2
+brkga_params.total_parents = 3
+brkga_params.bias_type = QUADRATIC
+brkga_params.num_independent_populations = 1
+brkga_params.pr_number_pairs = 0
+brkga_params.pr_minimum_distance = 0.0
+brkga_params.pr_type = DIRECT
+brkga_params.pr_selection = BESTSOLUTION
+brkga_params.alpha_block_size = 1.0
+brkga_params.pr_percentage = 1.0
+
 param_values[param_index["instance"]] = instance
 param_values[param_index["decode!"]] = sum_decode!
 param_values[param_index["opt_sense"]] = MAXIMIZE
 param_values[param_index["seed"]] = 16986526969459
 param_values[param_index["chr_size"]] = chromosome_size
-param_values[param_index["pop_size"]] = 100
-param_values[param_index["elite_percentage"]] = 0.25
-param_values[param_index["mutants_percentage"]] = 0.25
 param_values[param_index["evolutionary_mechanism_on"]] = true
-param_values[param_index["num_elite_parents"]] = 2
-param_values[param_index["total_parents"]] = 3
-param_values[param_index["bias"]] = QUADRATIC
-param_values[param_index["num_independent_populations"]] = 1
-param_values[param_index["pr_number_pairs"]] = 0
-param_values[param_index["pr_minimum_distance"]] = 0.0
-param_values[param_index["pr_type"]] = DIRECT
-param_values[param_index["pr_selection"]] = BESTSOLUTION
-param_values[param_index["alpha_block_size"]] = 1.0
-param_values[param_index["pr_percentage"]] = 1.0
+param_values[param_index["brkga_params"]] = brkga_params
 
 print("\n\n> Building configuration for path relink")
 brkga_data = build_brkga(param_values...)

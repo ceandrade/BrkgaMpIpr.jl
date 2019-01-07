@@ -1,12 +1,12 @@
 ################################################################################
 # util.jl: utility functions for tests.
 #
-# (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
+# (c) Copyright 2019, Carlos Eduardo de Andrade. All Rights Reserved.
 #
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 11, 2018 by ceandrade
-# Last update: Dec 27, 2018 by ceandrade
+# Last update: Jan 07, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -32,20 +32,20 @@ function write_data(filename::String, data::BrkgaData)
     save(File(format"JLD", filename),
         "opt_sense", brkga_data.opt_sense,
         "chromosome_size", brkga_data.chromosome_size,
-        "population_size", brkga_data.population_size,
+        "evolutionary_mechanism_on", brkga_data.evolutionary_mechanism_on,
         "elite_size", brkga_data.elite_size,
         "num_mutants", brkga_data.num_mutants,
-        "num_elite_parents", brkga_data.num_elite_parents,
-        "total_parents", brkga_data.total_parents,
-        "bias", brkga_data.bias,
-        "num_independent_populations", brkga_data.num_independent_populations,
-        "evolutionary_mechanism_on", brkga_data.evolutionary_mechanism_on,
-        "pr_number_pairs", brkga_data.pr_number_pairs,
-        "pr_minimum_distance", brkga_data.pr_minimum_distance,
-        "pr_type", brkga_data.pr_type,
-        "pr_selection", brkga_data.pr_selection,
-        "alpha_block_size", brkga_data.alpha_block_size,
-        "pr_percentage", brkga_data.pr_percentage,
+        "population_size", brkga_data.params.population_size,
+        "num_elite_parents", brkga_data.params.num_elite_parents,
+        "total_parents", brkga_data.params.total_parents,
+        "bias_type", brkga_data.params.bias_type,
+        "num_independent_populations", brkga_data.params.num_independent_populations,
+        "pr_number_pairs", brkga_data.params.pr_number_pairs,
+        "pr_minimum_distance", brkga_data.params.pr_minimum_distance,
+        "pr_type", brkga_data.params.pr_type,
+        "pr_selection", brkga_data.params.pr_selection,
+        "alpha_block_size", brkga_data.params.alpha_block_size,
+        "pr_percentage", brkga_data.params.pr_percentage,
         "problem_instance", brkga_data.problem_instance,
         # NOTE (ceandrade): currently, JLD cannot save functions.
         # decode!::Function
@@ -72,20 +72,19 @@ function load_brkga_data(filename::String, brkga_data::BrkgaData)
 
     brkga_data.opt_sense = tmp["opt_sense"]
     brkga_data.chromosome_size = tmp["chromosome_size"]
-    brkga_data.population_size = tmp["population_size"]
     brkga_data.elite_size = tmp["elite_size"]
     brkga_data.num_mutants = tmp["num_mutants"]
-    brkga_data.num_elite_parents = tmp["num_elite_parents"]
-    brkga_data.total_parents = tmp["total_parents"]
-    brkga_data.bias = tmp["bias"]
-    brkga_data.num_independent_populations = tmp["num_independent_populations"]
-    brkga_data.evolutionary_mechanism_on = tmp["evolutionary_mechanism_on"]
-    brkga_data.pr_number_pairs = tmp["pr_number_pairs"]
-    brkga_data.pr_minimum_distance = tmp["pr_minimum_distance"]
-    brkga_data.pr_type = tmp["pr_type"]
-    brkga_data.pr_selection = tmp["pr_selection"]
-    brkga_data.alpha_block_size = tmp["alpha_block_size"]
-    brkga_data.pr_percentage = tmp["pr_percentage"]
+    brkga_data.params.population_size = tmp["population_size"]
+    brkga_data.params.num_elite_parents = tmp["num_elite_parents"]
+    brkga_data.params.total_parents = tmp["total_parents"]
+    brkga_data.params.bias_type = tmp["bias_type"]
+    brkga_data.params.num_independent_populations = tmp["num_independent_populations"]
+    brkga_data.params.pr_number_pairs = tmp["pr_number_pairs"]
+    brkga_data.params.pr_minimum_distance = tmp["pr_minimum_distance"]
+    brkga_data.params.pr_type = tmp["pr_type"]
+    brkga_data.params.pr_selection = tmp["pr_selection"]
+    brkga_data.params.alpha_block_size = tmp["alpha_block_size"]
+    brkga_data.params.pr_percentage = tmp["pr_percentage"]
 
     # FIXME (ceandrade): the following doesn't work because it tries to
     # load the decoder function from the file. So, we rebuild the instance.
@@ -105,17 +104,17 @@ function load_brkga_data(filename::String, brkga_data::BrkgaData)
     brkga_data.reset_phase = tmp["reset_phase"]
 
     # NOTE (ceandrade): currently, JLD cannot save functions.
-    if brkga_data.bias == LOGINVERSE
+    if brkga_data.params.bias_type == LOGINVERSE
         set_bias_custom_function!(brkga_data, r -> 1.0 / log1p(r))
-    elseif brkga_data.bias == LINEAR
+    elseif brkga_data.params.bias_type == LINEAR
         set_bias_custom_function!(brkga_data, r -> 1.0 / r)
-    elseif brkga_data.bias == QUADRATIC
+    elseif brkga_data.params.bias_type == QUADRATIC
         set_bias_custom_function!(brkga_data, r -> r ^ -2.0)
-    elseif brkga_data.bias == CUBIC
+    elseif brkga_data.params.bias_type == CUBIC
         set_bias_custom_function!(brkga_data, r -> r ^ -3.0)
-    elseif brkga_data.bias == EXPONENTIAL
+    elseif brkga_data.params.bias_type == EXPONENTIAL
         set_bias_custom_function!(brkga_data, r -> exp(-r))
-    elseif brkga_data.bias == CONSTANT
+    elseif brkga_data.params.bias_type == CONSTANT
         set_bias_custom_function!(brkga_data, (::Int64) -> 1.0 / total_parents)
     end
 

@@ -1,7 +1,7 @@
 ################################################################################
-# distance_functions_tests.jl.jl: unit tests for distance functions.
+# distance_functions_tests.jl: unit tests for distance functions.
 #
-# (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
+# (c) Copyright 2019, Carlos Eduardo de Andrade. All Rights Reserved.
 #
 # This code is released under LICENSE.md.
 #

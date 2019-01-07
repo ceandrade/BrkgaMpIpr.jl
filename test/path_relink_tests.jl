@@ -1,12 +1,12 @@
 ################################################################################
 # path_relink_tests.jl: unit tests for path relink routines of BrkgaMpIpr.
 #
-# (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
+# (c) Copyright 2019, Carlos Eduardo de Andrade. All Rights Reserved.
 #
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 06, 2018 by ceandrade
-# Last update: Dec 27, 2018 by ceandrade
+# Last update: Jan 07, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -99,7 +99,7 @@ end
 ################################################################################
 
 @testset "direct_path_relink!()" begin
-    param_values = copy(default_param_values)
+    param_values = deepcopy(default_param_values)
     param_values[param_index["seed"]] = 2700001
     param_values[param_index["opt_sense"]] = MINIMIZE
     param_values[param_index["chr_size"]] = 10
@@ -141,7 +141,7 @@ end
     # Test maximum time
     ########################
 
-    param_values = copy(default_param_values)
+    param_values = deepcopy(default_param_values)
     param_values[param_index["chr_size"]] = 10000
     param_values[param_index["instance"]] = Instance(10000)
     brkga_data = build_brkga(param_values...)
@@ -355,7 +355,7 @@ end
 ################################################################################
 
 @testset "permutation_based_path_relink!()" begin
-    param_values = copy(default_param_values)
+    param_values = deepcopy(default_param_values)
     param_values[param_index["seed"]] = 2700001
     param_values[param_index["opt_sense"]] = MAXIMIZE
     param_values[param_index["chr_size"]] = 10
@@ -403,7 +403,7 @@ end
     # Test maximum time
     ########################
 
-    param_values = copy(default_param_values)
+    param_values = deepcopy(default_param_values)
     param_values[param_index["chr_size"]] = 10000
     param_values[param_index["instance"]] = Instance(10000)
     brkga_data = build_brkga(param_values...)
@@ -615,12 +615,13 @@ end
 ###############################################################################
 
 @testset "path_relink!()" begin
-    param_values = copy(default_param_values)
+    param_values = deepcopy(default_param_values)
     param_values[param_index["seed"]] = 2700001
     param_values[param_index["opt_sense"]] = MAXIMIZE
     param_values[param_index["chr_size"]] = 10
     param_values[param_index["instance"]] = Instance(10)
-    param_values[param_index["num_independent_populations"]] = 1
+    brkga_params = param_values[param_index["brkga_params"]]
+    brkga_params.num_independent_populations = 1
     brkga_data = build_brkga(param_values...)
 
     ########################
@@ -738,15 +739,34 @@ end
     # No improvement found
     ########################
 
-    param_values = copy(default_param_values)
+    param_values = deepcopy(default_param_values)
     param_values[param_index["seed"]] = 2700001
     param_values[param_index["opt_sense"]] = MAXIMIZE
     param_values[param_index["chr_size"]] = 10
     param_values[param_index["instance"]] = Instance(10)
-    param_values[param_index["num_independent_populations"]] = 1
-    param_values[param_index["decode!"]] = rank_decode!
+    param_values[param_index["decode!"]] = sum_decode!
+    brkga_params = param_values[param_index["brkga_params"]]
+    brkga_params.num_independent_populations = 1
     brkga_data = build_brkga(param_values...)
     initialize!(brkga_data)
+
+    # Create a homogeneous population and instance, so that any combination
+    # doesn't generate improvements.
+    brkga_data.problem_instance.data .=
+        ones(length(brkga_data.problem_instance.data))
+
+    population = brkga_data.current[1]
+    for chr in population.chromosomes
+        chr .= ones(length(chr))
+    end
+
+    # Let's re-decode everything.
+    for i in 1:brkga_data.params.population_size
+        value = brkga_data.decode!(population.chromosomes[i],
+                                   brkga_data.problem_instance, false)
+        population.fitness[i] = (value, i)
+    end
+
     original_brkga_data = deepcopy(brkga_data)
 
     @test NO_IMPROVEMENT == path_relink!(
@@ -755,7 +775,7 @@ end
             (x, y) -> true, #affect_solution::Function,
             10, #number_pairs::Int64,
             0.5, #minimum_distance::Float64,
-            PERMUTATION, #::PathRelinkingType,
+            DIRECT, #::PathRelinkingType,
             BESTSOLUTION, # PathRelinkingSelection
             1, #block_size::Int64,
             10, #max_time::Int64,
@@ -771,14 +791,14 @@ end
     # Improvement found, but not in the best solution.
     ########################
 
-    param_values = copy(default_param_values)
+    param_values = deepcopy(default_param_values)
     param_values[param_index["seed"]] = 2700001
-    param_values[param_index["pop_size"]] = 10
     param_values[param_index["opt_sense"]] = MAXIMIZE
     param_values[param_index["chr_size"]] = 100
     param_values[param_index["instance"]] = Instance(100)
-    param_values[param_index["num_independent_populations"]] = 1
     param_values[param_index["decode!"]] = rank_decode!
+    brkga_params = param_values[param_index["brkga_params"]]
+    brkga_params.num_independent_populations = 1
     brkga_data = build_brkga(param_values...)
     initialize!(brkga_data)
     original_brkga_data = deepcopy(brkga_data)
@@ -807,15 +827,14 @@ end
     ########################
     # Improvement found
     ########################
-
-    param_values = copy(default_param_values)
+    param_values = deepcopy(default_param_values)
     param_values[param_index["seed"]] = 2700001
-    param_values[param_index["pop_size"]] = 10
     param_values[param_index["opt_sense"]] = MAXIMIZE
     param_values[param_index["chr_size"]] = 10
     param_values[param_index["instance"]] = Instance(10)
-    param_values[param_index["num_independent_populations"]] = 1
     param_values[param_index["decode!"]] = rank_decode!
+    brkga_params = param_values[param_index["brkga_params"]]
+    brkga_params.num_independent_populations = 1
     brkga_data = build_brkga(param_values...)
     initialize!(brkga_data)
 
@@ -837,7 +856,7 @@ end
     end
 
     # Let's re-decode everything.
-    for i in 1:brkga_data.population_size
+    for i in 1:brkga_data.params.population_size
         value = brkga_data.decode!(population.chromosomes[i],
                                    brkga_data.problem_instance, false)
         population.fitness[i] = (value, i)
@@ -865,14 +884,14 @@ end
     # Five populations
     ########################
 
-    param_values = copy(default_param_values)
+    param_values = deepcopy(default_param_values)
     param_values[param_index["seed"]] = 2700001
-    param_values[param_index["pop_size"]] = 10
     param_values[param_index["opt_sense"]] = MINIMIZE
     param_values[param_index["chr_size"]] = 10
     param_values[param_index["instance"]] = Instance(10)
-    param_values[param_index["num_independent_populations"]] = 5
     param_values[param_index["decode!"]] = sum_decode!
+    brkga_params = param_values[param_index["brkga_params"]]
+    brkga_params.num_independent_populations = 5
     brkga_data = build_brkga(param_values...)
     initialize!(brkga_data)
 
@@ -894,7 +913,7 @@ end
 
     # Let's re-decode everything.
     for pop in brkga_data.current
-        for i in 1:brkga_data.population_size
+        for i in 1:brkga_data.params.population_size
             value = brkga_data.decode!(pop.chromosomes[i],
                                        brkga_data.problem_instance, false)
             pop.fitness[i] = (value, i)

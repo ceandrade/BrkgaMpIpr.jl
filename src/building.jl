@@ -1,12 +1,12 @@
 ################################################################################
 # building.jl: Building and parameter setup routines.
 #
-# (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
+# (c) Copyright 2019, Carlos Eduardo de Andrade. All Rights Reserved.
 #
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Dec 27, 2018 by ceandrade
+# Last update: Jan 04, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -31,19 +31,16 @@ const empty_function() = nothing
 
 ################################################################################
 
-
-################################################################################
-
 """
-    build_brkga(problem_instance, decode_function!, opt_sense, seed,
-        chromosome_size, population_size, elite_percentage, mutants_percentage,
-        evolutionary_mechanism_on, num_elite_parents, total_parents, bias,
-        num_independent_populations)::BrkgaData
+    build_brkga(problem_instance::AbstractInstance, decode_function!::Function,
+                opt_sense::Sense, seed::Int64, chromosome_size::Int64,
+                brkga_params::BrkgaParams, evolutionary_mechanism_on::Bool = true,
+    )::BrkgaData
 
-Build a `BrkgaData` object to be used in the evolutionary and path relink
-procedures. Such data structure should not be changed outside the `BrkgaMpIpr`
-functions. This version accepts all control arguments, and it is handy for
-tuning purposes.
+Build a [`BrkgaData`](@ref) object to be used in the evolutionary and path
+relink procedures. Such data structure should not be changed outside the
+[`BrkgaMpIpr`](@ref) functions. This version accepts all control arguments,
+and it is handy for tuning purposes.
 
 # Arguments
 - `problem_instance::AbstractInstance`: an instance to the problem to be
@@ -64,155 +61,111 @@ tuning purposes.
 
 - `chromosome_size::Int64`: number of genes in each chromosome.
 
-- `population_size::Int64`: number of individuals in each population.
-
-- `elite_percentage::Float64`: percentage of elite individuals into each
-  population.
-
-- `mutants_percentage::Float64`: percentage of mutants introduced at each
-  generation into the population.
+- `brkga_params::BrkgaParams`: BRKGA and IPR parameters object loaded from
+  a configuration file or manually created.
 
 - `evolutionary_mechanism_on::Bool = true`: if false, no evolution is performed
   but only chromosome decoding. Very useful to emulate a multi-start algorithm.
 
-- `num_elite_parents::Int64 = 1`: number of parents from elite set used on the
-  multi-parent crossover. If `num_elite_parents == 1` and `total_parents == 2`,
-  regular BRKGA crossover is performed (one elite and one non-elite sets).
-
-- `total_parents::Int64 = 2`: number of parents to be used on the multi-parent
-  crossover. If `total_parents == 2`, regular BRKGA crossover is performed
-  (one elite and one non-elite sets).
-
-- `bias::BiasFunction = LOGINVERSE`: bias function used to choose the parents
-  during multi-parent crossover. This function substitutes the `rhoe` parameter
-  from the original BRKGA.
-
-- `num_independent_populations::Int64 = 1`: number of independent populations
-  (island model).
-
-- `pr_number_pairs::Int64 = 0`: number of pairs of chromosomes to be tested to
-  path relinking. When set to 0, tests all pairs.
-
-- `pr_minimum_distance::Float64 = 0.0`: mininum distance between chromosomes
-  selected to path-relinking.
-
-- `pr_type::PathRelinkingType = DIRECT`: path relinking type.
-
-- `pr_selection::PathRelinkingSelection = BESTSOLUTION`: individual selection
-  to path-relinking
-
-- `alpha_block_size::Float64 = 1.0`: defines the block size based on the size
-  of the population.
-
-- `pr_percentage::Float64 = 1.0`: percentage / path size to be computed.
-  Value in (0.0, 1.0].
+# Throws
+- `ArgumentError`: in several cases where the arguments or a combination of them
+  are invalid.
 """
 function build_brkga(problem_instance::AbstractInstance,
         decode_function!::Function,
         opt_sense::Sense,
         seed::Int64,
         chromosome_size::Int64,
-        population_size::Int64,
-        elite_percentage::Float64,
-        mutants_percentage::Float64,
+        brkga_params::BrkgaParams,
         evolutionary_mechanism_on::Bool = true,
-        num_elite_parents::Int64 = 1,
-        total_parents::Int64 = 2,
-        bias::BiasFunction = LOGINVERSE,
-        num_independent_populations::Int64 = 1,
-        pr_number_pairs::Int64 = 0,
-        pr_minimum_distance::Float64 = 0.0,
-        pr_type::PathRelinkingType = DIRECT,
-        pr_selection::PathRelinkingSelection = BESTSOLUTION,
-        alpha_block_size::Float64 = 1.0,
-        pr_percentage::Float64 = 1.0
         )::BrkgaData
 
-    elite_size = evolutionary_mechanism_on ?
-            floor(Int64, elite_percentage * population_size) : 1
+    bp = brkga_params
 
-    num_mutants = evolutionary_mechanism_on ?
-            floor(Int64, mutants_percentage * population_size) :
-            population_size - 1
+    if evolutionary_mechanism_on
+        elite_size = floor(Int64, bp.elite_percentage * bp.population_size)
+        num_mutants = floor(Int64, bp.mutants_percentage * bp.population_size)
+    else
+        elite_size = 1
+        num_mutants = brkga_params.population_size - 1
+    end
 
     # Check for errors.
     if chromosome_size < 1
         throw(ArgumentError("chromosome size must be larger than zero: $chromosome_size"))
-    elseif population_size < 1
-        throw(ArgumentError("population size must be larger than zero: $population_size"))
+    elseif bp.population_size < 1
+        throw(ArgumentError("population size must be larger than zero: $(bp.population_size)"))
     elseif elite_size < 1
         throw(ArgumentError("elite-set size less then one: $elite_size"))
     elseif num_mutants < 0
         throw(ArgumentError("mutant-set size less then zero: $num_mutants"))
-    elseif elite_size > population_size
-        throw(ArgumentError("elite-set size ($elite_size) greater than population size ($population_size)"))
-    elseif num_mutants >= population_size
-        throw(ArgumentError("mutant-set size ($num_mutants) greater than population size ($population_size)"))
-    elseif elite_size + num_mutants > population_size
-        throw(ArgumentError("elite ($elite_size) + mutant sets ($num_mutants) greater than population size ($population_size)"))
-    elseif num_elite_parents < 1
-        throw(ArgumentError("num_elite_parents must be at least 1: $num_elite_parents"))
-    elseif total_parents < 2
-        throw(ArgumentError("total_parents must be at least 2: $total_parents"))
-    elseif num_elite_parents >= total_parents
-        throw(ArgumentError("num_elite_parents ($num_elite_parents) is greater than or equal to total_parents ($total_parents)"))
-    elseif num_elite_parents > elite_size
-        throw(ArgumentError("num_elite_parents ($num_elite_parents) is greater than elite set ($elite_size)"))
-    elseif num_independent_populations < 1
-        throw(ArgumentError("number of parallel populations must be larger than zero: $num_independent_populations"))
-    elseif alpha_block_size <= 0.0
-        throw(ArgumentError("alpha_block_size must be larger than zero: $alpha_block_size"))
-    elseif pr_percentage <= 0.0 || pr_percentage > 1.0
-        throw(ArgumentError("percentage / path size must be in (0, 1]: $pr_percentage"))
+    elseif elite_size > bp.population_size
+        throw(ArgumentError("elite-set size ($elite_size) greater than " *
+                            "population size ($(bp.population_size)"))
+    elseif num_mutants >= bp.population_size
+        throw(ArgumentError("mutant-set size ($num_mutants) greater than " *
+                            "population size ($(bp.population_size)"))
+    elseif elite_size + num_mutants > bp.population_size
+        throw(ArgumentError("elite ($elite_size) + mutant sets ($num_mutants)" *
+                            " greater than population size ($(bp.population_size))"))
+    elseif bp.num_elite_parents < 1
+        throw(ArgumentError("num_elite_parents must be at least 1: $(bp.num_elite_parents)"))
+    elseif bp.total_parents < 2
+        throw(ArgumentError("total_parents must be at least 2: $(bp.total_parents)"))
+    elseif bp.num_elite_parents >= bp.total_parents
+        throw(ArgumentError("num_elite_parents ($(bp.num_elite_parents) is " *
+                            "greater than or equal to total_parents ($(bp.total_parents)"))
+    elseif bp.num_elite_parents > elite_size
+        throw(ArgumentError("num_elite_parents ($(bp.num_elite_parents) is " *
+                             "greater than elite set ($elite_size)"))
+    elseif bp.num_independent_populations < 1
+        throw(ArgumentError("number of parallel populations must be larger " *
+                            "than zero: $(bp.num_independent_populations)"))
+    elseif bp.alpha_block_size <= 0.0
+        throw(ArgumentError("alpha_block_size must be larger than zero: " *
+                            "$(bp.alpha_block_size)"))
+    elseif bp.pr_percentage <= 0.0 || bp.pr_percentage > 1.0
+        throw(ArgumentError("percentage / path size must be in (0, 1]: " *
+                            "$(bp.pr_percentage)"))
     end
 
     brkga_data = BrkgaData(
         opt_sense,
         chromosome_size,
-        population_size,
+        brkga_params,
         elite_size,
         num_mutants,
-        num_elite_parents,
-        total_parents,
-        bias,
-        num_independent_populations,
         evolutionary_mechanism_on,
-        pr_number_pairs,
-        pr_minimum_distance,
-        pr_type,
-        pr_selection,
-        alpha_block_size,
-        pr_percentage,
         problem_instance,
         decode_function!,
         Random.MersenneTwister(seed),
-        Array{Population, 1}(),                            # previous pop
-        Array{Population, 1}(),                            # current pop
-        empty_function,                                    # bias_function
-        0.0,                                               # total_bias_weight
-        Array{Int64, 1}(undef, population_size),               # shuffled_inds
-        Array{Tuple{Float64, Int64}, 1}(undef, total_parents), # parents_ordered
-        false,                                             # initialized
-        false                                              # reset_phase
+        Array{Population, 1}(), # previous pop
+        Array{Population, 1}(), # current pop
+        empty_function,         # bias_function
+        0.0,                    # total_bias_weight
+        Array{Int64, 1}(undef, bp.population_size),               # shuffled_inds
+        Array{Tuple{Float64, Int64}, 1}(undef, bp.total_parents), # parents_ordered
+        false,  # initialized
+        false   # reset_phase
     )
 
-    if bias == LOGINVERSE
+    if bp.bias_type == LOGINVERSE
         set_bias_custom_function!(brkga_data, r -> 1.0 / log1p(r))
 
-    elseif bias == LINEAR
+    elseif bp.bias_type == LINEAR
         set_bias_custom_function!(brkga_data, r -> 1.0 / r)
 
-    elseif bias == QUADRATIC
+    elseif bp.bias_type == QUADRATIC
         set_bias_custom_function!(brkga_data, r -> r ^ -2.0)
 
-    elseif bias == CUBIC
+    elseif bp.bias_type == CUBIC
         set_bias_custom_function!(brkga_data, r -> r ^ -3.0)
 
-    elseif bias == EXPONENTIAL
+    elseif bp.bias_type == EXPONENTIAL
         set_bias_custom_function!(brkga_data, r -> exp(-r))
 
-    elseif bias == CONSTANT
-        set_bias_custom_function!(brkga_data, (::Int64) -> 1.0 / total_parents)
+    elseif bp.bias_type == CONSTANT
+        set_bias_custom_function!(brkga_data, (::Int64) -> 1.0 / bp.total_parents)
     end
 
     # Warm up the random number generator.
@@ -221,15 +174,18 @@ function build_brkga(problem_instance::AbstractInstance,
     return brkga_data
 end
 
+################################################################################
+
 """
     build_brkga(problem_instance, decode_function!, opt_sense, seed,
         chromosome_size, configuration_file,
         evolutionary_mechanism_on)::Tuple{BrkgaData, ExternalControlParams}
 
-Build a `BrkgaData` object to be used in the evolutionary and path relink
-procedures, and a `ExternalControlParams` that holds additional control
-parameters. Note that `BrkgaData` should not be changed outside the `BrkgaMpIpr`
-functions. This version reads most of the parameters from a configuration file.
+Build a [`BrkgaData`](@ref) object to be used in the evolutionary and path
+relink procedures, and a [`ExternalControlParams`](@ref) that holds additional
+control parameters. Note that [`BrkgaData`](@ref) should not be changed outside
+the [`BrkgaMpIpr`](@ref) functions. This version reads most of the parameters
+from a configuration file.
 
 # Arguments
 - `problem_instance::AbstractInstance`: an instance to the problem to be
@@ -272,99 +228,11 @@ function build_brkga(
         evolutionary_mechanism_on::Bool = true
     )::Tuple{BrkgaData, ExternalControlParams}
 
-    param_names_types = [
-        ("POPULATION_SIZE", Int64),
-        ("ELITE_PERCENTAGE", Float64),
-        ("MUTANTS_PERCENTAGE", Float64),
-        ("ELITE_PARENTS", Int64),
-        ("TOTAL_PARENTS", Int64),
-        ("BIAS_FUNCTION", BiasFunction),
-        ("INDEPENDENT_POPULATIONS", Int64),
-        ("PR_NUMBER_PAIRS", Int64),
-        ("PR_MINIMUM_DISTANCE", Float64),
-        ("PR_TYPE", PathRelinkingType),
-        ("PR_SELECTION", PathRelinkingSelection),
-        ("ALPHA_BLOCK_SIZE", Float64),
-        ("PR_PERCENTAGE", Float64),
-        ("EXCHANGE_INTERVAL", Int64),
-        ("NUM_EXCHANGE_INDIVUDUALS", Int64),
-        ("RESET_INTERVAL", Int64),
-    ]
-
-    param_index = Dict(
-        [v[1] => i for (i, v) in enumerate(param_names_types)])
-
-    param_values = Array{Any}(undef, length(param_names_types))
-    param_given = falses(length(param_names_types))
-
-    lines = Array{String,1}()
-    open(configuration_file) do file
-        lines = readlines(file)
-    end
-    if length(lines) == 0
-        throw(LoadError(configuration_file, 0, "cannot read '$configuration_file'"))
-    end
-
-    for (line_number, line) in enumerate(lines)
-        line = uppercase(strip(line))
-        if length(line) == 0 || line[1] == '#'
-            continue
-        end
-
-        param_name = ""
-        value = 0
-        try
-            param_name, value = split(line)
-            idx = param_index[param_name]
-            param_values[idx] = parse(param_names_types[idx][2], String(value))
-            param_given[idx] = true
-        catch err
-            if isa(err, BoundsError)
-                throw(LoadError(configuration_file, line_number,
-                        "error line $line_number of '$configuration_file': missing parameter or value"))
-
-            elseif isa(err, KeyError)
-                throw(LoadError(configuration_file, line_number, "parameter '$param_name' unknown"))
-
-            elseif isa(err, ArgumentError)
-                throw(LoadError(configuration_file, line_number, "invalid value for '$param_name': $value"))
-            end
-        end
-    end
-
-    missing_params = ""
-    for (idx, value) in enumerate(param_given)
-        if !value
-            missing_params *= "'" * param_names_types[idx][1] * "',"
-        end
-    end
-    if length(missing_params) > 0
-        throw(LoadError(configuration_file, 0, "missing parameters: $missing_params"))
-    end
-
-    external_params = ExternalControlParams(
-        param_values[param_index["EXCHANGE_INTERVAL"]],
-        param_values[param_index["NUM_EXCHANGE_INDIVUDUALS"]],
-        param_values[param_index["RESET_INTERVAL"]]
-    )
+    brkga_params, external_params = load_configuration(configuration_file)
 
     brkga_data = build_brkga(problem_instance, decode_function!, opt_sense,
-                    seed, chromosome_size,
-                    param_values[param_index["POPULATION_SIZE"]],
-                    param_values[param_index["ELITE_PERCENTAGE"]],
-                    param_values[param_index["MUTANTS_PERCENTAGE"]],
-                    evolutionary_mechanism_on,
-                    param_values[param_index["ELITE_PARENTS"]],
-                    param_values[param_index["TOTAL_PARENTS"]],
-                    param_values[param_index["BIAS_FUNCTION"]],
-                    param_values[param_index["INDEPENDENT_POPULATIONS"]],
-                    param_values[param_index["PR_NUMBER_PAIRS"]],
-                    param_values[param_index["PR_MINIMUM_DISTANCE"]],
-                    param_values[param_index["PR_TYPE"]],
-                    param_values[param_index["PR_SELECTION"]],
-                    param_values[param_index["ALPHA_BLOCK_SIZE"]],
-                    param_values[param_index["PR_PERCENTAGE"]]
-    )
+                             seed, chromosome_size, brkga_params,
+                             evolutionary_mechanism_on)
 
     return (brkga_data, external_params)
 end
@@ -384,7 +252,7 @@ This method also performs the initial decoding of the chromosomes. Therefore,
 depending on the decoder implementation, this can take a while, and the user may
 want to time such procedure in his/her experiments.
 
-**NOTE:** as it is in `evolve()`, the decoding is done in parallel using
+**NOTE:** as it is in [`evolve!`](@ref), the decoding is done in parallel using
 threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
 If such property cannot be held, we suggest using single thread by setting the
 environmental variable `JULIA_NUM_THREADS = 1`
@@ -399,39 +267,39 @@ function initialize!(brkga_data::BrkgaData)
     end
 
     bd = brkga_data  # Just a short alias.
+    params = bd.params
 
     # If we have warmstaters, complete the population if necessary.
     # Note that it is done only in the true initialization.
     pop_start = 1
     if length(bd.current) > 0 && !bd.reset_phase
         population = bd.current[1]
-        for i = (length(population.chromosomes) + 1):bd.population_size
+        for i in (length(population.chromosomes) + 1):params.population_size
             push!(population.chromosomes, rand(bd.rng, bd.chromosome_size))
         end
         population.fitness =
-            Array{Tuple{Float64, Int64}, 1}(undef, bd.population_size)
+            Array{Tuple{Float64, Int64}, 1}(undef, params.population_size)
         pop_start = 2
 
     elseif length(bd.current) == 0
-        bd.current = Array{Population, 1}(undef, bd.num_independent_populations)
-        bd.previous = Array{Population, 1}(undef,
-                                           bd.num_independent_populations)
+        bd.current = Array{Population, 1}(undef, params.num_independent_populations)
+        bd.previous = Array{Population, 1}(undef, params.num_independent_populations)
     end
 
     # Build the remaining populations and associated data structures.
-    for i = pop_start:bd.num_independent_populations
+    for i in pop_start:params.num_independent_populations
         # If no reset, allocate memory.
         if !bd.reset_phase
             population = Population()
-            for j = 1:bd.population_size
+            for j in 1:params.population_size
                 push!(population.chromosomes, rand(bd.rng, bd.chromosome_size))
             end
             population.fitness =
-                Array{Tuple{Float64, Int64}, 1}(undef, bd.population_size)
-            brkga_data.current[i] = population
+                Array{Tuple{Float64, Int64}, 1}(undef, params.population_size)
+            bd.current[i] = population
 
         else
-            for chr in brkga_data.current[i].chromosomes
+            for chr in bd.current[i].chromosomes
                 chr .= rand(bd.rng, length(chr))
             end
         end
@@ -473,21 +341,22 @@ Set a new bias function to be used to rank the chromosomes during the mating.
 function set_bias_custom_function!(brkga_data::BrkgaData,
                                    bias_function::Function)
 
-    bias_values = map(bias_function, 1:brkga_data.total_parents)
+    bias_values = map(bias_function, 1:brkga_data.params.total_parents)
+
     if any(x -> x < 0.0, bias_values)
         throw(ArgumentError("bias_function must be positive non-decreasing"))
     end
 
     # NOTE (ceandrade) issorted(bias_values, rev=true) and variants do not
     # work for constant functions.
-    for i in 2:brkga_data.total_parents
+    for i in 2:brkga_data.params.total_parents
         if bias_values[i - 1] < bias_values[i]
            throw(ArgumentError("bias_function is not a non-decreasing function"))
         end
     end
 
     if brkga_data.bias_function != empty_function
-        brkga_data.bias = CUSTOM
+        brkga_data.params.bias_type = CUSTOM
     end
 
     brkga_data.bias_function = bias_function
@@ -514,25 +383,26 @@ mixed integer programming model that models the problem.
 function set_initial_population!(brkga_data::BrkgaData,
                                  chromosomes::Array{Array{Float64, 1}, 1})
 
-    if length(chromosomes) > brkga_data.population_size
+    bd = brkga_data
+    if length(chromosomes) > bd.params.population_size
         throw(ArgumentError("number of given chromosomes " *
             "($(length(chromosomes))) is larger than the population size " *
-            "($(brkga_data.population_size))"))
+            "($(bd.params.population_size))"))
     end
 
     # Clean up the current population.
-    current = Array{Population, 1}(undef, brkga_data.num_independent_populations)
+    current = Array{Population, 1}(undef, bd.params.num_independent_populations)
     current[1] = Population()
 
     for (i, chr) in enumerate(chromosomes)
-        if length(chr) != brkga_data.chromosome_size
+        if length(chr) != bd.chromosome_size
             msg = "error on setting initial population: chromosome $i does " *
                 "not have the required dimension (actual size: " *
-                "$(length(chr)), required size: $(brkga_data.chromosome_size))"
+                "$(length(chr)), required size: $(bd.chromosome_size))"
             throw(ArgumentError(msg))
         end
         push!(current[1].chromosomes, copy(chr))
     end
-    brkga_data.current = current
+    bd.current = current
     nothing
 end

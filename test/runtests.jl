@@ -2,12 +2,12 @@
 ################################################################################
 # runtests.jl: unit tests for BrkgaMpIpr
 #
-# (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
+# (c) Copyright 2019, Carlos Eduardo de Andrade. All Rights Reserved.
 #
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Dec 28, 2018 by ceandrade
+# Last update: Jan 03, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -39,11 +39,7 @@ instance = Instance(CHROMOSOME_SIZE)
 
 # Makes easy to change specific position on the parameters vector below.
 const param_names = ["instance", "decode!", "opt_sense", "seed", "chr_size",
-                     "pop_size", "elite_percentage", "mutants_percentage",
-                     "evolutionary_mechanism_on", "num_elite_parents",
-                     "total_parents", "bias", "num_independent_populations",
-                     "pr_number_pairs", "pr_minimum_distance", "pr_type",
-                     "pr_selection", "alpha_block_size", "pr_percentage"]
+                     "brkga_params", "evolutionary_mechanism_on"]
 
 # Reverse index.
 const param_index = Dict([v => i for (i, v) in enumerate(param_names)])
@@ -51,26 +47,29 @@ const param_index = Dict([v => i for (i, v) in enumerate(param_names)])
 # Holds the parameters to build new BrkgaData.
 const default_param_values = Array{Any, 1}(undef, length(param_names))
 
+default_brkga_params = BrkgaParams()
+default_brkga_params.population_size = 10
+default_brkga_params.elite_percentage = 0.3
+default_brkga_params.mutants_percentage = 0.1
+default_brkga_params.num_elite_parents = 1
+default_brkga_params.total_parents = 2
+default_brkga_params.bias_type = LOGINVERSE
+default_brkga_params.num_independent_populations = 3
+default_brkga_params.pr_number_pairs = 0
+default_brkga_params.pr_minimum_distance = 0.0
+default_brkga_params.pr_type = DIRECT
+default_brkga_params.pr_selection = BESTSOLUTION
+default_brkga_params.alpha_block_size = 1.0
+default_brkga_params.pr_percentage = 1.0
+
 # Some default parameters.
 default_param_values[param_index["instance"]] = instance
 default_param_values[param_index["decode!"]] = sum_decode!
 default_param_values[param_index["opt_sense"]] = MAXIMIZE
 default_param_values[param_index["seed"]] = 2700001
 default_param_values[param_index["chr_size"]] = CHROMOSOME_SIZE
-default_param_values[param_index["pop_size"]] = 10
-default_param_values[param_index["elite_percentage"]] = 0.3
-default_param_values[param_index["mutants_percentage"]] = 0.1
+default_param_values[param_index["brkga_params"]] = default_brkga_params
 default_param_values[param_index["evolutionary_mechanism_on"]] = true
-default_param_values[param_index["num_elite_parents"]] = 1
-default_param_values[param_index["total_parents"]] = 2
-default_param_values[param_index["bias"]] = LOGINVERSE
-default_param_values[param_index["num_independent_populations"]] = 3
-default_param_values[param_index["pr_number_pairs"]] = 0
-default_param_values[param_index["pr_minimum_distance"]] = 0.0
-default_param_values[param_index["pr_type"]] = DIRECT
-default_param_values[param_index["pr_selection"]] = BESTSOLUTION
-default_param_values[param_index["alpha_block_size"]] = 1.0
-default_param_values[param_index["pr_percentage"]] = 1.0
 
 ################################################################################
 # Functions

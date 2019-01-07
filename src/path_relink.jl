@@ -1,12 +1,12 @@
 ################################################################################
 # path_relink.jl: main evolutionary routines.
 #
-# (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
+# (c) Copyright 2019, Carlos Eduardo de Andrade. All Rights Reserved.
 #
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 06, 2018 by ceandrade
-# Last update: Dec 27, 2018 by ceandrade
+# Last update: Jan 07, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -70,8 +70,10 @@ end
                      max_end::Int64)::UnitRange{Int64}
 
 Return a positive range for the given `block_number` with length `block_size`,
-limited to the `max_end`. **Note:** this function only accept positive numbers,
-and all sanity check is disregarded due to performance reasons.
+limited to the `max_end`.
+
+**NOTE:** this function only accept positive numbers, and all sanity check
+is disregarded due to performance reasons.
 
 **THIS IS AN INTERNAL FUNCTION AND IT IS NOT MEANT TO BE USED DIRECTLY.**
 """
@@ -106,8 +108,8 @@ end
     Base.:|(x::PathRelinkingResult,
             y::PathRelinkingResult)::PathRelinkingResult
 
-Perform bitwise `OR` between two `PathRelinkingResult` returning the highest
-rank `PathRelinkingResult`.
+Perform bitwise `OR` between two [`PathRelinkingResult`](@ref) returning
+the highest rank `PathRelinkingResult`.
 
 # Examples
 
@@ -145,12 +147,12 @@ Perform the direct path relinking, changing each allele or block
 of alleles of base chromosome for the correspondent one in the guide
 chromosome.
 
-The API will call `decode!()` function, in `BrkgaData`, always with
-`writeback = false`. The reason is that if the decoder rewrites the chromosome,
-the path between solutions is lost and inadvertent results may come up.
-Note that at the end of the path relinking, the method calls the decoder with
-`writeback = true` in the best chromosome found to guarantee that this
-chromosome is re-written to reflect the best solution found.
+The API will call [`decode!()`](@ref) function always with
+`writeback = false`. The reason is that if the decoder rewrites the
+chromosome, the path between solutions is lost and inadvertent results may
+come up. Note that at the end of the path relinking, the method calls the
+decoder with `writeback = true` in the best chromosome found to guarantee
+that this chromosome is re-written to reflect the best solution found.
 
 This method is a multi-thread implementation. Instead of to build and
 decode each chromosome one at a time, the method builds a list of
@@ -159,15 +161,15 @@ and then decode all candidates in parallel. Note that
 `O(chromosome_size^2 / block_size)` additional memory is necessary to build
 the candidates, which can be costly if the `chromosome_size` is very large.
 
-**NOTE:** as it is in `evolve()`, the decoding is done in parallel using
+**NOTE:** as it is in [`evolve()`](@ref), the decoding is done in parallel using
 threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
 If such property cannot be held, we suggest using single thread by setting the
 environmental variable `JULIA_NUM_THREADS = 1`
 (see https://docs.julialang.org/en/stable/manual/parallel-computing).
 
 **THIS IS AN INTERNAL METHOD AND IT IS NOT MEANT TO BE USED DIRECTLY. IT IS
-CALLED FROM THE `path_relink()` FUNCTION.** Due to this reason, this method
-**DOES NOT** perform health checks on the arguments.
+CALLED FROM THE [`path_relink()`](@ref) FUNCTION.** Due to this reason,
+this method **DOES NOT** perform health checks on the arguments.
 
 # Arguments
 - `brkga_data::BrkgaData`: the BRKGA data.
@@ -184,12 +186,12 @@ CALLED FROM THE `path_relink()` FUNCTION.** Due to this reason, this method
   does not chage the solution, and therefore, we can drop such change (and
   subsequentely decoding). The blocks can hold only one key/allele, sequential
   key blocks, of even the whole chromosome. `affect_solution` takes two
-  views/subarrays. The function **must have** the following signature
+  views/subarrays. The function **MUST HAVE** the following signature
 
         `affect_solution(block1::SubArray{Float64, 1},
                          block2::SubArray{Float64, 1})::Bool`
 
-  **Note: this function depends on the problem structure and how the
+  **NOTE: this function depends on the problem structure and how the
   keys/alleles are used.**
 
 - `block_size::Int64`: (posite) number of alleles to be exchanged at once in
@@ -246,7 +248,7 @@ function direct_path_relink!(brkga_data::BrkgaData,
     end
 
     # Holds the original keys.
-    old_keys = Array{Float64, 1}(undef, brkga_data.chromosome_size)
+    old_keys = Array{Float64, 1}(undef, bd.chromosome_size)
 
     sense = (bd.opt_sense == MAXIMIZE)
     iterations = 1
@@ -363,11 +365,11 @@ end
                                             percentage::Float64
         )::Tuple{Float64, Array{Float64, 1}}
 
-Performs the permutation-based path relinking. In this method, the permutation
+Perform the permutation-based path relinking. In this method, the permutation
 induced by the keys in the guide solution is used to change the order of the
 keys in the permutation induced by the base solution.
 
-The API will call `decode!()` function, in `BrkgaData`, always with
+The API will call [`decode!()`](@ref) function always with
 `writeback = false`. The reason is that if the decoder rewrites the chromosome,
 the path between solutions is lost and inadvertent results may come up.
 Note that at the end of the path relinking, the method calls the decoder with
@@ -381,15 +383,15 @@ and then decode all candidates in parallel. Note that
 `O(chromosome_size^2 / block_size)` additional memory is necessary to build
 the candidates, which can be costly if the `chromosome_size` is very large.
 
-**NOTE:** as it is in `evolve()`, the decoding is done in parallel using
+**NOTE:** as it is in [`evolve()`](@ref), the decoding is done in parallel using
 threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
 If such property cannot be held, we suggest using single thread by setting the
 environmental variable `JULIA_NUM_THREADS = 1`
 (see https://docs.julialang.org/en/stable/manual/parallel-computing).
 
 **THIS IS AN INTERNAL METHOD AND IT IS NOT MEANT TO BE USED DIRECTLY. IT IS
-CALLED FROM THE `path_relink()` FUNCTION.** Due to this reason, this method
-**DOES NOT** perform health checks on the arguments.
+CALLED FROM THE [`path_relink()`](@ref) FUNCTION.** Due to this reason,
+this method **DOES NOT** perform health checks on the arguments.
 
 # Arguments
 - `brkga_data::BrkgaData`: the BRKGA data.
@@ -584,7 +586,7 @@ end
                           percentage::Float64
     )::Bool
 
-Performs path relinking between elite solutions that are, at least, a given
+Perform path relinking between elite solutions that are, at least, a given
 minimum distance between themselves. In this method, the local/loaded
 parameters are ignored in favor to the supplied ones.
 
@@ -605,7 +607,7 @@ populations (in a circular fashion, as described above). Yet, if such pairs
 are not found in any case, the algorithm declares failure. This indicates
 that the populations are very homogeneous.
 
-The API will call `decode!()` function, in `BrkgaData`, always with
+The API will call [`decode!()`](@ref) function always with
 `writeback = false`. The reason is that if the decoder rewrites the chromosome,
 the path between solutions is lost and inadvertent results may come up.
 Note that at the end of the path relinking, the method calls the decoder with
@@ -619,7 +621,7 @@ and then decode all candidates in parallel. Note that
 `O(chromosome_size^2 / block_size)` additional memory is necessary to build
 the candidates, which can be costly if the `chromosome_size` is very large.
 
-**NOTE:** as it is in `evolve()`, the decoding is done in parallel using
+**NOTE:** as it is in [`evolve()`](@ref), the decoding is done in parallel using
 threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
 If such property cannot be held, we suggest using single thread by setting the
 environmental variable `JULIA_NUM_THREADS = 1`
@@ -629,7 +631,7 @@ environmental variable `JULIA_NUM_THREADS = 1`
 - `brkga_data::BrkgaData`: the BRKGA data.
 
 - `compute_distance::Function`: the function used to compute the distance
-  between two chromosomes. The function **must have** the following signature
+  between two chromosomes. The function **MUST HAVE** the following signature
 
         `compute_distance(vector1::Array{Float64, 1},
                           vector2::Array{Float64, 1}::Float64`
@@ -643,12 +645,12 @@ environmental variable `JULIA_NUM_THREADS = 1`
   does not chage the solution, and therefore, we can drop such change (and
   subsequentely decoding). The blocks can hold only one key/allele, sequential
   key blocks, of even the whole chromosome. `affect_solution` takes two
-  views/subarrays. The function **must have** the following signature
+  views/subarrays. The function **MUST HAVE** the following signature
 
         `affect_solution(block1::SubArray{Float64, 1},
                          block2::SubArray{Float64, 1})::Float64`
 
-  **Note: this function depends on the problem structure and how the
+  **NOTE: this function depends on the problem structure and how the
   keys/alleles are used.**
 
  - `number_pairs::Int64`: number of chromosome pairs to be tested.
@@ -695,7 +697,8 @@ function path_relink!(brkga_data::BrkgaData,
     )::PathRelinkingResult
 
     if !brkga_data.initialized
-        error("the algorithm hasn't been initialized. Call initialize!() before path_relink!()")
+        error("the algorithm hasn't been initialized. " *
+              "Call initialize!() before path_relink!()")
     end
 
     if percentage < 1e-6 || percentage > 1.0
@@ -721,7 +724,7 @@ function path_relink!(brkga_data::BrkgaData,
     pr_start_time = time()
     pop_count = 1
     final_status = TOO_HOMOGENEOUS
-    while pop_count <= bd.num_independent_populations
+    while pop_count <= bd.params.num_independent_populations
         elapsed_seconds = time() - pr_start_time
         if elapsed_seconds > max_time
             break
@@ -733,17 +736,17 @@ function path_relink!(brkga_data::BrkgaData,
         found_pair = false
 
         # If we have just one population, we take the both solution from it.
-        if bd.num_independent_populations == 1
+        if bd.params.num_independent_populations == 1
             pop_base = pop_guide = 1
             pop_count = Inf
 
         # If we have two populations, perform just one path relinking.
-        elseif bd.num_independent_populations == 2
+        elseif bd.params.num_independent_populations == 2
             pop_count = Inf
         end
 
         # Do the circular thing.
-        if pop_guide == bd.num_independent_populations + 1
+        if pop_guide == bd.params.num_independent_populations + 1
             pop_guide = 1
         end
 

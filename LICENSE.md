@@ -1,7 +1,7 @@
 BRKGA-MP-IPR License
 ========================
 
-Copyright (c) 2018, Carlos Eduardo de Andrade. All other rights reserved.
+Copyright (c) 2019, Carlos Eduardo de Andrade. All other rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are only permitted provided that the following conditions are
@@ -19,12 +19,12 @@ met:
    without specific prior written permission.
 
 4. All publications, softwares, or any other materials mentioning features or
-   use of this software and/or the data used to test it 
+   use of this software and/or the data used to test it
    must cite explicitly cite the following article:
-   
+
 > C.E. Andrade. The Multi-Parent Biased Random-key Genetic Algorithm with
 > Implicit Path Relinking. European Jornal of Operational Research, volume XX,
-> issue X, pages xx-xx, 2018. DOI
+> issue X, pages xx-xx, 2019. DOI
 > [to be determined](http://dx.doi.org/xxx)
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND

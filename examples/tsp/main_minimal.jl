@@ -2,12 +2,12 @@
 # main_minimal.jl: minimal script for call BRKGA algorithms to solve
 #                  instances of the Traveling Salesman Problem.
 #
-# (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
+# (c) Copyright 2019, Carlos Eduardo de Andrade. All Rights Reserved.
 #
 # This code is released under LICENSE.md.
 #
 # Created on:  Dec 28, 2018 by ceandrade
-# Last update: Dec 28, 2018 by ceandrade
+# Last update: Jan 07, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE

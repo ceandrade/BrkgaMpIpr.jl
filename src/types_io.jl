@@ -1,12 +1,12 @@
 ################################################################################
 # types_io.jl: Input/output/parsing methods for internal data strucutures.
 #
-# (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
+# (c) Copyright 2019, Carlos Eduardo de Andrade. All Rights Reserved.
 #
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 24, 2018 by ceandrade
-# Last update: Dec 27, 2018 by ceandrade
+# Last update: Jan 04, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -28,7 +28,7 @@ import Base: parse
 """
     parse(::Type{BiasFunction}, value::String)::BiasFunction
 
-Parse `value` returning a valid `BiasFunction` enumeration.
+Parse `value` returning a valid [`BiasFunction`](@ref) enumeration.
 
 # Throws
 - `ArgumentError`: in case the bias description does not match.
@@ -59,7 +59,7 @@ end
 """
     parse(::Type{PathRelinkingType}, value::String)::PathRelinkingType
 
-Parse `value` returning a valid `PathRelinkingType` enumeration.
+Parse `value` returning a valid [`PathRelinkingType`](@ref) enumeration.
 
 # Throws
 - `ArgumentError`: in case the type description does not match.
@@ -80,7 +80,7 @@ end
 """
     parse(::Type{PathRelinkingSelection}, value::String)::PathRelinkingSelection
 
-Parse `value` returning a valid `PathRelinkingSelection` enumeration.
+Parse `value` returning a valid [`PathRelinkingSelection`](@ref) enumeration.
 
 # Throws
 - `ArgumentError`: in case the selection description does not match.
@@ -100,44 +100,143 @@ end
 ################################################################################
 
 """
-    write_configuration(filename::String, brkga_data::BrkgaData,
-            external_params::ExternalControlParams = ExternalControlParams())
+    load_configuration(configuration_file::String)::
+            Tuple{BrkgaParams, ExternalControlParams}
 
-Write the parameters from `brkga_data` and `external_params` into `filename`.
+Load the parameters from `filename` returning them as a tuple.
+
+# Throws
+- `LoadError`: in cases of the file is an invalid configuration file,
+  parameters are missing, or parameters are ill-formatted.
+- `SystemError`: in case the configuration files cannot be openned.
+"""
+function load_configuration(configuration_file::String)::
+        Tuple{BrkgaParams, ExternalControlParams}
+
+    # Create a dictionaty with fields and their types.
+    param_names_types = Dict(
+        [name => typ for (name, typ) in zip(fieldnames(BrkgaParams),
+                                            BrkgaParams.types)]
+    )
+    push!(param_names_types,
+        [name => typ for (name, typ)
+         in zip(fieldnames(ExternalControlParams),
+                ExternalControlParams.types)]...
+    )
+
+    param_given = Dict([name => false for name in keys(param_names_types)])
+
+    brkga_params = BrkgaParams()
+    control_params = ExternalControlParams()
+
+    lines = Array{String,1}()
+    open(configuration_file) do file
+        lines = readlines(file)
+    end
+    if length(lines) == 0
+        throw(LoadError(configuration_file, 0,
+                        "cannot read '$configuration_file'"))
+    end
+
+    for (line_number, line) in enumerate(lines)
+        line = strip(line)
+        if length(line) == 0 || line[1] == '#'
+            continue
+        end
+
+        param_name = ""
+        value = 0
+        try
+            param_name, value = split(line)
+            param_name = lowercase(param_name)
+
+            field = Symbol(param_name)
+            if field in fieldnames(BrkgaParams)
+                data = brkga_params
+            elseif field in fieldnames(ExternalControlParams)
+                data = control_params
+            else
+                throw(KeyError(""))
+            end
+
+            setfield!(data, field, parse(param_names_types[field],
+                                         String(value)))
+            param_given[field] = true
+        catch err
+            if isa(err, BoundsError)
+                throw(LoadError(configuration_file, line_number, "error line " *
+                                "$line_number of '$configuration_file': " *
+                                "missing parameter or value"))
+
+            elseif isa(err, KeyError)
+                throw(LoadError(configuration_file, line_number,
+                                "parameter '$param_name' unknown"))
+
+            elseif isa(err, ArgumentError)
+                throw(LoadError(configuration_file, line_number,
+                                "invalid value for '$param_name': $value"))
+            else
+                throw(err)
+            end
+        end
+    end
+
+    missing_params = ""
+    for (name, value) in param_given
+        if !value
+            missing_params *= "'$name',"
+        end
+    end
+    if length(missing_params) > 0
+        throw(LoadError(configuration_file, 0,
+                        "missing parameters: $missing_params"))
+    end
+
+    return (brkga_params, control_params)
+end
+
+################################################################################
+
+"""
+    function write_configuration(filename::String, brkga_params::BrkgaParams,
+                                 external_params::ExternalControlParams)
+
+Write `brkga_params` and `external_params` into `filename`.
 
 # Throws
 - `ArgumentError`: in case the bias description does not match.
-
-
 """
-function write_configuration(filename::String, brkga_data::BrkgaData,
-        external_params::ExternalControlParams = ExternalControlParams())
+function write_configuration(filename::String, brkga_params::BrkgaParams,
+                             external_params::ExternalControlParams)
 
-    elite_percentage = brkga_data.elite_size / brkga_data.population_size;
-    mutants_percentage = brkga_data.num_mutants / brkga_data.population_size;
-
-    output_string = """
-population_size $(brkga_data.population_size)
-elite_percentage $(elite_percentage)
-mutants_percentage $(mutants_percentage)
-mutants_percentage $(mutants_percentage)
-elite_parents $(brkga_data.num_elite_parents)
-total_parents $(brkga_data.total_parents)
-bias_function $(brkga_data.bias)
-independent_populations $(brkga_data.num_independent_populations)
-pr_number_pairs $(brkga_data.pr_number_pairs)
-pr_minimum_distance $(brkga_data.pr_minimum_distance)
-pr_type $(brkga_data.pr_type)
-pr_selection $(brkga_data.pr_selection)
-alpha_block_size $(brkga_data.alpha_block_size)
-pr_percentage $(brkga_data.pr_percentage)
-exchange_interval $(external_params.exchange_interval)
-num_exchange_indivuduals $(external_params.num_exchange_indivuduals)
-reset_interval $(external_params.reset_interval)
-"""
+    output_string = ""
+    for field in fieldnames(BrkgaParams)
+        output_string *= "$field $(getfield(brkga_params, field))\n"
+    end
+    for field in fieldnames(ExternalControlParams)
+        output_string *= "$field $(getfield(external_params, field))\n"
+    end
 
     open(filename, "w") do file
         write(file, output_string)
     end
+    nothing
+end
+
+"""
+    function write_configuration(filename::String, brkga_data::BrkgaData,
+                                 external_params::ExternalControlParams =
+                                                        ExternalControlParams())
+
+Write the parameters from `brkga_data.params` and `external_params`
+into `filename`.
+
+# Throws
+- `ArgumentError`: in case the bias description does not match.
+"""
+function write_configuration(filename::String, brkga_data::BrkgaData,
+                             external_params::ExternalControlParams =
+                                                        ExternalControlParams())
+    write_configuration(filename, brkga_data.params, external_params)
     nothing
 end

@@ -1,12 +1,12 @@
 ################################################################################
 # evolution.jl: main evolutionary routines.
 #
-# (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
+# (c) Copyright 2019, Carlos Eduardo de Andrade. All Rights Reserved.
 #
 # This code is released under LICENSE.md.
 #
 # Created on:  Apr 19, 2018 by ceandrade
-# Last update: Dec 27, 2018 by ceandrade
+# Last update: Jan 07, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -33,7 +33,8 @@ for `num_generations` generations
 """
 function evolve!(brkga_data::BrkgaData, num_generations::Int64 = 1)
     if !brkga_data.initialized
-        error("the algorithm hasn't been initialized. Call initialize!() before reset!()")
+        error("the algorithm hasn't been initialized. " *
+              "Call initialize!() before reset!()")
     end
 
     if num_generations < 1
@@ -43,7 +44,7 @@ function evolve!(brkga_data::BrkgaData, num_generations::Int64 = 1)
     end
 
     for i in 1:num_generations
-        for population_index in 1:brkga_data.num_independent_populations
+        for population_index in 1:brkga_data.params.num_independent_populations
             evolve_population!(brkga_data, population_index)
         end
     end
@@ -58,18 +59,21 @@ Evolve the population `population_index` to the next.
 
 # Throws
 - `ErrorException`: if `initialize!()` was not called before.
-- `ArgumentError`: when `population_index < 1` or `population_index > num_independent_populations`.
+- `ArgumentError`: when `population_index < 1` or
+  `population_index > num_independent_populations`.
 """
 function evolve_population!(brkga_data::BrkgaData, population_index::Int64)
     bd = brkga_data
 
     if !bd.initialized
-        error("the algorithm hasn't been initialized. Call initialize!() before reset!()")
+        error("the algorithm hasn't been initialized. " *
+              "Call initialize!() before reset!()")
     end
 
-    if population_index < 1 || population_index > bd.num_independent_populations
+    if population_index < 1 ||
+       population_index > bd.params.num_independent_populations
         msg = "Population index must be in [1, " *
-              "$(bd.num_independent_populations)]: $population_index"
+              "$(bd.params.num_independent_populations)]: $population_index"
         throw(ArgumentError(msg))
     end
 
@@ -84,7 +88,7 @@ function evolve_population!(brkga_data::BrkgaData, population_index::Int64)
     end
 
     # Second, we mate 'pop_size - elite_size - num_mutants' pairs.
-    for chr in (bd.elite_size + 1):(bd.population_size - bd.num_mutants)
+    for chr in (bd.elite_size + 1):(bd.params.population_size - bd.num_mutants)
         # First, we shuffled the elite set and non-elite set indices,
         # then we take the elite and non-elite parents. Note that we cannot
         # shuffled both sets together, otherwise we would mix elite
@@ -92,17 +96,18 @@ function evolve_population!(brkga_data::BrkgaData, population_index::Int64)
 
         bd.shuffled_individuals[1:bd.elite_size] =
             Random.shuffle(bd.rng, 1:bd.elite_size)
-        bd.shuffled_individuals[(bd.elite_size + 1):bd.population_size] =
-            Random.shuffle(bd.rng, (bd.elite_size + 1):bd.population_size)
+        bd.shuffled_individuals[(bd.elite_size + 1):bd.params.population_size] =
+            Random.shuffle(bd.rng, (bd.elite_size + 1):bd.params.population_size)
 
         # Take the elite parents.
-        @inbounds for i in 1:bd.num_elite_parents
+        @inbounds for i in 1:bd.params.num_elite_parents
             bd.parents_ordered[i] = curr.fitness[bd.shuffled_individuals[i]]
         end
 
         # Take the non-elite parents.
-        @inbounds for i in 1:(bd.total_parents - bd.num_elite_parents)
-            bd.parents_ordered[i + bd.num_elite_parents] =
+        @inbounds for i in 1:(bd.params.total_parents -
+                              bd.params.num_elite_parents)
+            bd.parents_ordered[i + bd.params.num_elite_parents] =
                 curr.fitness[bd.shuffled_individuals[i + bd.elite_size]]
         end
 
@@ -126,12 +131,13 @@ function evolve_population!(brkga_data::BrkgaData, population_index::Int64)
     end
 
     # To finish, we fill up the remaining spots with mutants.
-    for chr in (bd.population_size - bd.num_mutants + 1):bd.population_size
+    for chr in (bd.params.population_size -
+                bd.num_mutants + 1):bd.params.population_size
         next.chromosomes[chr] .= rand(bd.rng, bd.chromosome_size)
     end
 
     # Perform the decoding on the offpring and mutants.
-    Threads.@threads for i in (bd.elite_size + 1):bd.population_size
+    Threads.@threads for i in (bd.elite_size + 1):bd.params.population_size
         value = bd.decode!(next.chromosomes[i], bd.problem_instance)
         next.fitness[i] = (value, i)
     end

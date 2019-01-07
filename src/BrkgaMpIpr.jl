@@ -1,12 +1,12 @@
 ################################################################################
 # BrkgaMpIpr.jl: Main module for BRKGA-MP-IPR framework.
 #
-# (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
+# (c) Copyright 2019, Carlos Eduardo de Andrade. All Rights Reserved.
 #
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Dec 26, 2018 by ceandrade
+# Last update: Jan 03, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -46,9 +46,9 @@ export PathRelinkingSelection, BESTSOLUTION, RANDOMELITE
 export PathRelinkingResult
 export TOO_HOMOGENEOUS, NO_IMPROVEMENT, ELITE_IMPROVEMENT, BEST_IMPROVEMENT
 
-export parse, write_configuration
+export BrkgaData, AbstractInstance, BrkgaParams, ExternalControlParams
 
-export BrkgaData, AbstractInstance, ExternalControlParams
+export parse, load_configuration, write_configuration
 
 export build_brkga, set_bias_custom_function!, set_initial_population!
 export initialize!, reset!, exchange_elite!, inject_chromosome!

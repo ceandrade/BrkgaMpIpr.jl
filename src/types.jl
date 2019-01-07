@@ -1,12 +1,12 @@
 ################################################################################
 # types.jl: Definitions of internal data structures and external API.
 #
-# (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
+# (c) Copyright 2019, Carlos Eduardo de Andrade. All Rights Reserved.
 #
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Dec 27, 2018 by ceandrade
+# Last update: Jan 04, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -138,7 +138,7 @@ example,
 ```julia
 mutable struct TSPInstance <: AbstractInstance
     num_cities::Int64
-    distances::Array{Float64,2}
+    distances::Array{Float64}
 end
 ```
 represents an instance type for the Traveling Salesman problem which defines
@@ -182,118 +182,180 @@ end
 ################################################################################
 
 """
-    mutable struct BrkgaData
+    mutable struct BrkgaParams
 
-Represents the internal state of the BRKGA-MP-IPR algorithm. This structure is
-**NOT intended** to be used outside BRKGA functions. Ad hoc changes may lead to
-inadvertent results. However, some fields of interest are documented using
-docstring. Internal only fields have regular comments as documentation.
+Represents the BRKGA and IPR hyper-parameters. You can load these parameters
+from a configuration file using [`load_configuration`](@ref) and
+[`build_brkga`](@ref), and write them using
+[`write_configuration`](@ref).
 """
-mutable struct BrkgaData
+mutable struct BrkgaParams
     ########################################
-    # BRKGA Hyper-parameter
+    # BRKGA Hyper-parameters
     ########################################
-
     """
-    (BRKGA Hyper-parameter)
-    Optimization sense (minimization = 0, maximization = 1).
-    """
-    opt_sense::Sense
-
-    """
-    (BRKGA Hyper-parameter)
-    Number of genes in the chromosome [> 0].
-    """
-    chromosome_size::Int64
-
-    """
-    (BRKGA Hyper-parameter)
     Number of elements in the population [> 0].
     """
     population_size::Int64
 
     """
-    (BRKGA Hyper-parameter)
-    Number of elite items in the population [> 0].
+    Percentage of individuals to become the elite set (0, 1].
     """
-    elite_size::Int64
+    elite_percentage::Float64
 
     """
-    (BRKGA Hyper-parameter)
-    Number of mutants introduced at each generation into the population [> 0].
+    Percentage of mutants to be inserted in the population
     """
-    num_mutants::Int64
+    mutants_percentage::Float64
 
     """
-    (BRKGA Hyper-parameter)
     Number of elite parents for mating [> 0].
     """
     num_elite_parents::Int64
 
     """
-    (BRKGA Hyper-parameter)
     Number of total parents for mating [> 0].
     """
     total_parents::Int64
 
     """
-    (BRKGA Hyper-parameter)
     Type of bias that will be used.
     """
-    bias::BiasFunction
+    bias_type::BiasFunction
 
     """
-    (BRKGA Hyper-parameter)
     Number of independent parallel populations.
     """
     num_independent_populations::Int64
-
-    """
-    (BRKGA Hyper-parameter)
-    If false, no evolution is performed but only chromosome decoding.
-    Very useful to emulate a multi-start algorithm.
-    """
-    evolutionary_mechanism_on::Bool
 
     ########################################
     # Path Relinking parameters
     ########################################
 
     """
-    (Path-relink Hyper-parameter)
     Number of pairs of chromosomes to be tested to path relinking.
     """
     pr_number_pairs::Int64
 
     """
-    (Path-relink Hyper-parameter)
     Mininum distance between chromosomes selected to path-relinking.
     """
     pr_minimum_distance::Float64
 
     """
-    (Path-relink Hyper-parameter)
     Path relinking type.
     """
     pr_type::PathRelinkingType
 
     """
-    (Path-relink Hyper-parameter)
     Individual selection to path-relinking.
     """
     pr_selection::PathRelinkingSelection
 
     """
-    (Path-relink Hyper-parameter)
     Defines the block size based on the size of the population.
     """
     alpha_block_size::Float64
 
     """
-    (Path-relink Hyper-parameter)
     Percentage / path size to be computed. Value in (0, 1].
     """
     pr_percentage::Float64
+
+    """
+    Initialization constructor.
+    """
+    BrkgaParams() = new(0, 0, 0, 0, 0, CONSTANT, 0, 0, 0.0, DIRECT,
+                        BESTSOLUTION, 0.0, 0.0)
+end
+
+################################################################################
+
+"""
+    mutable struct ControlParams
+
+Represents additional control parameters that can be used outside this
+framework. You can load these parameters from a configuration file using
+[`load_configuration`](@ref) and [`build_brkga`](@ref), and write them using
+[`write_configuration`](@ref).
+"""
+mutable struct ExternalControlParams
+    """
+    Interval at which elite chromosomes are exchanged
+    (0 means no exchange) [> 0].
+    """
+    exchange_interval::Int64
+
+    """
+    Number of elite chromosomes exchanged from each population [> 0].
+    """
+    num_exchange_indivuduals::Int64
+
+    """
+    Interval at which the populations are reset (0 means no reset) [> 0].
+    """
+    reset_interval::Int64
+
+    """
+    Initialization constructor.
+    """
+    ExternalControlParams(
+        exchange_interval::Int64 = 0,
+        num_exchange_indivuduals::Int64 = 0,
+        reset_interval::Int64 = 0) = new(exchange_interval,
+                                         num_exchange_indivuduals,
+                                         reset_interval)
+end
+
+################################################################################
+
+"""
+    mutable struct BrkgaData
+
+Represents the internal state of the BRKGA-MP-IPR algorithm.
+
+This structure has no direct constructor and must be built using
+[`build_brkga`](@ref) functions. You can create multiple `BrkgaData`
+representing different states of the algorithm, and use them independently.
+
+**NOTE:** this structure is **NOT INTENDED** to be used outside BRKGA functions.
+Ad hoc changes may lead to inadvertent results.
+"""
+mutable struct BrkgaData
+    ########################################
+    # Hyper-parameters
+    ########################################
+
+    """
+    Optimization sense (minimization = 0, maximization = 1).
+    """
+    opt_sense::Sense
+
+    """
+    Number of genes in the chromosome [> 0].
+    """
+    chromosome_size::Int64
+
+    """
+    BRKGA parameters for evolution.
+    """
+    params::BrkgaParams
+
+    """
+    Number of elite items in the population [> 0].
+    """
+    elite_size::Int64
+
+    """
+    Number of mutants introduced at each generation into the population [> 0].
+    """
+    num_mutants::Int64
+
+    """
+    If false, no evolution is performed but only chromosome decoding.
+    Very useful to emulate a multi-start algorithm.
+    """
+    evolutionary_mechanism_on::Bool
 
     ########################################
     # Internal data
@@ -316,7 +378,8 @@ mutable struct BrkgaData
                 problem_instance::AbstractInstance,
                 rewrite::Bool = true)::Float64
 
-    Note that if `rewrite == true`, `decode!` can change `chromosome`.
+    Note that if `rewrite == false`, `decode!` must not change `chromosome`.
+    IPR routines requires `decode!` to not change `chromosome`.
     """
     # TODO (ceandrade): the current Julia version (1.0) doesn't support
     # strong typing function signatures, as defined above. When such cabability
@@ -380,40 +443,4 @@ mutable struct BrkgaData
     Indicates if the algorithm have been reset.
     """
     reset_phase::Bool
-end
-
-################################################################################
-
-"""
-    struct ControlParams
-
-Represents additional control parameters that can be used outside this
-framework. They can be loaded from a configuration file by `init()`.
-"""
-struct ExternalControlParams
-    """
-    Interval at which elite chromosomes are exchanged
-    (0 means no exchange) [> 0].
-    """
-    exchange_interval::Int64
-
-    """
-    Number of elite chromosomes exchanged from each population [> 0].
-    """
-    num_exchange_indivuduals::Int64
-
-    """
-    Interval at which the populations are reset (0 means no reset) [> 0].
-    """
-    reset_interval::Int64
-
-    """
-    Initialization constructor.
-    """
-    ExternalControlParams(
-        exchange_interval::Int64 = 0,
-        num_exchange_indivuduals::Int64 = 0,
-        reset_interval::Int64 = 0) = new(exchange_interval,
-                                         num_exchange_indivuduals,
-                                         reset_interval)
 end

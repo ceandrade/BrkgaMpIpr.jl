@@ -1,12 +1,12 @@
 ################################################################################
 # building_tests.jl: unit tests for building routines of BrkgaMpIpr.
 #
-# (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
+# (c) Copyright 2019, Carlos Eduardo de Andrade. All Rights Reserved.
 #
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Dec 27, 2018 by ceandrade
+# Last update: Jan 04, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -26,12 +26,15 @@
     # Test regular/correct building.
     ########################
 
-    param_values = copy(default_param_values)
+    param_values = deepcopy(default_param_values)
     brkga_data = build_brkga(param_values...)
+
     @test brkga_data.elite_size == 3
     @test brkga_data.num_mutants == 1
-    @test length(brkga_data.shuffled_individuals) == param_values[param_index["pop_size"]]
-    @test length(brkga_data.parents_ordered) == param_values[param_index["total_parents"]]
+
+    brkga_params = param_values[param_index["brkga_params"]]
+    @test length(brkga_data.shuffled_individuals) == brkga_params.population_size
+    @test length(brkga_data.parents_ordered) == brkga_params.total_parents
 
     local_rng = MersenneTwister(param_values[param_index["seed"]])
     # Same warm up that in build_brkga().
@@ -43,153 +46,140 @@
     ########################
 
     param_values[param_index["evolutionary_mechanism_on"]] = false
-    param_values[param_index["pop_size"]] = 10
+    param_values[param_index["brkga_params"]].population_size = 10
     brkga_data = build_brkga(param_values...)
     @test brkga_data.elite_size == 1
     @test brkga_data.num_mutants == 9
-
-    param_values = copy(default_param_values)
 
     ########################
     # Test bias functions.
     ########################
 
-    param_values[param_index["bias"]] = LOGINVERSE
+    param_values = deepcopy(default_param_values)
+    param_values[param_index["brkga_params"]].bias_type = LOGINVERSE
     brkga_data = build_brkga(param_values...)
     @test brkga_data.bias_function(1) ≈ 1.4426950408889634
     @test brkga_data.bias_function(2) ≈ 0.9102392266268375
     @test brkga_data.bias_function(3) ≈ 0.7213475204444817
 
-    param_values[param_index["bias"]] = LINEAR
+    param_values[param_index["brkga_params"]].bias_type = LINEAR
     brkga_data = build_brkga(param_values...)
     @test brkga_data.bias_function(1) ≈ 1.0
     @test brkga_data.bias_function(2) ≈ 0.5
     @test brkga_data.bias_function(3) ≈ 0.3333333333333333
 
-    param_values[param_index["bias"]] = QUADRATIC
+    param_values[param_index["brkga_params"]].bias_type = QUADRATIC
     brkga_data = build_brkga(param_values...)
     @test brkga_data.bias_function(1) ≈ 1.0
     @test brkga_data.bias_function(2) ≈ 0.25
     @test brkga_data.bias_function(3) ≈ 0.1111111111111111
 
-    param_values[param_index["bias"]] = CUBIC
+    param_values[param_index["brkga_params"]].bias_type = CUBIC
     brkga_data = build_brkga(param_values...)
     @test brkga_data.bias_function(1) ≈ 1.0
     @test brkga_data.bias_function(2) ≈ 0.125
     @test brkga_data.bias_function(3) ≈ 0.037037037037037035
 
-    param_values[param_index["bias"]] = EXPONENTIAL
+    param_values[param_index["brkga_params"]].bias_type = EXPONENTIAL
     brkga_data = build_brkga(param_values...)
     @test brkga_data.bias_function(1) ≈ 0.36787944117144233
     @test brkga_data.bias_function(2) ≈ 0.1353352832366127
     @test brkga_data.bias_function(3) ≈ 0.049787068367863944
 
-    param_values[param_index["bias"]] = CONSTANT
+    param_values[param_index["brkga_params"]].bias_type = CONSTANT
     brkga_data = build_brkga(param_values...)
     @test brkga_data.bias_function(1) ≈ 0.5
     @test brkga_data.bias_function(2) ≈ 0.5
     @test brkga_data.bias_function(3) ≈ 0.5
-
-    param_values = copy(default_param_values)
 
     ########################
     # Test exceptions.
     ########################
 
     # Chromosome size
+    param_values = deepcopy(default_param_values)
     param_values[param_index["chr_size"]] = 0
     @test_throws ArgumentError build_brkga(param_values...)
 
     param_values[param_index["chr_size"]] = -10
     @test_throws ArgumentError build_brkga(param_values...)
 
-    param_values = copy(default_param_values)
-
     # Population size
-    param_values[param_index["pop_size"]] = 0
+    param_values = deepcopy(default_param_values)
+    param_values[param_index["brkga_params"]].population_size = 0
     @test_throws ArgumentError build_brkga(param_values...)
 
-    param_values[param_index["pop_size"]] = -10
+    param_values[param_index["brkga_params"]].population_size = -10
     @test_throws ArgumentError build_brkga(param_values...)
-
-    param_values = copy(default_param_values)
 
     # Elite size.
-    param_values[param_index["elite_percentage"]] = 0.0
+    param_values = deepcopy(default_param_values)
+    param_values[param_index["brkga_params"]].elite_percentage = 0.0
     @test_throws ArgumentError build_brkga(param_values...)
 
-    param_values[param_index["elite_percentage"]] = -10.0
+    param_values[param_index["brkga_params"]].elite_percentage = -1.0
     @test_throws ArgumentError build_brkga(param_values...)
 
-    param_values[param_index["elite_percentage"]] = 0.3
-    param_values[param_index["pop_size"]] = 2
+    param_values[param_index["brkga_params"]].elite_percentage = 0.3
+    param_values[param_index["brkga_params"]].population_size = 2
     @test_throws ArgumentError build_brkga(param_values...)
 
-    param_values[param_index["elite_percentage"]] = 1.1
-    param_values[param_index["pop_size"]] = 10
+    param_values[param_index["brkga_params"]].elite_percentage = 1.1
+    param_values[param_index["brkga_params"]].population_size = 10
     @test_throws ArgumentError build_brkga(param_values...)
-
-    param_values = copy(default_param_values)
 
     # Mutant size.
-    param_values[param_index["mutants_percentage"]] = -10.0
+    param_values = deepcopy(default_param_values)
+    param_values[param_index["brkga_params"]].mutants_percentage = -1.0
     @test_throws ArgumentError build_brkga(param_values...)
 
-    param_values[param_index["mutants_percentage"]] = 1.0
+    param_values[param_index["brkga_params"]].mutants_percentage = 1.0
     @test_throws ArgumentError build_brkga(param_values...)
 
-    param_values[param_index["mutants_percentage"]] = 1.1
+    param_values[param_index["brkga_params"]].mutants_percentage = 1.1
     @test_throws ArgumentError build_brkga(param_values...)
-
-    param_values = copy(default_param_values)
 
     # Elite + Mutant size.
-    param_values[param_index["elite_percentage"]] = 0.6
-    param_values[param_index["mutants_percentage"]] = 0.6
+    param_values = deepcopy(default_param_values)
+    param_values[param_index["brkga_params"]].elite_percentage = 0.6
+    param_values[param_index["brkga_params"]].mutants_percentage = 0.6
     @test_throws ArgumentError build_brkga(param_values...)
-
-    param_values = copy(default_param_values)
 
     # Elite parents for mating.
-    param_values[param_index["num_elite_parents"]] = 0
+    param_values = deepcopy(default_param_values)
+    param_values[param_index["brkga_params"]].num_elite_parents = 0
     @test_throws ArgumentError build_brkga(param_values...)
 
-    param_values[param_index["num_elite_parents"]] = 2
-    param_values[param_index["total_parents"]] = 2
+    param_values[param_index["brkga_params"]].num_elite_parents = 2
+    param_values[param_index["brkga_params"]].total_parents = 2
     @test_throws ArgumentError build_brkga(param_values...)
 
-    param_values[param_index["num_elite_parents"]] = 1 +
-               ceil(Int64, param_values[param_index["pop_size"]] *
-                           param_values[param_index["elite_percentage"]])
-    param_values[param_index["total_parents"]] = 1 +
-               param_values[param_index["num_elite_parents"]]
+    brkga_params = param_values[param_index["brkga_params"]]
+    brkga_params.num_elite_parents = 1 +
+            ceil(Int64, brkga_params.population_size *
+                        brkga_params.elite_percentage)
+    brkga_params.total_parents = 1 + brkga_params.num_elite_parents
     @test_throws ArgumentError build_brkga(param_values...)
-
-    param_values = copy(default_param_values)
 
     # Number of independent populations.
-    param_values[param_index["num_independent_populations"]] = 0
+    param_values = deepcopy(default_param_values)
+    param_values[param_index["brkga_params"]].num_independent_populations = 0
     @test_throws ArgumentError build_brkga(param_values...)
-
-    param_values = copy(default_param_values)
 
     # alpha_block_size.
-    param_values[param_index["alpha_block_size"]] = 0.0
+    param_values = deepcopy(default_param_values)
+    param_values[param_index["brkga_params"]].alpha_block_size = 0.0
     @test_throws ArgumentError build_brkga(param_values...)
-
-    param_values = copy(default_param_values)
 
     # percentage / path size.
-    param_values[param_index["pr_percentage"]] = 0.0
+    param_values = deepcopy(default_param_values)
+    param_values[param_index["brkga_params"]].pr_percentage = 0.0
     @test_throws ArgumentError build_brkga(param_values...)
-
-    param_values = copy(default_param_values)
 
     # percentage / path size.
-    param_values[param_index["pr_percentage"]] = 1.001
+    param_values = deepcopy(default_param_values)
+    param_values[param_index["brkga_params"]].pr_percentage = 1.001
     @test_throws ArgumentError build_brkga(param_values...)
-
-    param_values = copy(default_param_values)
 end
 
 ################################################################################
@@ -213,43 +203,22 @@ end
         build_brkga(local_param_values...,
                     joinpath(config_path, "regular.conf"))
 
-    @test brkga_data.population_size == 500
     @test brkga_data.elite_size == 150
     @test brkga_data.num_mutants == 75
-    @test brkga_data.num_elite_parents == 2
-    @test brkga_data.total_parents == 3
-    @test brkga_data.bias == LOGINVERSE
-    @test brkga_data.num_independent_populations == 3
-    @test brkga_data.pr_number_pairs == 0
-    @test brkga_data.pr_minimum_distance == 0.15
-    @test brkga_data.pr_type == PERMUTATION
-    @test brkga_data.pr_selection == RANDOMELITE
-    @test brkga_data.alpha_block_size == 1.0
-    @test brkga_data.pr_percentage == 1.0
+    @test brkga_data.params.population_size == 500
+    @test brkga_data.params.num_elite_parents == 2
+    @test brkga_data.params.total_parents == 3
+    @test brkga_data.params.bias_type == LOGINVERSE
+    @test brkga_data.params.num_independent_populations == 3
+    @test brkga_data.params.pr_number_pairs == 0
+    @test brkga_data.params.pr_minimum_distance == 0.15
+    @test brkga_data.params.pr_type == PERMUTATION
+    @test brkga_data.params.pr_selection == RANDOMELITE
+    @test brkga_data.params.alpha_block_size == 1.0
+    @test brkga_data.params.pr_percentage == 1.0
     @test external_params.exchange_interval == 200
     @test external_params.num_exchange_indivuduals == 2
     @test external_params.reset_interval == 600
-
-    ########################
-    # Test exceptions.
-    ########################
-
-    @test_throws LoadError build_brkga(local_param_values..., ".")
-    @test_throws SystemError build_brkga(local_param_values..., "")
-    @test_throws LoadError build_brkga(local_param_values...,
-            joinpath(config_path, "missing_value.conf"))
-    @test_throws LoadError build_brkga(local_param_values...,
-            joinpath(config_path, "unknown_param.conf"))
-    @test_throws LoadError build_brkga(local_param_values...,
-                    joinpath(config_path, "wrong_type.conf"))
-    @test_throws LoadError build_brkga(local_param_values...,
-                    joinpath(config_path, "missing_param.conf"))
-    @test_throws LoadError build_brkga(local_param_values...,
-                    joinpath(config_path, "wrong_bias_function.conf"))
-    @test_throws LoadError build_brkga(local_param_values...,
-                    joinpath(config_path, "wrong_pr_type.conf"))
-    @test_throws LoadError build_brkga(local_param_values...,
-                    joinpath(config_path, "wrong_pr_selection.conf"))
 end
 
 ################################################################################
@@ -279,20 +248,21 @@ end
     ########################
     # Test without warmstart
     ########################
-    param_values = copy(default_param_values)
+    param_values = deepcopy(default_param_values)
     param_values[param_index["opt_sense"]] = MAXIMIZE
     brkga_data = build_brkga(param_values...)
+    params = brkga_data.params
 
     initialize!(brkga_data)
 
-    for i = 1:brkga_data.num_independent_populations
-        @test length(brkga_data.current) == param_values[param_index["num_independent_populations"]]
-        @test length(brkga_data.current[i].chromosomes) == param_values[param_index["pop_size"]]
-        @test length(brkga_data.current[i].fitness) == param_values[param_index["pop_size"]]
+    for i in 1:params.num_independent_populations
+        @test length(brkga_data.current) == params.num_independent_populations
+        @test length(brkga_data.current[i].chromosomes) == params.population_size
+        @test length(brkga_data.current[i].fitness) == params.population_size
 
-        @test length(brkga_data.previous) == param_values[param_index["num_independent_populations"]]
-        @test length(brkga_data.previous[i].chromosomes) == param_values[param_index["pop_size"]]
-        @test length(brkga_data.previous[i].fitness) == param_values[param_index["pop_size"]]
+        @test length(brkga_data.previous) == params.num_independent_populations
+        @test length(brkga_data.previous[i].chromosomes) == params.population_size
+        @test length(brkga_data.previous[i].fitness) == params.population_size
 
         @test brkga_data.current[i].chromosomes == brkga_data.previous[i].chromosomes
         @test brkga_data.current[i].chromosomes !== brkga_data.previous[i].chromosomes
@@ -300,7 +270,7 @@ end
         @test brkga_data.current[i].fitness !== brkga_data.previous[i].fitness
 
         correct_order = true
-        for j = 2:length(brkga_data.current[i].fitness)
+        for j in 2:length(brkga_data.current[i].fitness)
             correct_order &= brkga_data.current[i].fitness[j-1] >=
                              brkga_data.current[i].fitness[j]
         end
@@ -310,14 +280,15 @@ end
     @test brkga_data.initialized == true
     @test brkga_data.reset_phase == false
 
-    param_values = copy(default_param_values)
+    param_values = deepcopy(default_param_values)
     param_values[param_index["opt_sense"]] = MINIMIZE
     brkga_data = build_brkga(param_values...)
+    params = brkga_data.params
     initialize!(brkga_data)
 
-    for i = 1:brkga_data.num_independent_populations
+    for i in 1:params.num_independent_populations
         correct_order = true
-        for j = 2:length(brkga_data.current[i].fitness)
+        for j in 2:length(brkga_data.current[i].fitness)
             correct_order &= brkga_data.current[i].fitness[j-1] <=
                              brkga_data.current[i].fitness[j]
         end
@@ -334,20 +305,21 @@ end
         rand(local_rng, param_values[param_index["chr_size"]]),
         rand(local_rng, param_values[param_index["chr_size"]])
     ]
-    param_values = copy(default_param_values)
+    param_values = deepcopy(default_param_values)
     brkga_data = build_brkga(param_values...)
+    params = brkga_data.params
     set_initial_population!(brkga_data, chromosomes)
 
     initialize!(brkga_data)
 
-    for i = 1:brkga_data.num_independent_populations
-        @test length(brkga_data.current) == param_values[param_index["num_independent_populations"]]
-        @test length(brkga_data.current[i].chromosomes) == param_values[param_index["pop_size"]]
-        @test length(brkga_data.current[i].fitness) == param_values[param_index["pop_size"]]
+    for i in 1:params.num_independent_populations
+        @test length(brkga_data.current) == params.num_independent_populations
+        @test length(brkga_data.current[i].chromosomes) == params.population_size
+        @test length(brkga_data.current[i].fitness) == params.population_size
 
-        @test length(brkga_data.previous) == param_values[param_index["num_independent_populations"]]
-        @test length(brkga_data.previous[i].chromosomes) == param_values[param_index["pop_size"]]
-        @test length(brkga_data.previous[i].fitness) == param_values[param_index["pop_size"]]
+        @test length(brkga_data.previous) == params.num_independent_populations
+        @test length(brkga_data.previous[i].chromosomes) == params.population_size
+        @test length(brkga_data.previous[i].fitness) == params.population_size
 
         @test brkga_data.current[i].chromosomes == brkga_data.previous[i].chromosomes
         @test brkga_data.current[i].chromosomes !== brkga_data.previous[i].chromosomes
@@ -371,15 +343,16 @@ end
     # Test reset phase
     ########################
 
-    param_values = copy(default_param_values)
+    param_values = deepcopy(default_param_values)
     brkga_data = build_brkga(param_values...)
+    params = brkga_data.params
     initialize!(brkga_data)
 
     # Create a local RNG and advance it until the same state as the internal
     # BrkgaData RNG after initialization.
     local_rng = MersenneTwister(param_values[param_index["seed"]])
-    skip = brkga_data.num_independent_populations *
-           brkga_data.population_size * brkga_data.chromosome_size
+    skip = params.num_independent_populations *
+           params.population_size * brkga_data.chromosome_size
     rand(local_rng, 1000 + skip)
 
     # Assert the both generators are in the same state.
@@ -398,12 +371,15 @@ end
 ###############################################################################
 
 @testset "set_bias_custom_function!()" begin
-    param_values = copy(default_param_values)
-    param_values[param_index["total_parents"]] = 10
+    param_values = deepcopy(default_param_values)
+
+    param_values[param_index["brkga_params"]].population_size = 100
+    param_values[param_index["brkga_params"]].total_parents = 10
+
     brkga_data = build_brkga(param_values...)
 
-    # After build, bias function is never CUSTOM
-    @test brkga_data.bias != CUSTOM
+    # After build, brkga_params function is never CUSTOM
+    @test brkga_data.params.bias_type != CUSTOM
 
     @test_throws ArgumentError set_bias_custom_function!(brkga_data, x -> x)
     @test_throws ArgumentError set_bias_custom_function!(brkga_data, x -> x + 1)
@@ -412,42 +388,45 @@ end
     set_bias_custom_function!(brkga_data, x -> 1.0 / log1p(x))
     @test brkga_data.total_bias_weight ≈ 6.554970525044798
 
-    # After 2nd call to set_bias_custom_function, bias function is always CUSTOM
-    @test brkga_data.bias == CUSTOM
+    # After 2nd call to set_bias_custom_function, brkga_params function is always CUSTOM
+    @test brkga_data.params.bias_type == CUSTOM
 
     set_bias_custom_function!(brkga_data, x -> 1.0 / x)
     @test brkga_data.total_bias_weight ≈ 2.9289682539682538
-    @test brkga_data.bias == CUSTOM
+    @test brkga_data.params.bias_type == CUSTOM
 
     set_bias_custom_function!(brkga_data, x -> x ^ -2.0)
     @test brkga_data.total_bias_weight ≈ 1.5497677311665408
-    @test brkga_data.bias == CUSTOM
+    @test brkga_data.params.bias_type == CUSTOM
 
     set_bias_custom_function!(brkga_data, x -> x ^ -3.0)
     @test brkga_data.total_bias_weight ≈ 1.197531985674193
-    @test brkga_data.bias == CUSTOM
+    @test brkga_data.params.bias_type == CUSTOM
 
     set_bias_custom_function!(brkga_data, x -> exp(-x))
     @test brkga_data.total_bias_weight ≈ 0.5819502851677112
-    @test brkga_data.bias == CUSTOM
+    @test brkga_data.params.bias_type == CUSTOM
 
-    set_bias_custom_function!(brkga_data, x -> 1.0 / brkga_data.total_parents)
+    set_bias_custom_function!(brkga_data, x -> 1.0 / brkga_data.params.total_parents)
     @test brkga_data.total_bias_weight ≈ 0.9999999999999999
-    @test brkga_data.bias == CUSTOM
+    @test brkga_data.params.bias_type == CUSTOM
 
     set_bias_custom_function!(brkga_data, x -> 0.6325 / sqrt(x))
     @test brkga_data.total_bias_weight ≈ 3.175781171302612
-    @test brkga_data.bias == CUSTOM
+    @test brkga_data.params.bias_type == CUSTOM
 
-    param_values = copy(default_param_values)
-    param_values[param_index["num_elite_parents"]] = 1
-    param_values[param_index["total_parents"]] = 2
+    #############################################
+    # Constant functions test for standard BRKGA
+    #############################################
+
+    param_values = deepcopy(default_param_values)
+    param_values[param_index["brkga_params"]].num_elite_parents = 1
+    param_values[param_index["brkga_params"]].total_parents = 2
     brkga_data = build_brkga(param_values...)
 
     rho = 0.5
     set_bias_custom_function!(brkga_data, x -> x ≈ 1.0 ? rho : 1.0 - rho)
     @test brkga_data.total_bias_weight ≈ 1.0
-    @test brkga_data.bias == CUSTOM
 
     rho = 0.75
     set_bias_custom_function!(brkga_data, x -> x ≈ 1.0 ? rho : 1.0 - rho)
@@ -461,14 +440,14 @@ end
 ################################################################################
 
 @testset "set_initial_population!()" begin
-    param_values = copy(default_param_values)
+    param_values = deepcopy(default_param_values)
     param_values[param_index["chr_size"]] = 3
-    param_values[param_index["num_independent_populations"]] = 2
+    param_values[param_index["brkga_params"]].num_independent_populations = 2
     brkga_data = build_brkga(param_values...)
     local_rng = MersenneTwister(param_values[param_index["seed"]])
 
     chromosomes = Array{Array{Float64, 1}, 1}(undef,
-        param_values[param_index["pop_size"]] + 1
+        param_values[param_index["brkga_params"]].population_size + 1
     )
     @test_throws ArgumentError set_initial_population!(brkga_data, chromosomes)
 

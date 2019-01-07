@@ -1,12 +1,12 @@
 ################################################################################
 # evolution_tests.jl: unit tests for evolutionary routines of BrkgaMpIpr.
 #
-# (c) Copyright 2018, Carlos Eduardo de Andrade. All Rights Reserved.
+# (c) Copyright 2019, Carlos Eduardo de Andrade. All Rights Reserved.
 #
 # This code is released under LICENSE.md.
 #
 # Created on:  Apr 19, 2018 by ceandrade
-# Last update: Nov 09, 2018 by ceandrade
+# Last update: Jan 07, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -26,9 +26,11 @@ include("util.jl")
 ################################################################################
 
 @testset "evolve_population!()" begin
-    param_values = copy(default_param_values)
-    param_values[param_index["num_elite_parents"]] = 2
-    param_values[param_index["total_parents"]] = 3
+    param_values = deepcopy(default_param_values)
+    brkga_params = param_values[param_index["brkga_params"]]
+    brkga_params.num_independent_populations = 3
+    brkga_params.num_elite_parents = 1
+    brkga_params.total_parents = 2
     brkga_data = build_brkga(param_values...)
 
     # Not initialized
@@ -39,7 +41,7 @@ include("util.jl")
     @test_throws ArgumentError BrkgaMpIpr.evolve_population!(brkga_data, 0)
     @test_throws ArgumentError BrkgaMpIpr.evolve_population!(brkga_data, -1)
     @test_throws ArgumentError BrkgaMpIpr.evolve_population!(brkga_data,
-        brkga_data.num_independent_populations + 1)
+        brkga_data.params.num_independent_populations + 1)
 
     # Save previous and current populations locally
     previous = deepcopy(brkga_data.previous)
@@ -49,7 +51,7 @@ include("util.jl")
     # Test if algorithm swaps the populations correctly
     ########################
 
-    for i in 1:brkga_data.num_independent_populations
+    for i in 1:brkga_data.params.num_independent_populations
         BrkgaMpIpr.evolve_population!(brkga_data, i)
 
         @test current[i].chromosomes == brkga_data.previous[i].chromosomes
@@ -115,14 +117,14 @@ include("util.jl")
     @test get_best_fitness(brkga_data) ≈ results["fitness1"]
     @test get_best_chromosome(brkga_data) ≈ results["chromosome1"]
 
-    for _ in 2:brkga_data.num_independent_populations
+    for _ in 2:brkga_data.params.num_independent_populations
         BrkgaMpIpr.evolve_population!(brkga_data, 2)
     end
     @test get_best_fitness(brkga_data) ≈ results["fitness2"]
     @test get_best_chromosome(brkga_data) ≈ results["chromosome2"]
 
     for _ in 1:100
-        for i in 1:brkga_data.num_independent_populations
+        for i in 1:brkga_data.params.num_independent_populations
             BrkgaMpIpr.evolve_population!(brkga_data, i)
         end
     end
@@ -147,7 +149,7 @@ include("util.jl")
     @test get_best_chromosome(brkga_data) ≈ results["chromosome2"]
 
     for _ in 1:100
-        for i in 1:brkga_data.num_independent_populations
+        for i in 1:brkga_data.params.num_independent_populations
             BrkgaMpIpr.evolve_population!(brkga_data, i)
         end
     end
@@ -158,7 +160,7 @@ end
 ################################################################################
 
 @testset "evolve!()" begin
-    param_values = copy(default_param_values)
+    param_values = deepcopy(default_param_values)
     brkga_data = build_brkga(param_values...)
 
     # Not initialized
@@ -185,7 +187,17 @@ end
     @test get_best_fitness(brkga_data) ≈ results["fitness2"]
     @test get_best_chromosome(brkga_data) ≈ results["chromosome2"]
 
+    # Evolve step by step, or all generations at once
+    # should produce the same results.
+    brkga_data2 = deepcopy(brkga_data)
     evolve!(brkga_data, 100)
+
+    for _ in 1:100
+        evolve!(brkga_data2, 1)
+    end
+
     @test get_best_fitness(brkga_data) ≈ results["fitness102"]
     @test get_best_chromosome(brkga_data) ≈ results["chromosome102"]
+    @test get_best_fitness(brkga_data2) ≈ results["fitness102"]
+    @test get_best_chromosome(brkga_data2) ≈ results["chromosome102"]
 end

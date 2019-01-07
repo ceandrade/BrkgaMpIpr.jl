@@ -2,4 +2,3 @@ Contributing
 =======================
 
 To be defined.
-
