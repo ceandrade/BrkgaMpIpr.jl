@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 06, 2018 by ceandrade
-# Last update: Jan 07, 2019 by ceandrade
+# Last update: Jan 08, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -139,7 +139,7 @@ end
                                  chromosome2::Array{Float64, 1},
                                  affect_solution::Function,
                                  block_size::Int64,
-                                 max_time::Int64,
+                                 max_time::Float64,
                                  percentage::Float64
         )::Tuple{Float64, Array{Float64, 1}}
 
@@ -198,7 +198,7 @@ this method **DOES NOT** perform health checks on the arguments.
   each iteration. If `block_size == 1`, the traditional path relinking is
   performed.
 
-- `max_time::Int64`: abort path-relinking when reach `max_time`.
+- `max_time::Float64`: abort path-relinking when reach `max_time`.
   If `max_time <= 0`, no limit is imposed. Given in seconds.
 
 - `percentage::Float64`: define the size, in percentage, of the path to
@@ -216,7 +216,7 @@ function direct_path_relink!(brkga_data::BrkgaData,
                              chromosome2::Array{Float64, 1},
                              affect_solution::Function,
                              block_size::Int64,
-                             max_time::Int64,
+                             max_time::Float64,
                              percentage::Float64
     )::Array{Any, 1}
 
@@ -361,7 +361,7 @@ end
                                             chromosome2::Array{Float64, 1},
                                             affect_solution::Function,
                                             block_size::Int64,
-                                            max_time::Int64,
+                                            max_time::Float64,
                                             percentage::Float64
         )::Tuple{Float64, Array{Float64, 1}}
 
@@ -404,7 +404,7 @@ this method **DOES NOT** perform health checks on the arguments.
 
 - `block_size::Int64`: not used in this function but kept to API compatibility.
 
-- `max_time::Int64`: abort path-relinking when reach `max_time`.
+- `max_time::Float64`: abort path-relinking when reach `max_time`.
   If `max_time <= 0`, no limit is imposed. Given in seconds.
 
 - `percentage::Float64`: define the size, in percentage, of the path to
@@ -421,7 +421,7 @@ function permutation_based_path_relink!(brkga_data::BrkgaData,
                                         chromosome2::Array{Float64, 1},
                                         affect_solution::Function,
                                         block_size::Int64,
-                                        max_time::Int64,
+                                        max_time::Float64,
                                         percentage::Float64
     )::Array{Any, 1}
 
@@ -669,7 +669,7 @@ environmental variable `JULIA_NUM_THREADS = 1`
   iteration. If one, the traditional path relinking is performed.
   It must be ≥ 1.
 
-- `max_time::Int64 = 0`: abort path-relinking when reach `max_time`.
+- `max_time::Float64 = 0`: abort path-relinking when reach `max_time`.
   If `max_time ≤ 0`, no limit is imposed. Given in seconds.
 
 - `percentage::Float64 = 1.0`: define the size, in percentage, of the path to
@@ -692,7 +692,7 @@ function path_relink!(brkga_data::BrkgaData,
                       pr_type::PathRelinkingType,
                       pr_selection::PathRelinkingSelection,
                       block_size::Int64 = 1,
-                      max_time::Int64 = 0,
+                      max_time::Float64 = 0.0,
                       percentage::Float64 = 1.0
     )::PathRelinkingResult
 
@@ -711,7 +711,7 @@ function path_relink!(brkga_data::BrkgaData,
     end
 
     if max_time <= 0
-        max_time = typemax(Int64)
+        max_time = typemax(Float64)
     end
 
     bd = brkga_data
@@ -801,7 +801,7 @@ function path_relink!(brkga_data::BrkgaData,
         # best_found[2] -> chromosome
         best_found = func(bd, initial_solution, guiding_solution,
                           affect_solution, block_size,
-                          max_time - Int64(ceil(elapsed_seconds)), percentage)
+                          max_time - elapsed_seconds, percentage)
 
         final_status |= NO_IMPROVEMENT
 

@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 06, 2018 by ceandrade
-# Last update: Jan 07, 2019 by ceandrade
+# Last update: Jan 08, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -117,7 +117,7 @@ end
                 brkga_data.current[1].chromosomes[2], #chromosome2
                 (x, y) -> false, #affect_solution::Function,
                 1, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.1234 #percentage::Float64
     )
     @test tmp == [Inf, Array{Float64, 1}()]
@@ -132,7 +132,7 @@ end
                 brkga_data.current[1].chromosomes[2], #chromosome2
                 (x, y) -> false, #affect_solution::Function,
                 1, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.1234 #percentage::Float64
     )
     @test tmp == [-Inf, Array{Float64, 1}()]
@@ -154,7 +154,7 @@ end
                 brkga_data.current[1].chromosomes[2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 1, #block_size::Int64,
-                5, #max_time::Int64,
+                5.0, #max_time::Float64,
                 1.0 #percentage::Float64
     )
     @test ceil(time() - start_time) ≈ 6.0
@@ -166,7 +166,7 @@ end
                 brkga_data.current[1].chromosomes[2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 1, #block_size::Int64,
-                10, #max_time::Int64,
+                10.0, #max_time::Float64,
                 1.0 #percentage::Float64
     )
     @test ceil(time() - start_time) ≈ 11.0
@@ -197,7 +197,7 @@ end
                 brkga_data.current[1].chromosomes[2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 1, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.5 #percentage::Float64
     )
     @test block1[1] ≈ results["block1"][1]
@@ -211,7 +211,7 @@ end
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 10, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.5 #percentage::Float64
     )
     @test block10[1] ≈ results["block10"][1]
@@ -225,7 +225,7 @@ end
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 100, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.5 #percentage::Float64
     )
     @test block100[1] ≈ results["block100"][1]
@@ -239,7 +239,7 @@ end
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 400, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.5 #percentage::Float64
     )
     @test block400[1] ≈ results["block400"][1]
@@ -253,7 +253,7 @@ end
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 372, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.5 #percentage::Float64
     )
     @test block372[1] ≈ results["block372"][1]
@@ -271,7 +271,7 @@ end
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 10, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.1 #percentage::Float64
     )
     @test path10[1] ≈ results["path10"][1]
@@ -285,7 +285,7 @@ end
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 10, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.3 #percentage::Float64
     )
     @test path30[1] ≈ results["path30"][1]
@@ -299,7 +299,7 @@ end
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 10, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.50 #percentage::Float64
     )
     @test path50[1] ≈ results["path50"][1]
@@ -313,7 +313,7 @@ end
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 10, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 1.0 #percentage::Float64
     )
     @test path100[1] ≈ results["path100"][1]
@@ -331,7 +331,7 @@ end
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> x[1] < y[2], #affect_solution::Function,
                 10, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.5 #percentage::Float64
     )
     @test xy[1] ≈ results["xy"][1]
@@ -345,7 +345,7 @@ end
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> x[1] > y[2], #affect_solution::Function,
                 10, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.5 #percentage::Float64
     )
     @test yx[1] ≈ results["yx"][1]
@@ -377,7 +377,7 @@ end
                 brkga_data.current[1].chromosomes[2], #chromosome2
                 (x, y) -> false, #affect_solution::Function,
                 1, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.1234 #percentage::Float64
     )
     @test tmp == [-Inf, Array{Float64, 1}()]
@@ -394,7 +394,7 @@ end
                 brkga_data.current[1].chromosomes[2], #chromosome2
                 (x, y) -> false, #affect_solution::Function,
                 1, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.1234 #percentage::Float64
     )
     @test tmp == [Inf, Array{Float64, 1}()]
@@ -416,7 +416,7 @@ end
                 brkga_data.current[1].chromosomes[2], #chromosome2
                 (x, y) -> false, #affect_solution::Function,
                 1, #block_size::Int64,
-                5, #max_time::Int64,
+                5.0, #max_time::Float64,
                 1.0 #percentage::Float64
     )
     @test ceil(time() - start_time) ≈ 6.0
@@ -428,7 +428,7 @@ end
                 brkga_data.current[1].chromosomes[2], #chromosome2
                 (x, y) -> false, #affect_solution::Function,
                 1, #block_size::Int64,
-                10, #max_time::Int64,
+                10.0, #max_time::Float64,
                 1.0 #percentage::Float64
     )
     @test ceil(time() - start_time) ≈ 11.0
@@ -459,7 +459,7 @@ end
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 1, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.5 #percentage::Float64
     )
 
@@ -471,7 +471,7 @@ end
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 10, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.5 #percentage::Float64
     )
     @test block10[1] ≈ results["block10"][1]
@@ -485,7 +485,7 @@ end
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 100, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.5 #percentage::Float64
     )
     @test block100[1] ≈ results["block100"][1]
@@ -499,7 +499,7 @@ end
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 400, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.5 #percentage::Float64
     )
     @test block400[1] ≈ results["block400"][1]
@@ -513,7 +513,7 @@ end
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 372, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.5 #percentage::Float64
     )
     @test block372[1] ≈ results["block372"][1]
@@ -531,7 +531,7 @@ end
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 10, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.1 #percentage::Float64
     )
     @test path10[1] ≈ results["path10"][1]
@@ -545,7 +545,7 @@ end
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 10, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.3 #percentage::Float64
     )
     @test path30[1] ≈ results["path30"][1]
@@ -559,7 +559,7 @@ end
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 10, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 0.5 #percentage::Float64
     )
     @test path50[1] ≈ results["path50"][1]
@@ -573,7 +573,7 @@ end
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 10, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Float64,
                 1.0 #percentage::Float64
     )
     @test path100[1] ≈ results["path100"][1]
@@ -591,7 +591,7 @@ end
             brkga_data.current[1].chromosomes[chr2], #chromosome2
             (x, y) -> x[1] < y[2], #affect_solution::Function,
             10, #block_size::Int64,
-            120, #max_time::Int64,
+            120.0, #max_time::Float64,
             0.5 #percentage::Float64
     )
     @test xy[1] ≈ results["xy"][1]
@@ -605,7 +605,7 @@ end
             brkga_data.current[1].chromosomes[chr2], #chromosome2
             (x, y) -> x[1] > y[2], #affect_solution::Function,
             10, #block_size::Int64,
-            120, #max_time::Int64,
+            120.0, #max_time::Float64,
             0.5 #percentage::Float64
     )
     @test yx[1] ≈ results["yx"][1]
@@ -636,7 +636,7 @@ end
                                             DIRECT, #::PathRelinkingType,
                                             BESTSOLUTION, # PathRelinkingSelection
                                             1, #block_size::Int64,
-                                            120, #max_time::Int64,
+                                            120.0, #max_time::Float64,
                                             1.0 #percentage::Float64
                                             )
 
@@ -650,7 +650,7 @@ end
                                             DIRECT, #::PathRelinkingType,
                                             BESTSOLUTION, # PathRelinkingSelection
                                             1, #block_size::Int64,
-                                            120, #max_time::Int64,
+                                            120.0, #max_time::Float64,
                                             -0.1 #percentage::Float64
                                             )
 
@@ -662,7 +662,7 @@ end
                                             DIRECT, #::PathRelinkingType,
                                             BESTSOLUTION, # PathRelinkingSelection
                                             1, #block_size::Int64,
-                                            120, #max_time::Int64,
+                                            120.0, #max_time::Float64,
                                             1.01 #percentage::Float64
                                             )
 
@@ -674,7 +674,7 @@ end
                                             DIRECT, #::PathRelinkingType,
                                             BESTSOLUTION, # PathRelinkingSelection
                                             0, #block_size::Int64,
-                                            120, #max_time::Int64,
+                                            120.0, #max_time::Float64,
                                             1.0 #percentage::Float64
                                             )
 
@@ -686,7 +686,7 @@ end
                                             DIRECT, #::PathRelinkingType,
                                             BESTSOLUTION, # PathRelinkingSelection
                                             -10, #block_size::Int64,
-                                            120, #max_time::Int64,
+                                            120.0, #max_time::Float64,
                                             1.0 #percentage::Float64
                                             )
 
@@ -703,7 +703,7 @@ end
         DIRECT, #::PathRelinkingType,
         RANDOMELITE, # PathRelinkingSelection
         1, #block_size::Int64,
-        2, #max_time::Int64,
+        2.0, #max_time::Float64,
         1.0 #percentage::Float64
     )
 
@@ -723,7 +723,7 @@ end
         DIRECT, #::PathRelinkingType,
         RANDOMELITE, # PathRelinkingSelection
         1, #block_size::Int64,
-        10, #max_time::Int64,
+        10.0, #max_time::Float64,
         1.0, #percentage::Float64
     )
 
@@ -778,7 +778,7 @@ end
             DIRECT, #::PathRelinkingType,
             BESTSOLUTION, # PathRelinkingSelection
             1, #block_size::Int64,
-            10, #max_time::Int64,
+            10.0, #max_time::Float64,
             1.0, #percentage::Float64
         )
 
@@ -812,7 +812,7 @@ end
         PERMUTATION, #::PathRelinkingType,
         RANDOMELITE, # PathRelinkingSelection
         1, #block_size::Int64,
-        0, #max_time::Int64,
+        0.0, #max_time::Float64,
         1.0, #percentage::Float64
     )
 
@@ -873,7 +873,7 @@ end
         PERMUTATION, #::PathRelinkingType,
         RANDOMELITE, # PathRelinkingSelection
         1, #block_size::Int64,
-        0, #max_time::Int64,
+        0.0, #max_time::Float64,
         1.0, #percentage::Float64
     )
 
@@ -931,7 +931,7 @@ end
         DIRECT, #::PathRelinkingType,
         BESTSOLUTION, # PathRelinkingSelection
         1, #block_size::Int64,
-        0, #max_time::Int64,
+        0.0, #max_time::Float64,
         1.0, #percentage::Float64
     )
 
