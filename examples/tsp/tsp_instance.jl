@@ -7,7 +7,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Dec 28, 2018 by ceandrade
-# Last update: Dec 28, 2018 by ceandrade
+# Last update: Jan 08, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -85,11 +85,11 @@ end
 ################################################################################
 
 """
-    function distance(instance::TSP_Instance, i::Int64, j::Int64)
+    function distance(instance::TSP_Instance, i::Int64, j::Int64)::Float64
 
 Return the distance between nodes `i` and `j`.
 """
-@inline function distance(instance::TSP_Instance, i::Int64, j::Int64)
+@inline function distance(instance::TSP_Instance, i::Int64, j::Int64)::Float64
     if i > j
         i, j = j, i
     end

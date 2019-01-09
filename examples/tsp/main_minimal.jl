@@ -54,7 +54,7 @@ instance = TSP_Instance(instance_file)
 ########################################
 
 println("Building BRKGA data and initializing...")
-(brkga_data, control_params) = build_brkga(
+brkga_data, control_params = build_brkga(
     instance, tsp_decode!, MINIMIZE, seed, instance.num_nodes,
     configuration_file
 )
