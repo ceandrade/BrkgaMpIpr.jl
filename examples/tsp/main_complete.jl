@@ -255,7 +255,7 @@ function main(args)
         iter_without_improvement = iteration - last_update_iteration
 
         # Here, we call the path relink when the algorithm gets stuck for
-        # `exchange_interval` iterations. Obvisualy, we can use many other ways
+        # `exchange_interval` iterations. Obviously, we can use many other ways
         # of hybridization.
         if control_params.exchange_interval > 0 &&
            iter_without_improvement > 0 &&

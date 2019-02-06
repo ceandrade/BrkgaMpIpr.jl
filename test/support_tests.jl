@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 26, 2018 by ceandrade
-# Last update: Jan 04, 2018 by ceandrade
+# Last update: Feb 05, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -423,4 +423,29 @@ end
     # Population 2 must be intact.
     @test brkga_data.current[2].fitness[1][1] != 101.0
     @test brkga_data.current[2].fitness[end][1] != -10.0
+end
+
+################################################################################
+
+@testset "permutation_shake!()" begin
+    param_values = deepcopy(default_param_values)
+    param_values[param_index["chr_size"]] = 10
+    param_values[param_index["brkga_params"]].population_size = 5
+    param_values[param_index["brkga_params"]].elite_percentage = 0.4
+    param_values[param_index["brkga_params"]].num_independent_populations = 1
+    param_values[param_index["instance"]] = Instance(10)
+    default_param_values[param_index["decode!"]] = sum_decode!
+
+    brkga_data = build_brkga(param_values...)
+
+    @test_throws ErrorException shake!(brkga_data, 1, CHANGE, 1)
+
+    initialize!(brkga_data)
+
+    @assert brkga_data.elite_size == 2
+
+    @test_throws ArgumentError shake!(brkga_data, -1, CHANGE, 1)
+    @test_throws ArgumentError shake!(brkga_data, 1, CHANGE, -1)
+
+    # TODO (ceandrade): implement the full tests.
 end

@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 26, 2018 by ceandrade
-# Last update: Jan 04, 2019 by ceandrade
+# Last update: Feb 05, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -309,5 +309,93 @@ function inject_chromosome!(brkga_data::BrkgaData,
 
     pop.fitness[position] = (fitness, idx)
     sort!(pop.fitness, rev = (bd.opt_sense == MAXIMIZE))
+    nothing
+end
+
+################################################################################
+
+"""
+    function shake!(brkga_data::BrkgaData, intensity::Int64,
+                    shaking_type::ShakingType, population_index::Int64 = Inf64)
+
+Perform a shaking in the chosen population. The procedure applies changes
+(shaking) on elite chromosomes and fully reset the remaining population.
+
+# Arguments
+- intensity::Int64: the intensity of the shaking (> 0);
+- shaking_type::ShakingType: either `CHANGE` or `SWAP` moves;
+- population_index::Int64: the index of the population to be shaken.
+  If `population_index > num_independent_populations`, all populations are
+  shaken.
+
+# Throws
+- `ErrorException`: if [`initialize!`](@ref) has not been called before.
+- `ArgumentError`: when `population_index < 1` or `intensity < 1`.
+"""
+function shake!(brkga_data::BrkgaData, intensity::Int64,
+                shaking_type::ShakingType, population_index::Int64 = Inf64)
+    bd = brkga_data
+    if !bd.initialized
+        error("the algorithm hasn't been initialized. Call initialize!() " *
+              "before shake!()")
+    end
+
+    if intensity < 1
+        msg = "intensity must be larger than zero: $intensity"
+        throw(ArgumentError(msg))
+    end
+
+    if population_index < 1
+        msg = "population index must be larger than zero: $population_index"
+        throw(ArgumentError(msg))
+    end
+
+    if population_index > bd.params.num_independent_populations
+        pop_start = 1
+        pop_end = bd.params.num_independent_populations
+    else
+        pop_start = population_index
+        pop_end = population_index
+    end
+
+    for pop_idx in pop_start:pop_end
+        pop = brkga_data.current[pop_idx].chromosomes
+
+        # Shake the elite set.
+        for e in 1:bd.elite_size, k in 1:intensity
+            i = rand(bd.rng, 1:(bd.chromosome_size - 1))
+            if shaking_type == CHANGE
+                # Invert value.
+                pop[e][i] = 1.0 - pop[e][i]
+            else
+                # Swap with neighbor.
+                pop[e][i], pop[e][i + 1] = pop[e][i + 1], pop[e][i]
+            end
+
+            i = rand(bd.rng, 1:bd.chromosome_size)
+            if shaking_type == CHANGE
+                # Change to random value.
+                pop[e][i] = rand(bd.rng)
+            else
+                # Swap two random positions.
+                j = rand(bd.rng, 1:bd.chromosome_size)
+                pop[e][i], pop[e][j] = pop[e][j], pop[e][i]
+            end
+        end
+
+        # Reset the remaining population.
+        for chr in (bd.elite_size + 1):bd.params.population_size
+            pop[chr] .= rand(bd.rng, bd.chromosome_size)
+        end
+
+        # Perform the decoding.
+        curr = brkga_data.current[pop_idx]
+        Threads.@threads for i in 1:bd.params.population_size
+            value = bd.decode!(curr.chromosomes[i], bd.problem_instance)
+            curr.fitness[i] = (value, i)
+        end
+
+        sort!(curr.fitness, rev = (bd.opt_sense == MAXIMIZE))
+    end
     nothing
 end

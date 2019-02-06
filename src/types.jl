@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Jan 04, 2019 by ceandrade
+# Last update: Feb 04, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -122,6 +122,28 @@ Specifies the result type/status of path relink procedure:
     NO_IMPROVEMENT = 1
     ELITE_IMPROVEMENT = 3
     BEST_IMPROVEMENT = 7
+end
+
+################################################################################
+
+"""
+    @enum ShakingType
+
+Specifies the type of shaking to be performed.
+
+    - CHANGE: applies the following permutations:
+        1) inverts the value of a random chosen, i.e., from `value` to
+           ` 1 - value`;
+        2) assign a random value to a random key.
+
+    - SWAP: applies two swap perturbations:
+        1) swaps the values of a randomly chosen key `i` and its
+           neighbor `i + 1`;
+        2) swaps values of two randomly chosen keys.
+"""
+@enum ShakingType begin
+    CHANGE = 0
+    SWAP = 1
 end
 
 ################################################################################
