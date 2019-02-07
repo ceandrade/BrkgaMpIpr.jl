@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Apr 19, 2018 by ceandrade
-# Last update: Jan 07, 2019 by ceandrade
+# Last update: Feb 06, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -25,10 +25,16 @@
     evolve!(brkga_data::BrkgaData, num_generations::Int64 = 1)
 
 Evolve the current populations following the guidelines of Multi-parent BRKGAs
-for `num_generations` generations
+for `num_generations` generations.
+
+**NOTE:** the decoding is done in parallel using threads, and the user
+**must guarantee that the decoder is THREAD-SAFE.** If such property cannot be
+held, we suggest using single thread by setting the environmental variable
+`JULIA_NUM_THREADS = 1` [(see Julia Parallel Computing)]
+(https://docs.julialang.org/en/v1.1/manual/parallel-computing/).
 
 # Throws
-- `ErrorException`: if `initialize!()` was not called before.
+- `ErrorException`: if [`initialize!()`](@ref) was not called before.
 - `ArgumentError`: when `num_generations < 1`.
 """
 function evolve!(brkga_data::BrkgaData, num_generations::Int64 = 1)
@@ -57,8 +63,14 @@ end
 
 Evolve the population `population_index` to the next.
 
+**NOTE:** the decoding is done in parallel using threads, and the user
+**must guarantee that the decoder is THREAD-SAFE.** If such property cannot be
+held, we suggest using single thread by setting the environmental variable
+`JULIA_NUM_THREADS = 1` [(see Julia Parallel Computing)]
+(https://docs.julialang.org/en/v1.1/manual/parallel-computing/).
+
 # Throws
-- `ErrorException`: if `initialize!()` was not called before.
+- `ErrorException`: if [`initialize!()`](@ref) was not called before.
 - `ArgumentError`: when `population_index < 1` or
   `population_index > num_independent_populations`.
 """

@@ -39,8 +39,8 @@ const empty_function() = nothing
 
 Build a [`BrkgaData`](@ref) object to be used in the evolutionary and path
 relink procedures. Such data structure should not be changed outside the
-[`BrkgaMpIpr`](@ref) functions. This version accepts all control arguments,
-and it is handy for tuning purposes.
+`BrkgaMpIpr` functions. This version accepts all control arguments, and it is
+handy for tuning purposes.
 
 # Arguments
 - `problem_instance::AbstractInstance`: an instance to the problem to be
@@ -182,10 +182,10 @@ end
         evolutionary_mechanism_on)::Tuple{BrkgaData, ExternalControlParams}
 
 Build a [`BrkgaData`](@ref) object to be used in the evolutionary and path
-relink procedures, and a [`ExternalControlParams`](@ref) that holds additional
-control parameters. Note that [`BrkgaData`](@ref) should not be changed outside
-the [`BrkgaMpIpr`](@ref) functions. This version reads most of the parameters
-from a configuration file.
+relink procedures, and a [`ExternalControlParams`](@ref) that holds
+additional control parameters. Note that [`BrkgaData`](@ref) should not be
+changed outside the `BrkgaMpIpr` functions. This version reads most of the
+parameters from a configuration file.
 
 # Arguments
 - `problem_instance::AbstractInstance`: an instance to the problem to be

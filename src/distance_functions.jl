@@ -73,7 +73,7 @@ Return `true` the the changing of the blocks of keys `block1` by the
 blocks of keys `block2` affects the solution, based on the
 [Hamming distance](https://en.wikipedia.org/wiki/Hamming_distance).
 
-**Note 1:** this function may be more appropriated to threshold/direct
+**NOTE 1:** this function may be more appropriated to threshold/direct
 chromosome representations.
 
 **NOTE 2:** `block1` and `block2` must have the same size. No bounds checking

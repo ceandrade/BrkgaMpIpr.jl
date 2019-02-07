@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 06, 2018 by ceandrade
-# Last update: Jan 08, 2019 by ceandrade
+# Last update: Feb 06, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -147,12 +147,12 @@ Perform the direct path relinking, changing each allele or block
 of alleles of base chromosome for the correspondent one in the guide
 chromosome.
 
-The API will call [`decode!()`](@ref) function always with
-`writeback = false`. The reason is that if the decoder rewrites the
-chromosome, the path between solutions is lost and inadvertent results may
-come up. Note that at the end of the path relinking, the method calls the
-decoder with `writeback = true` in the best chromosome found to guarantee
-that this chromosome is re-written to reflect the best solution found.
+The API will call `decode!()` function always with `writeback = false`. The
+reason is that if the decoder rewrites the chromosome, the path between
+solutions is lost and inadvertent results may come up. Note that at the end
+of the path relinking, the method calls the decoder with `writeback = true`
+in the best chromosome found to guarantee that this chromosome is re-written
+to reflect the best solution found.
 
 This method is a multi-thread implementation. Instead of to build and
 decode each chromosome one at a time, the method builds a list of
@@ -161,11 +161,11 @@ and then decode all candidates in parallel. Note that
 `O(chromosome_size^2 / block_size)` additional memory is necessary to build
 the candidates, which can be costly if the `chromosome_size` is very large.
 
-**NOTE:** as it is in [`evolve()`](@ref), the decoding is done in parallel using
-threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
+**NOTE:** as it is in [`evolve!()`](@ref), the decoding is done in parallel
+using threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
 If such property cannot be held, we suggest using single thread by setting the
-environmental variable `JULIA_NUM_THREADS = 1`
-(see https://docs.julialang.org/en/stable/manual/parallel-computing).
+environmental variable `JULIA_NUM_THREADS = 1` [(see Julia Parallel Computing)]
+(https://docs.julialang.org/en/v1.1/manual/parallel-computing/).
 
 **THIS IS AN INTERNAL METHOD AND IT IS NOT MEANT TO BE USED DIRECTLY. IT IS
 CALLED FROM THE [`path_relink()`](@ref) FUNCTION.** Due to this reason,
@@ -188,8 +188,8 @@ this method **DOES NOT** perform health checks on the arguments.
   key blocks, of even the whole chromosome. `affect_solution` takes two
   views/subarrays. The function **MUST HAVE** the following signature
 
-        `affect_solution(block1::SubArray{Float64, 1},
-                         block2::SubArray{Float64, 1})::Bool`
+        affect_solution(block1::SubArray{Float64, 1},
+                        block2::SubArray{Float64, 1})::Bool
 
   **NOTE: this function depends on the problem structure and how the
   keys/alleles are used.**
@@ -369,12 +369,12 @@ Perform the permutation-based path relinking. In this method, the permutation
 induced by the keys in the guide solution is used to change the order of the
 keys in the permutation induced by the base solution.
 
-The API will call [`decode!()`](@ref) function always with
-`writeback = false`. The reason is that if the decoder rewrites the chromosome,
-the path between solutions is lost and inadvertent results may come up.
-Note that at the end of the path relinking, the method calls the decoder with
-`writeback = true` in the best chromosome found to guarantee that this
-chromosome is re-written to reflect the best solution found.
+The API will call `decode!()` function always with `writeback = false`. The
+reason is that if the decoder rewrites the chromosome, the path between
+solutions is lost and inadvertent results may come up. Note that at the end
+of the path relinking, the method calls the decoder with `writeback = true`
+in the best chromosome found to guarantee that this chromosome is re-written
+to reflect the best solution found.
 
 This method is a multi-thread implementation. Instead of to build and
 decode each chromosome one at a time, the method builds a list of
@@ -383,11 +383,11 @@ and then decode all candidates in parallel. Note that
 `O(chromosome_size^2 / block_size)` additional memory is necessary to build
 the candidates, which can be costly if the `chromosome_size` is very large.
 
-**NOTE:** as it is in [`evolve()`](@ref), the decoding is done in parallel using
-threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
+**NOTE:** as it is in [`evolve!()`](@ref), the decoding is done in parallel
+using threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
 If such property cannot be held, we suggest using single thread by setting the
-environmental variable `JULIA_NUM_THREADS = 1`
-(see https://docs.julialang.org/en/stable/manual/parallel-computing).
+environmental variable `JULIA_NUM_THREADS = 1` [(see Julia Parallel Computing)]
+(https://docs.julialang.org/en/v1.1/manual/parallel-computing/).
 
 **THIS IS AN INTERNAL METHOD AND IT IS NOT MEANT TO BE USED DIRECTLY. IT IS
 CALLED FROM THE [`path_relink()`](@ref) FUNCTION.** Due to this reason,
@@ -607,12 +607,12 @@ populations (in a circular fashion, as described above). Yet, if such pairs
 are not found in any case, the algorithm declares failure. This indicates
 that the populations are very homogeneous.
 
-The API will call [`decode!()`](@ref) function always with
-`writeback = false`. The reason is that if the decoder rewrites the chromosome,
-the path between solutions is lost and inadvertent results may come up.
-Note that at the end of the path relinking, the method calls the decoder with
-`writeback = true` in the best chromosome found to guarantee that this
-chromosome is re-written to reflect the best solution found.
+The API will call `decode!()` function always with `writeback = false`. The
+reason is that if the decoder rewrites the chromosome, the path between
+solutions is lost and inadvertent results may come up. Note that at the end
+of the path relinking, the method calls the decoder with `writeback = true`
+in the best chromosome found to guarantee that this chromosome is re-written
+to reflect the best solution found.
 
 This method is a multi-thread implementation. Instead of to build and
 decode each chromosome one at a time, the method builds a list of
@@ -621,11 +621,11 @@ and then decode all candidates in parallel. Note that
 `O(chromosome_size^2 / block_size)` additional memory is necessary to build
 the candidates, which can be costly if the `chromosome_size` is very large.
 
-**NOTE:** as it is in [`evolve()`](@ref), the decoding is done in parallel using
-threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
+**NOTE:** as it is in [`evolve!()`](@ref), the decoding is done in parallel
+using threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
 If such property cannot be held, we suggest using single thread by setting the
-environmental variable `JULIA_NUM_THREADS = 1`
-(see https://docs.julialang.org/en/stable/manual/parallel-computing).
+environmental variable `JULIA_NUM_THREADS = 1` [(see Julia Parallel Computing)]
+(https://docs.julialang.org/en/v1.1/manual/parallel-computing/).
 
 # Arguments
 - `brkga_data::BrkgaData`: the BRKGA data.
@@ -647,8 +647,8 @@ environmental variable `JULIA_NUM_THREADS = 1`
   key blocks, of even the whole chromosome. `affect_solution` takes two
   views/subarrays. The function **MUST HAVE** the following signature
 
-        `affect_solution(block1::SubArray{Float64, 1},
-                         block2::SubArray{Float64, 1})::Float64`
+        affect_solution(block1::SubArray{Float64, 1},
+                        block2::SubArray{Float64, 1})::Float64
 
   **NOTE: this function depends on the problem structure and how the
   keys/alleles are used.**
@@ -680,7 +680,7 @@ environmental variable `JULIA_NUM_THREADS = 1`
 - Returns `PathRelinkingResult` depending of the relink status.
 
 # Throws
-- `ErrorException`: if `initialize!()` was not called before.
+- `ErrorException`: if [`initialize!()`](@ref) was not called before.
 - `ArgumentError`: when `percentage < 1e-6 || percentage > 1.0` and
   `block_size < 1`.
 """

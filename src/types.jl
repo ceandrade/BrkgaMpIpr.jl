@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Feb 04, 2019 by ceandrade
+# Last update: Feb 05, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -41,21 +41,21 @@ end
     @enum BiasFunction
 
 Specifies a bias function when choosing parents to mating. This function
-substitutes the `rhoe` parameter from the original BRKGA. For a given
-rank r, we have the following functions:
+substitutes the ``\\rho`` (rho) parameter from the original BRKGA.
+For a given rank ``r``, we have the following functions:
 
-    - CONSTANT: 1 / number of parents for mating (all individuals have the
+  - `CONSTANT`: 1 / number of parents for mating (all individuals have the
                 same probability)
 
-    - CUBIC: r^-3
+  - `CUBIC`: ``r^{-3}``
 
-    - EXPONENTIAL: ϵ^-r
+  - `EXPONENTIAL`: ``ϵ^{-r}``
 
-    - LINEAR: 1/r
+  - `LINEAR`: ``1 / r``
 
-    - LOGINVERSE: 1 / log(r + 1)
+  - `LOGINVERSE`: ``1 / \\log(r + 1)``
 
-    - QUADRATIC: r^-2
+  - `QUADRATIC`: ``r^{-2}``
 """
 @enum BiasFunction begin
     CONSTANT = 0
@@ -74,9 +74,9 @@ end
 
 Specifies type of path relinking:
 
-    - DIRECT: changes each key for the correspondent in the other chromosome.
+  - `DIRECT`: changes each key for the correspondent in the other chromosome.
 
-    - PERMUTATION: switches the order of a key for that in the other chromosome.
+  - `PERMUTATION`: switches the order of a key for that in the other chromosome.
 """
 @enum PathRelinkingType begin
     DIRECT = 0
@@ -90,9 +90,9 @@ end
 
 Specifies which individuals used to build the path:
 
-    - BESTSOLUTION: selects, in the order, the best solution of each population.
+  - `BESTSOLUTION`: selects, in the order, the best solution of each population.
 
-    - RANDOMELITE: chooses uniformly random solutions from the elite sets.
+  - `RANDOMELITE`: chooses uniformly random solutions from the elite sets.
 """
 @enum PathRelinkingSelection begin
     BESTSOLUTION = 0
@@ -106,16 +106,16 @@ end
 
 Specifies the result type/status of path relink procedure:
 
-    - TOO_HOMOGENEOUS: the chromosomes among the populations are too homogeneous
+  - `TOO_HOMOGENEOUS`: the chromosomes among the populations are too homogeneous
                        and the path relink will not generate improveded
                        solutions.
 
-    - NO_IMPROVEMENT: path relink was done but no improveded solution was found.
+  - `NO_IMPROVEMENT`: path relink was done but no improveded solution was found.
 
-    - ELITE_IMPROVEMENT: an improved solution among the elite set was found,
+  - `ELITE_IMPROVEMENT`: an improved solution among the elite set was found,
                          but the best solution was not improved.
 
-    - BEST_IMPROVEMENT: the best solution was improved.
+  - `BEST_IMPROVEMENT`: the best solution was improved.
 """
 @enum PathRelinkingResult begin
     TOO_HOMOGENEOUS = 0
@@ -131,15 +131,15 @@ end
 
 Specifies the type of shaking to be performed.
 
-    - CHANGE: applies the following permutations:
-        1) inverts the value of a random chosen, i.e., from `value` to
-           ` 1 - value`;
-        2) assign a random value to a random key.
+  - `CHANGE`: applies the following permutations:
+    1) Inverts the value of a random chosen, i.e., from `value` to
+       `1 - value`;
+    2) Assigns a random value to a random key.
 
-    - SWAP: applies two swap perturbations:
-        1) swaps the values of a randomly chosen key `i` and its
-           neighbor `i + 1`;
-        2) swaps values of two randomly chosen keys.
+  - `SWAP`: applies two swap perturbations:
+    1) Swaps the values of a randomly chosen key `i` and its
+       neighbor `i + 1`;
+    2) Swaps values of two randomly chosen keys.
 """
 @enum ShakingType begin
     CHANGE = 0
