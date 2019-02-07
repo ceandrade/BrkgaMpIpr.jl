@@ -28,7 +28,7 @@
 """
     @enum Sense
 
-Specifies the objective function as minimization (0) or maximization (1).
+Tells the algorithm either to `MINIMIZE` or `MAXIMIZE` the objective function.
 """
 @enum Sense begin
    MINIMIZE = 0
@@ -294,7 +294,7 @@ end
 ################################################################################
 
 """
-    mutable struct ControlParams
+    mutable struct ExternalControlParams
 
 Represents additional control parameters that can be used outside this
 framework. You can load these parameters from a configuration file using

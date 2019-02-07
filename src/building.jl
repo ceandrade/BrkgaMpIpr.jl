@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Jan 04, 2019 by ceandrade
+# Last update: Feb 07, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -62,10 +62,11 @@ handy for tuning purposes.
 - `chromosome_size::Int64`: number of genes in each chromosome.
 
 - `brkga_params::BrkgaParams`: BRKGA and IPR parameters object loaded from
-  a configuration file or manually created.
+  a configuration file or manually created. All the data is deep-copied.
 
 - `evolutionary_mechanism_on::Bool = true`: if false, no evolution is performed
-  but only chromosome decoding. Very useful to emulate a multi-start algorithm.
+  but only chromosome decoding. On each generation, all population is replaced
+  excluding the best chromosome. Very useful to emulate a multi-start algorithm.
 
 # Throws
 - `ArgumentError`: in several cases where the arguments or a combination of them
@@ -87,7 +88,7 @@ function build_brkga(problem_instance::AbstractInstance,
         num_mutants = floor(Int64, bp.mutants_percentage * bp.population_size)
     else
         elite_size = 1
-        num_mutants = brkga_params.population_size - 1
+        num_mutants = bp.population_size - 1
     end
 
     # Check for errors.
@@ -132,7 +133,7 @@ function build_brkga(problem_instance::AbstractInstance,
     brkga_data = BrkgaData(
         opt_sense,
         chromosome_size,
-        brkga_params,
+        deepcopy(brkga_params),
         elite_size,
         num_mutants,
         evolutionary_mechanism_on,
@@ -210,8 +211,9 @@ parameters from a configuration file.
   example can be found at <a href="example.conf">example.conf</a>. Note that
   the content after "#" is considered comments and it is ignored.
 
- - `evolutionary_mechanism_on::Bool = true`: if false, no evolution is performed
-   but only chromosome decoding. Very useful to emulate a multi-start algorithm.
+  - `evolutionary_mechanism_on::Bool = true`: if false, no evolution is performed
+  but only chromosome decoding. On each generation, all population is replaced
+  excluding the best chromosome. Very useful to emulate a multi-start algorithm.
 
 # Throws
 - `LoadError`: in cases of the file is an invalid configuration file,
