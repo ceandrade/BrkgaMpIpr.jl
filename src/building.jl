@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Feb 07, 2019 by ceandrade
+# Last update: Feb 08, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -43,26 +43,30 @@ relink procedures. Such data structure should not be changed outside the
 handy for tuning purposes.
 
 # Arguments
-- `problem_instance::AbstractInstance`: an instance to the problem to be
-  solved.
+- [`problem_instance::AbstractInstance`](@ref AbstractInstance): an instance
+  to the problem to be solved.
 
 - `decode_function!::Function`: the decode funtion used to map chromosomes
   to solutions. It **must have** the following signature:
 
-            decode!(chromosome::Array{Float64, 1},
-                    problem_instance::AbstractInstance,
-                    rewrite::Bool = true)::Float64
+  ```julia
+  decode!(chromosome::Array{Float64, 1},
+          problem_instance::AbstractInstance,
+          rewrite::Bool = true)::Float64
+  ```
 
   Note that if `rewrite == false`, `decode!` cannot modify `chromosome`.
 
-- `opt_sense::Sense`: the optimization sense (maximization or minimization).
+- [`opt_sense::Sense`](@ref Sense): the optimization sense (
+  maximization or minimization).
 
 - `seed::Int64`: seed for the random number generator.
 
 - `chromosome_size::Int64`: number of genes in each chromosome.
 
-- `brkga_params::BrkgaParams`: BRKGA and IPR parameters object loaded from
-  a configuration file or manually created. All the data is deep-copied.
+- [`brkga_params::BrkgaParams`](@ref BrkgaParams): BRKGA and IPR parameters
+  object loaded from a configuration file or manually created. All the data is
+  deep-copied.
 
 - `evolutionary_mechanism_on::Bool = true`: if false, no evolution is performed
   but only chromosome decoding. On each generation, all population is replaced
@@ -189,29 +193,32 @@ changed outside the `BrkgaMpIpr` functions. This version reads most of the
 parameters from a configuration file.
 
 # Arguments
-- `problem_instance::AbstractInstance`: an instance to the problem to be
-  solved.
+- [`problem_instance::AbstractInstance`](@ref AbstractInstance): an instance
+  to the problem to be solved.
 
 - `decode_function!::Function`: the decode funtion used to map chromosomes
   to solutions. It **must have** the following signature:
 
-            decode!(chromosome::Array{Float64, 1},
-                    problem_instance::AbstractInstance,
-                    rewrite::Bool = true)::Float64
+  ```julia
+  decode!(chromosome::Array{Float64, 1},
+          problem_instance::AbstractInstance,
+          rewrite::Bool = true)::Float64
+  ```
 
   Note that if `rewrite == false`, `decode!` cannot modify `chromosome`.
 
-- `opt_sense::Sense`: the optimization sense (maximization or minimization).
+- [`opt_sense::Sense`](@ref Sense): the optimization sense (
+  maximization or minimization).
 
 - `seed::Int64`: seed for the random number generator.
 
-- `chromosome_size::Int64`: number of genes in each chromosome.
+- `chromosome_size::Int64`: number of genes in each chromosome..
 
 - `configuration_file::String`:  text file with the BRKGA parameters. An
   example can be found at <a href="example.conf">example.conf</a>. Note that
   the content after "#" is considered comments and it is ignored.
 
-  - `evolutionary_mechanism_on::Bool = true`: if false, no evolution is performed
+- `evolutionary_mechanism_on::Bool = true`: if false, no evolution is performed
   but only chromosome decoding. On each generation, all population is replaced
   excluding the best chromosome. Very useful to emulate a multi-start algorithm.
 
@@ -248,17 +255,20 @@ Initialize the populations and others data structures of the BRKGA. If an
 initial population is supplied, this method completes the remaining individuals,
 if they do not exist.
 
-**THIS METHOD MUST BE CALLED BEFORE ANY OPTIMIZATIOM METHODS.**
+!!! warning
+    THIS METHOD MUST BE CALLED BEFORE ANY OPTIMIZATION METHODS.
 
 This method also performs the initial decoding of the chromosomes. Therefore,
 depending on the decoder implementation, this can take a while, and the user may
 want to time such procedure in his/her experiments.
 
-**NOTE:** as it is in [`evolve!`](@ref), the decoding is done in parallel using
-threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
-If such property cannot be held, we suggest using single thread by setting the
-environmental variable `JULIA_NUM_THREADS = 1`
-(see https://docs.julialang.org/en/stable/manual/parallel-computing).
+!!! note
+    As it is in [`evolve!`](@ref), the decoding is done in parallel using
+    threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
+    If such property cannot be held, we suggest using a single thread by
+    setting the environmental variable `JULIA_NUM_THREADS = 1` [(see Julia
+    Parallel Computing)]
+    (https://docs.julialang.org/en/v1.1/manual/parallel-computing/).
 
 # Throws
 - `ErrorException`: if `bias_function` is not defined previously.

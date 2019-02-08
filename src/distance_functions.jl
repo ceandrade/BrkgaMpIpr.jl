@@ -7,7 +7,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Nov 15, 2018 by ceandrade
-# Last update: Nov 15, 2018 by ceandrade
+# Last update: Feb 08, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -35,8 +35,9 @@ between two vectors. It takes a `threshold` parameter to "binarize" the
 vectors. For instance, if `threshold = 0.7`, all values larger than or equal
 to 0.7 will be considerd `1.0`, otherwise `0.0`.
 
-**NOTE:** this function may be more appropriated to threshold/direct
-chromosome representations.
+!!! note
+    This function may be more appropriated to threshold/direct chromosome
+    representations.
 
 # Arguments
 - `vector1::Array{Float64, 1}`: the first vector.
@@ -73,14 +74,16 @@ Return `true` the the changing of the blocks of keys `block1` by the
 blocks of keys `block2` affects the solution, based on the
 [Hamming distance](https://en.wikipedia.org/wiki/Hamming_distance).
 
-**NOTE 1:** this function may be more appropriated to threshold/direct
-chromosome representations.
+!!! note
+    This function may be more appropriated to threshold/direct chromosome
+    representations.
 
-**NOTE 2:** `block1` and `block2` must have the same size. No bounds checking
-is done due to performance reasons.
+!!! note
+    `block1` and `block2` must have the same size. No bounds checking is done
+    due to performance reasons.
 
-**NOTE 3:** this function is annotated with `@inline` due to performance
-reasons too.
+!!! note
+    This function is annotated with `@inline` due to performance reasons too.
 
 # Arguments
 - `block1::SubArray{Float64, 1}`: the first vector.
@@ -115,8 +118,9 @@ end
 Compute the [Kendall Tau distance](https://en.wikipedia.org/wiki/Kendall_tau_distance)
 between two vectors.
 
-**NOTE:** this function may be more appropriated to permutation chromosome
-representations.
+!!! note
+    This function may be more appropriated to permutation chromosome
+    representations.
 
 # Arguments
 - `vector1::Array{Float64, 1}`: the first vector.
@@ -180,8 +184,9 @@ Return `true` the the changing of the blocks of keys `block1` by the
 blocks of keys `block2` affects the solution, based on the
 [Kendall Tau distance.](https://en.wikipedia.org/wiki/Kendall_tau_distance)
 
-**NOTE:** `block1` and `block2` must have the same size. No bounds checking
-is done due to performance reasons.
+!!! note
+    `block1` and `block2` must have the same size. No bounds checking is done
+    due to performance reasons.
 
 # Arguments
 - `block1::SubArray{Float64, 1}`: the first vector.

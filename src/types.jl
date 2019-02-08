@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Feb 05, 2019 by ceandrade
+# Last update: Feb 08, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -340,8 +340,9 @@ This structure has no direct constructor and must be built using
 [`build_brkga`](@ref) functions. You can create multiple `BrkgaData`
 representing different states of the algorithm, and use them independently.
 
-**NOTE:** this structure is **NOT INTENDED** to be used outside BRKGA functions.
-Ad hoc changes may lead to inadvertent results.
+!!! warning
+    This structure is **NOT INTENDED** to be used outside BRKGA functions.
+    Ad hoc changes may lead to inadvertent results.
 """
 mutable struct BrkgaData
     ########################################

@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 26, 2018 by ceandrade
-# Last update: Feb 05, 2019 by ceandrade
+# Last update: Feb 08, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -24,14 +24,17 @@
 """
     reset!(brkga_data::BrkgaData)
 
-Reset all populations with brand new keys. All warm start solutions provided
-by [`set_initial_population!`](@ref) are discarded.
+Reset all populations with brand new keys. All warm-start solutions provided
+by [`set_initial_population!`](@ref) are discarded. You may use
+[`inject_chromosome!`](@ref) to insert those solutions again.
 
-**NOTE:** as it is in [`evolve!`](@ref), the decoding is done in parallel using
-threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
-If such property cannot be held, we suggest using single thread by setting the
-environmental variable `JULIA_NUM_THREADS = 1`
-(see https://docs.julialang.org/en/stable/manual/parallel-computing).
+!!! warning
+    As it is in [`evolve!()`](@ref), the decoding is done in parallel using
+    threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
+    If such property cannot be held, we suggest using single thread by
+    setting the environmental variable `JULIA_NUM_THREADS = 1` [(see Julia
+    Parallel Computing)]
+    (https://docs.julialang.org/en/v1.1/manual/parallel-computing/)
 
 # Throws
 - `ErrorException`: if [`initialize!`](@ref) has not been called before.
@@ -219,12 +222,14 @@ end
 
 Return a reference for population `population_index`.
 
-**NOTE 1:** this function is implemented for complaince with the C++ API.
-The user can access the population directly using
-`brkga_data.current[population_index]`.
+!!! note
+    This function is implemented for complaince with the C++ API. The user
+    can access the population directly using
+    `brkga_data.current[population_index]`.
 
-**NOTE 2: IT IS NOT ADIVISED TO CHANGE THE POPULATION DIRECTLY,**
-since such changes can result in undefined behavior.
+!!! warning
+    IT IS NOT ADIVISED TO CHANGE THE POPULATION DIRECTLY, since such changes
+    can result in undefined behavior.
 
 # Throws
 - `ErrorException`: if [`initialize!`](@ref) has not been called before.
@@ -251,11 +256,11 @@ end
 ################################################################################
 
 """
-    function inject_chromosome(brkga_data::BrkgaData,
-                               chromosome::Array{Float64, 1},
-                               population_index::Int64,
-                               position::Int64,
-                               fitness::Float64 = Inf)
+    function inject_chromosome!(brkga_data::BrkgaData,
+                                chromosome::Array{Float64, 1},
+                                population_index::Int64,
+                                position::Int64,
+                                fitness::Float64 = Inf)
 
 Inject `chromosome` and its `fitness` into population `population_index`
 in the `position` place. If fitness is not provided (`fitness = Inf`), the
@@ -322,9 +327,10 @@ Perform a shaking in the chosen population. The procedure applies changes
 (shaking) on elite chromosomes and fully reset the remaining population.
 
 # Arguments
-- intensity::Int64: the intensity of the shaking (> 0);
-- shaking_type::ShakingType: either `CHANGE` or `SWAP` moves;
-- population_index::Int64: the index of the population to be shaken.
+- `intensity::Int64`: the intensity of the shaking (> 0);
+- [`shaking_type::ShakingType`](@ref ShakingType): either `CHANGE` or `SWAP`
+  moves;
+- `population_index::Int64`: the index of the population to be shaken.
   If `population_index > num_independent_populations`, all populations are
   shaken.
 

@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 06, 2018 by ceandrade
-# Last update: Feb 06, 2019 by ceandrade
+# Last update: Feb 08, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -33,7 +33,8 @@ import Base
 Hold the data structures used to build a candidate chromosome for parallel
 decoding on direct path relink.
 
-**THIS IS AN INTERNAL DATA STRUCTURE AND IT IS NOT MEANT TO BE USED DIRECTLY.**
+!!! warning
+    THIS IS AN INTERNAL DATA STRUCTURE AND IT IS NOT MEANT TO BE USED DIRECTLY.
 """
 mutable struct Triple
     chr::Array{Float64, 1}
@@ -51,7 +52,8 @@ end
 Hold the data structures used to build a candidate chromosome for parallel
 decoding on permutation-based path relink.
 
-**THIS IS AN INTERNAL DATA STRUCTURE AND IT IS NOT MEANT TO BE USED DIRECTLY.**
+!!! warning
+    THIS IS AN INTERNAL DATA STRUCTURE AND IT IS NOT MEANT TO BE USED DIRECTLY.
 """
 mutable struct DecodeStruct
     chr::Array{Float64, 1}
@@ -72,10 +74,12 @@ end
 Return a positive range for the given `block_number` with length `block_size`,
 limited to the `max_end`.
 
-**NOTE:** this function only accept positive numbers, and all sanity check
-is disregarded due to performance reasons.
+!!! note
+    This function only accept positive numbers, and all sanity check is
+    disregarded due to performance reasons.
 
-**THIS IS AN INTERNAL FUNCTION AND IT IS NOT MEANT TO BE USED DIRECTLY.**
+!!! warning
+    THIS IS AN INTERNAL DATA STRUCTURE AND IT IS NOT MEANT TO BE USED DIRECTLY.
 """
 @inline function find_block_range(block_number::Int64, block_size::Int64,
                                   max_end::Int64)::UnitRange{Int64}
@@ -92,10 +96,12 @@ end
 Swap the value in position `pos1` with the value in position `pos2` in
 vector `x`.
 
-**NOTE:** this function only accept positive numbers, and all sanity and
-bounds check is disregarded due to performance reasons.
+!!! note
+    This function only accept positive numbers, and all sanity and bounds check
+    is disregarded due to performance reasons.
 
-**THIS IS AN INTERNAL FUNCTION AND IT IS NOT MEANT TO BE USED DIRECTLY.**
+!!! warning
+    THIS IS AN INTERNAL DATA STRUCTURE AND IT IS NOT MEANT TO BE USED DIRECTLY.
 """
 @inline function swap!(x::Array{T, 1}, pos1::Int64, pos2::Int64) where T
     @inbounds x[pos1], x[pos2] = x[pos2], x[pos1]
@@ -161,18 +167,21 @@ and then decode all candidates in parallel. Note that
 `O(chromosome_size^2 / block_size)` additional memory is necessary to build
 the candidates, which can be costly if the `chromosome_size` is very large.
 
-**NOTE:** as it is in [`evolve!()`](@ref), the decoding is done in parallel
-using threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
-If such property cannot be held, we suggest using single thread by setting the
-environmental variable `JULIA_NUM_THREADS = 1` [(see Julia Parallel Computing)]
-(https://docs.julialang.org/en/v1.1/manual/parallel-computing/).
+!!! warning
+    As it is in [`evolve!()`](@ref), the decoding is done in parallel using
+    threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
+    If such property cannot be held, we suggest using single thread by
+    setting the environmental variable `JULIA_NUM_THREADS = 1` [(see Julia
+    Parallel Computing)]
+    (https://docs.julialang.org/en/v1.1/manual/parallel-computing/).
 
-**THIS IS AN INTERNAL METHOD AND IT IS NOT MEANT TO BE USED DIRECTLY. IT IS
-CALLED FROM THE [`path_relink()`](@ref) FUNCTION.** Due to this reason,
-this method **DOES NOT** perform health checks on the arguments.
+!!! warning
+    THIS IS AN INTERNAL METHOD AND IT IS NOT MEANT TO BE USED DIRECTLY. IT IS
+    CALLED FROM THE [`path_relink()`](@ref) FUNCTION. Due to this reason,
+    this method **DOES NOT** perform health checks on the arguments.
 
 # Arguments
-- `brkga_data::BrkgaData`: the BRKGA data.
+- [`brkga_data::BrkgaData`](@ref BrkgaData): the BRKGA data.
 
 - `chromosome1::Array{Float64, 1}` and `chromosome2::Array{Float64, 1}`: the
   chromosomes to be used to build the path.
@@ -188,11 +197,14 @@ this method **DOES NOT** perform health checks on the arguments.
   key blocks, of even the whole chromosome. `affect_solution` takes two
   views/subarrays. The function **MUST HAVE** the following signature
 
-        affect_solution(block1::SubArray{Float64, 1},
-                        block2::SubArray{Float64, 1})::Bool
+  ```julia
+  affect_solution(block1::SubArray{Float64, 1},
+                  block2::SubArray{Float64, 1})::Bool
+  ```
 
-  **NOTE: this function depends on the problem structure and how the
-  keys/alleles are used.**
+  !!! note
+        This function depends on the problem structure and how the
+        keys/alleles are used.
 
 - `block_size::Int64`: (posite) number of alleles to be exchanged at once in
   each iteration. If `block_size == 1`, the traditional path relinking is
@@ -383,18 +395,21 @@ and then decode all candidates in parallel. Note that
 `O(chromosome_size^2 / block_size)` additional memory is necessary to build
 the candidates, which can be costly if the `chromosome_size` is very large.
 
-**NOTE:** as it is in [`evolve!()`](@ref), the decoding is done in parallel
-using threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
-If such property cannot be held, we suggest using single thread by setting the
-environmental variable `JULIA_NUM_THREADS = 1` [(see Julia Parallel Computing)]
-(https://docs.julialang.org/en/v1.1/manual/parallel-computing/).
+!!! warning
+    As it is in [`evolve!()`](@ref), the decoding is done in parallel using
+    threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
+    If such property cannot be held, we suggest using single thread by
+    setting the environmental variable `JULIA_NUM_THREADS = 1` [(see Julia
+    Parallel Computing)]
+    (https://docs.julialang.org/en/v1.1/manual/parallel-computing/).
 
-**THIS IS AN INTERNAL METHOD AND IT IS NOT MEANT TO BE USED DIRECTLY. IT IS
-CALLED FROM THE [`path_relink()`](@ref) FUNCTION.** Due to this reason,
-this method **DOES NOT** perform health checks on the arguments.
+!!! warning
+    THIS IS AN INTERNAL METHOD AND IT IS NOT MEANT TO BE USED DIRECTLY. IT IS
+    CALLED FROM THE [`path_relink()`](@ref) FUNCTION. Due to this reason,
+    this method **DOES NOT** perform health checks on the arguments.
 
 # Arguments
-- `brkga_data::BrkgaData`: the BRKGA data.
+- [`brkga_data::BrkgaData`](@ref BrkgaData): the BRKGA data.
 
 - `chromosome1::Array{Float64, 1}` and `chromosome2::Array{Float64, 1}`: the
   chromosomes to be used to build the path.
@@ -621,20 +636,24 @@ and then decode all candidates in parallel. Note that
 `O(chromosome_size^2 / block_size)` additional memory is necessary to build
 the candidates, which can be costly if the `chromosome_size` is very large.
 
-**NOTE:** as it is in [`evolve!()`](@ref), the decoding is done in parallel
-using threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
-If such property cannot be held, we suggest using single thread by setting the
-environmental variable `JULIA_NUM_THREADS = 1` [(see Julia Parallel Computing)]
-(https://docs.julialang.org/en/v1.1/manual/parallel-computing/).
+!!! warning
+    As it is in [`evolve!()`](@ref), the decoding is done in parallel using
+    threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
+    If such property cannot be held, we suggest using single thread by
+    setting the environmental variable `JULIA_NUM_THREADS = 1` [(see Julia
+    Parallel Computing)]
+    (https://docs.julialang.org/en/v1.1/manual/parallel-computing/).
 
 # Arguments
-- `brkga_data::BrkgaData`: the BRKGA data.
+- [`brkga_data::BrkgaData`](@ref BrkgaData): the BRKGA data.
 
 - `compute_distance::Function`: the function used to compute the distance
   between two chromosomes. The function **MUST HAVE** the following signature
 
-        `compute_distance(vector1::Array{Float64, 1},
-                          vector2::Array{Float64, 1}::Float64`
+  ```julia
+  compute_distance(vector1::Array{Float64, 1},
+                   vector2::Array{Float64, 1}::Float64
+  ```
 
 - `affect_solution::Function`: function that takes two partial chromosomes /
   block of genes `block1` and `block2` and checks whether changing the keys from
@@ -647,23 +666,27 @@ environmental variable `JULIA_NUM_THREADS = 1` [(see Julia Parallel Computing)]
   key blocks, of even the whole chromosome. `affect_solution` takes two
   views/subarrays. The function **MUST HAVE** the following signature
 
-        affect_solution(block1::SubArray{Float64, 1},
-                        block2::SubArray{Float64, 1})::Float64
+  ```julia
+  affect_solution(block1::SubArray{Float64, 1},
+                  block2::SubArray{Float64, 1})::Bool
+  ```
 
-  **NOTE: this function depends on the problem structure and how the
-  keys/alleles are used.**
+  !!! note
+        This function depends on the problem structure and how the
+        keys/alleles are used
 
  - `number_pairs::Int64`: number of chromosome pairs to be tested.
    If `number_pairs < 1`, all pairs are tested.
 
-- `minimum_distance`: minimum distance between two chromosomes computed
+- `minimum_distance::Float64`: minimum distance between two chromosomes computed
   by `compute_distance`.
 
-- `pr_type::PathRelinkingType`: type of path relinking to be performed.
-  Either `DIRECT` or `PERMUTATION`-based.
+- [`pr_type::PathRelinkingType`](@ref PathRelinkingType): type of path relinking
+  to be performed. Either `DIRECT` or `PERMUTATION`-based.
 
-- `pr_selection::PathRelinkingSelection`: selection of which individuals use
-  to path relinking. Either `BESTSOLUTION` or `RANDOMELITE`.
+- [`pr_selection::PathRelinkingSelection`](@ref PathRelinkingSelection):
+  selection of which individuals use to path relinking. Either `BESTSOLUTION`
+  or `RANDOMELITE`.
 
 - `block_size::Int64 = 1`: number of alleles to be exchanged at once in each
   iteration. If one, the traditional path relinking is performed.
@@ -677,7 +700,7 @@ environmental variable `JULIA_NUM_THREADS = 1` [(see Julia Parallel Computing)]
 
 # Returns
 
-- Returns `PathRelinkingResult` depending of the relink status.
+- Returns [`PathRelinkingResult`](@ref) depending of the relink status.
 
 # Throws
 - `ErrorException`: if [`initialize!()`](@ref) was not called before.
