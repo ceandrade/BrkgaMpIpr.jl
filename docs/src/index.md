@@ -1,68 +1,38 @@
-# BrkgaMpIpr.jl Documentation
+BrkgaMpIpr tutorial and documentation
+================================================================================
 
-## Enumerations
-```@docs
-Sense
-BiasFunction
-PathRelinkingType
-PathRelinkingSelection
-PathRelinkingResult
-ShakingType
-``` 
+BrkgaMpIpr.jl provides a _very easy-to-use_ framework for the
+Multi-Parent Biased Random-Key Genetic Algorithm with Implict Path Relink
+(**BRKGA-MP-IPR**). Assuming that your have a _decoder_ to your problem,
+we can setup, run, and extract the value of the best solution in less than
+5 commands (obvisiously, you may need few other lines fo code to do a proper
+test).
 
-## Types
-```@docs
-BrkgaData
-AbstractInstance
-BrkgaParams
-ExternalControlParams
+This Julia version provides a framework fast as C/C++, easy-to-code as Python,
+and it is much cheaper (indeed, free) than Matlab. But if you are like me and
+also like C++, check out the
+[**C++ version.**](https://github.com/ceandrade/brkga_mp_ipr).
+
+If you are not familiar with how BRKGA works, take a look on
+[Standard BRKGA](http://dx.doi.org/10.1007/s10732-010-9143-1) and
+[Multi-Parent BRKGA](http://dx.doi.org/xxx).
+In the future, we will provide a _Prime on BRKGA-MP_
+section. If you know what _elite set_, _decoder_, and so means,
+we can get to the guts on the [Tutorial](@ref).
+
+```@contents
+Pages = ["tutorial.md", "api.md"]
 ```
 
+License and Citing
+----------------------------------------
 
-## I/O functions
-```@doc
-parse
-load_configuration
-write_configuration
-```
+BrkgaMpIpr.jl uses a permissive BSD-like license. Clause 4 estipulates that
+"all publications, softwares, or any other materials mentioning features or
+use of this software and/or the data used to test it must cite explicitly
+the following article":
 
-
-## Building functions
-```@docs
-build_brkga
-set_bias_custom_function!
-set_initial_population!
-initialize!
-```
-
-## Support functions
-```@docs
-reset!
-exchange_elite!
-inject_chromosome!
-shake!
-```
-
-
-## Retrival functions
-```@docs
-get_best_fitness
-get_best_chromosome
-get_chromosome
-get_current_population
-```
-
-## Evolution functions
-```@docs
-evolve!
-```
-
-## Path relink functions
-```@docs
-hamming_distance
-affect_solution_hamming_distance
-kendall_tau_distance
-affect_solution_kendall_tau
-path_relink!
-```
-
+> C.E. Andrade. R.F. Toso, J.F. Gonçalves, M.G.C. Resende. The Multi-Parent
+> Biased Random-key Genetic Algorithm with Implicit Path Relinking. _European
+> Jornal of Operational Research_, volume XX, issue X, pages xx-xx, 2019.
+> DOI [to be determined](http://dx.doi.org/xxx)
