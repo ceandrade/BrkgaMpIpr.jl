@@ -18,10 +18,10 @@ If you are not familiar with how BRKGA works, take a look on
 [Multi-Parent BRKGA](http://dx.doi.org/xxx).
 In the future, we will provide a _Prime on BRKGA-MP_
 section. If you know what _elite set_, _decoder_, and so means,
-we can get to the guts on the [Tutorial](@ref).
+we can get to the guts on the [Guide](@ref).
 
 ```@contents
-Pages = ["tutorial.md", "api.md"]
+Pages = ["guide.md", "api.md"]
 ```
 
 License and Citing

@@ -20,7 +20,7 @@ met:
 
 4. All publications, softwares, or any other materials mentioning features or
    use of this software and/or the data used to test it
-   must cite explicitly cite the following article:
+   must cite explicitly the following article:
 
 > C.E. Andrade. The Multi-Parent Biased Random-key Genetic Algorithm with
 > Implicit Path Relinking. European Jornal of Operational Research, volume XX,

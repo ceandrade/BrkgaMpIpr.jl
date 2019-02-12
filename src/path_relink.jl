@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 06, 2018 by ceandrade
-# Last update: Feb 08, 2019 by ceandrade
+# Last update: Feb 12, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -177,7 +177,7 @@ the candidates, which can be costly if the `chromosome_size` is very large.
 
 !!! warning
     THIS IS AN INTERNAL METHOD AND IT IS NOT MEANT TO BE USED DIRECTLY. IT IS
-    CALLED FROM THE [`path_relink()`](@ref) FUNCTION. Due to this reason,
+    CALLED FROM THE [`path_relink!()`](@ref) FUNCTION. Due to this reason,
     this method **DOES NOT** perform health checks on the arguments.
 
 # Arguments
@@ -405,7 +405,7 @@ the candidates, which can be costly if the `chromosome_size` is very large.
 
 !!! warning
     THIS IS AN INTERNAL METHOD AND IT IS NOT MEANT TO BE USED DIRECTLY. IT IS
-    CALLED FROM THE [`path_relink()`](@ref) FUNCTION. Due to this reason,
+    CALLED FROM THE [`path_relink!()`](@ref) FUNCTION. Due to this reason,
     this method **DOES NOT** perform health checks on the arguments.
 
 # Arguments
@@ -599,7 +599,7 @@ end
                           block_size::Int64,
                           max_time::Int64,
                           percentage::Float64
-    )::Bool
+    )::PathRelinkingResult
 
 Perform path relinking between elite solutions that are, at least, a given
 minimum distance between themselves. In this method, the local/loaded

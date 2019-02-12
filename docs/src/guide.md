@@ -1,4 +1,4 @@
-Tutorial
+Guide
 ================================================================================
 
 The BrkgaMpIpr.jl is pretty simple, and you must provide one required data
@@ -279,7 +279,7 @@ initialize!(brkga_data)
 !!! warning
     `initialize!` must be called before any optimization methods.
 
-!!! note
+!!! warning
     BrkgaMpIpr.jl performs the decoding of each chromosome in parallel if
     multi-thread is enabled. Therefore, **we must guarantee that the decoder is
     THREAD-SAFE.** If such property cannot be held, we suggest using a single
@@ -338,3 +338,190 @@ size of the population. Just remember:
 
 !!! warning
     `set_initial_population!` must be called **BEFORE** `initialize!`.
+
+Optimization time: evolving the population
+--------------------------------------------------------------------------------
+
+Once all data is set up, it is time to evolve the population and perform
+other operations like path-relinking, shaking, migration, and others. The
+call is pretty simple:
+
+```julia
+evolve!(brkga_data::BrkgaData, num_generations::Int64 = 1)
+```
+
+[`evolve!`](@ref) evolves all populations for `num_generations`.
+
+For example, in `main_minimal.jl`, we just evolve the population for a given
+number of generations directly and then extract the best solution cost.
+
+```julia
+evolve!(brkga_data, num_generations)
+best_cost = get_best_fitness(brkga_data)
+```
+
+On `main_complete.jl`, we have fine-grained control on the optimization.
+There, we have a main loop that evolves the population one generation at a
+time and performs several operations as to hold the best solution, to check
+whether it is time for path relink, population reset, among others. The
+advantage of that code is that we can track all optimization details.
+
+!!! warning
+    Again, the decoding of each chromosome is done in parallel if
+    multi-thread is enabled. Therefore, **we must guarantee that the decoder is
+    THREAD-SAFE.** If such property cannot be held, we suggest using a single
+    thread by setting the environmental variable `JULIA_NUM_THREADS = 1`
+    [(see Julia Parallel Computing)]
+    (https://docs.julialang.org/en/v1.1/manual/parallel-computing/).
+
+Accessing solutions/chromosomes
+--------------------------------------------------------------------------------
+
+Since Julia does not offer encapsulation mechanisms to keep data private
+within data structures, you can access all chromosomes, fitness, and other
+data members directly from [`BrkgaData`](@ref). **However, we do not recommend
+that, unless you are sure what you are doing.** So, BrkgaMpIpr.jl offers some
+helper functions.
+
+Usually, we want to access the best chromosome after some iterations. You can
+use the companion functions:
+
+```julia
+get_best_fitness(brkga_data::BrkgaData)::Float64
+```
+
+```julia
+get_best_chromosome(brkga_data::BrkgaData)::Array{Float64, 1}
+```
+
+[`get_best_fitness`](@ref) returns the value/fitness of the best chromosome
+across all populations.
+
+[`get_best_chromosome`](@ref) returns a _copy_ of the best chromosome across
+all populations. You may want to extract an actual solution from such
+chromosome, i.e., to apply a decoding function that returns the actual
+solution instead only its value.
+
+You may also want to get a copy of specific chromosome for a given population
+using [`get_chromosome`](@ref).
+
+```julia
+get_chromosome(brkga_data::BrkgaData,
+               population_index::Int64,
+               position::Int64)::Array{Float64, 1}
+```
+
+For example, you can get the 3rd best chromosome from the 2nd population using
+
+```julia
+third_best = get_chromosome(brkga_data, 2, 3)
+```
+
+Now, suppose you get such chromosome or chromosomes and apply a quick local
+search procedure on them. It may be useful to reinsert such new solutions in
+the BRKGA population for the next evolutionary cycles. You can do that using
+[`inject_chromosome!`](@ref).
+
+```julia
+inject_chromosome!(brkga_data::BrkgaData,
+                   chromosome::Array{Float64, 1},
+                   population_index::Int64,
+                   position::Int64,
+                   fitness::Float64 = Inf)
+```
+
+Note that the chromosome is put in a specific position of a given population.
+If you do not provide the fitness, [`inject_chromosome!`](@ref) will decode the
+injected chromosome. For example, the following code injects a random chromosome
+`keys` into the population #1 in the last position (`population_size`).
+
+```julia
+keys = sort(rand(instance.num_nodes))
+inject_chromosome!(brkga_data, keys, 1, brkga_data.params.population_size)
+```
+
+Implicit Path Relink
+--------------------------------------------------------------------------------
+
+
+Shaking and Resetting
+--------------------------------------------------------------------------------
+
+Sometimes, BRKGA gets stuck, converging to local maxima/minima, for several iterations. When such a situation happens, it is a good idea to perturb the population, or even restart from a new one completely new.
+
+BrkgaMpIpr.jl offers [`shake!`](@ref) function, an improved variation of the original version proposed in
+[this paper](http://dx.doi.org/xxx).
+
+```julia
+shake!(brkga_data::BrkgaData,
+       intensity::Int64,
+       shaking_type::ShakingType,
+       population_index::Int64 = Inf64)
+```
+
+[`shake!`](@ref) function gets an `intensity` parameter that measures how
+many times the perturbation is applied on the elite set for a given
+`population_index` (if not given, all populations are shaken). This method
+offers two generic/implicit [`ShakingType`](@ref)s.
+With [`CHANGE`](@ref ShakingType), direct modifications are done in the
+keys/alleles. This kind of shaking is recommended when the chromosome uses
+direct or threshold representations. [`SWAP`](@ref ShakingType) exchanges
+keys/alleles inducing new permutations. For representational definitions,
+please read [this paper](http://dx.doi.org/xxx). For instance, the following
+code shakes all populations using 10 swap moves.
+
+```julia
+shake!(brkga_data, 10, SWAP)
+```
+
+Sometimes, even shaking the populations does not help to escape from local
+maxima/minima. So, we need a drastic measure, restarting from scratch the
+role population. This can be easily accomplished with [`reset!`](@ref).
+
+```julia
+reset!(brkga_data)
+```
+
+!!! note
+    When using [`reset!`](@ref), all warm-start solutions provided by
+    [`set_initial_population!`](@ref) are discarded. You may use
+    [`inject_chromosome!`](@ref) to insert those solutions again.
+
+!!! warning
+    Again, the decoding of each chromosome is done in parallel if
+    multi-thread is enabled. Therefore, **we must guarantee that the decoder is
+    THREAD-SAFE.** If such property cannot be held, we suggest using a single
+    thread by setting the environmental variable `JULIA_NUM_THREADS = 1`
+    [(see Julia Parallel Computing)]
+    (https://docs.julialang.org/en/v1.1/manual/parallel-computing/).
+
+Multi-population and migration
+--------------------------------------------------------------------------------
+
+Multi-population or _island model_ was introduced in genetic algorithms in
+[this paper](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.36.7225).
+The idea is to evolve parallel and independent populations and, once a
+while, exchange individuals among these populations. In several scenarios,
+this approach is very beneficial for optimization.
+
+BrkgaMpIpr.jl is implemented using such island idea from the core. If you
+read the guide until here, you may notice that several methods take into
+account multiple populations. To use multiple populations, you must set
+[`BrkgaParams`](@ref)`.num_independent_populations` with 2 ou more populations,
+and build [`BrkgaData`](@ref) from such parameters.
+
+The immigration process is implemented by
+
+```julia
+exchange_elite!(brkga_data::BrkgaData, num_immigrants::Int64)
+```
+
+[`exchange_elite!`](@ref) copies `num_immigrants` from one population to
+another, replacing the worst `num_immigrants` individuals from the recipient
+population. Note that the migration is done for all pairs of populations.
+For instance, the following code exchanges 3 best individuals from
+each population:
+
+```julia
+exchange_elite!(brkga_data, 3)
+```

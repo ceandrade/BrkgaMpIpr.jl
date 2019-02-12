@@ -69,5 +69,5 @@ initialize!(brkga_data)
 println("Evolving $num_generations generations...")
 evolve!(brkga_data, num_generations)
 
-best_solution = get_best_fitness(brkga_data)
-@show best_solution
+best_cost = get_best_fitness(brkga_data)
+@show best_cost

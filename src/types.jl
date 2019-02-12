@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Feb 08, 2019 by ceandrade
+# Last update: Feb 12, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -131,7 +131,7 @@ end
 
 Specifies the type of shaking to be performed.
 
-  - `CHANGE`: applies the following permutations:
+  - `CHANGE`: applies the following perturbations:
     1) Inverts the value of a random chosen, i.e., from `value` to
        `1 - value`;
     2) Assigns a random value to a random key.
@@ -175,6 +175,10 @@ abstract type AbstractInstance end
 
 Encapsulates a population of chromosomes. Note that this struct is **NOT**
 meant to be used externally of this unit.
+
+Fields
+------
+$(FIELDS)
 """
 mutable struct Population
     """
@@ -210,6 +214,10 @@ Represents the BRKGA and IPR hyper-parameters. You can load these parameters
 from a configuration file using [`load_configuration`](@ref) and
 [`build_brkga`](@ref), and write them using
 [`write_configuration`](@ref).
+
+Fields
+------
+$(FIELDS)
 """
 mutable struct BrkgaParams
     ########################################
@@ -300,6 +308,10 @@ Represents additional control parameters that can be used outside this
 framework. You can load these parameters from a configuration file using
 [`load_configuration`](@ref) and [`build_brkga`](@ref), and write them using
 [`write_configuration`](@ref).
+
+Fields
+------
+$(FIELDS)
 """
 mutable struct ExternalControlParams
     """
@@ -343,6 +355,10 @@ representing different states of the algorithm, and use them independently.
 !!! warning
     This structure is **NOT INTENDED** to be used outside BRKGA functions.
     Ad hoc changes may lead to inadvertent results.
+
+Fields
+------
+$(FIELDS)
 """
 mutable struct BrkgaData
     ########################################
@@ -385,7 +401,7 @@ mutable struct BrkgaData
     ########################################
 
     """
-    (Internal data)
+    *(Internal data)*
     The problem instance used by the `decode!` function to map a chromosome
     to a problem solution. Since `decode!` should not change this data,
     this attribute can be considered constant.
@@ -393,13 +409,15 @@ mutable struct BrkgaData
     problem_instance::AbstractInstance
 
     """
-    (Internal data)
+    *(Internal data)*
     This is the **main decode function** called during the evolutionary
     process and in the path relink. It **must have** the following signature:
 
-        decode!(chromosome::Array{Float64, 1},
-                problem_instance::AbstractInstance,
-                rewrite::Bool = true)::Float64
+    ```julia
+    decode!(chromosome::Array{Float64, 1},
+            problem_instance::AbstractInstance,
+            rewrite::Bool = true)::Float64
+    ```
 
     Note that if `rewrite == false`, `decode!` must not change `chromosome`.
     IPR routines requires `decode!` to not change `chromosome`.
@@ -411,58 +429,58 @@ mutable struct BrkgaData
     decode!::Function
 
     """
-    (Internal data)
+    *(Internal data)*
     The internal random generator number. DON'T USE FOR ANYTHING OUTSIDE.
     If you need a RNG, create a new generator.
     """
     rng::Random.MersenneTwister
 
     """
-    (Internal data)
+    *(Internal data)*
     Previous population.
     """
     previous::Array{Population, 1}
 
     """
-    (Internal data)
+    *(Internal data)*
     Current population.
     """
     current::Array{Population, 1}
 
     """
-    (Internal data)
+    *(Internal data)*
     A unary non-increasing function such that
     `bias_function(::Int64 > 0)::Float64`
     """
     bias_function::Function
 
     """
-    (Internal data)
+    *(Internal data)*
     Holds the sum of the results of each raking given a bias function.
     This value is needed to normalization.
     """
     total_bias_weight::Float64
 
     """
-    (Internal data)
+    *(Internal data)*
     Used to shuffled individual/chromosome indices during the mate.
     """
     shuffled_individuals::Array{Int64, 1}
 
     """
-    (Internal data)
+    *(Internal data)*
     Defines the order of parents during the mating.
     """
     parents_ordered::Array{Tuple{Float64, Int64}, 1}
 
     """
-    (Internal data)
+    *(Internal data)*
     Indicates if the algorithm was proper initialized.
     """
     initialized::Bool
 
     """
-    (Internal data)
+    *(Internal data)*
     Indicates if the algorithm have been reset.
     """
     reset_phase::Bool

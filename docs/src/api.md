@@ -79,3 +79,33 @@ kendall_tau_distance
 affect_solution_kendall_tau
 path_relink!
 ```
+
+Internals
+--------------------------------------------------------------------------------
+
+These types and functions are used internally in the framework. They are not
+meant to be used directly.
+
+```@meta
+CurrentModule = BrkgaMpIpr
+```
+
+### Types
+
+```@docs
+Population
+Triple
+DecodeStruct
+empty_function
+```
+
+### Helper functions
+
+```@docs
+evolve_population!
+direct_path_relink!
+permutation_based_path_relink!
+swap!
+:|
+find_block_range
+```

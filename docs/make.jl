@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Feb 05, 2018 by ceandrade
-# Last update: Feb 08, 2019 by ceandrade
+# Last update: Feb 12, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -25,11 +25,16 @@ push!(LOAD_PATH, "../src/")
 
 using Documenter, BrkgaMpIpr
 makedocs(
+    modules = [BrkgaMpIpr],
+    # clean = false,
+    # format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true"),
     sitename="BrkgaMpIpr.jl documentation",
+    authors = "Carlos E. Andrade",
+    assets = ["assets/logo.png", "assets/favicon.png"],
     pages = [
             "Home" => "index.md",
-            "Tutorial" => "tutorial.md",
+            "Guide" => "guide.md",
             "Library" => "api.md"
-        ]
+        ],
 )
 
