@@ -525,3 +525,9 @@ each population:
 ```julia
 exchange_elite!(brkga_data, 3)
 ```
+
+Simulating the standard BRKGA
+--------------------------------------------------------------------------------
+
+Reading and writing parameters
+--------------------------------------------------------------------------------

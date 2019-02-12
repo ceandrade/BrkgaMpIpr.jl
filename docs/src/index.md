@@ -11,7 +11,7 @@ test).
 This Julia version provides a framework fast as C/C++, easy-to-code as Python,
 and it is much cheaper (indeed, free) than Matlab. But if you are like me and
 also like C++, check out the
-[**C++ version.**](https://github.com/ceandrade/brkga_mp_ipr).
+[**C++ version.**](https://github.com/ceandrade/brkga_mp_ipr)
 
 If you are not familiar with how BRKGA works, take a look on
 [Standard BRKGA](http://dx.doi.org/10.1007/s10732-010-9143-1) and

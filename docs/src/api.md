@@ -5,11 +5,11 @@ Enumerations
 --------------------------------------------------------------------------------
 
 ```@docs
-Sense
 BiasFunction
-PathRelinkingType
-PathRelinkingSelection
 PathRelinkingResult
+PathRelinkingSelection
+PathRelinkingType
+Sense
 ShakingType
 ```
 
@@ -17,8 +17,8 @@ Types
 --------------------------------------------------------------------------------
 
 ```@docs
-BrkgaData
 AbstractInstance
+BrkgaData
 BrkgaParams
 ExternalControlParams
 ```
@@ -37,18 +37,18 @@ write_configuration
 
 ```@docs
 build_brkga
+initialize!
 set_bias_custom_function!
 set_initial_population!
-initialize!
 ```
 
 Support functions
 --------------------------------------------------------------------------------
 
 ```@docs
-reset!
 exchange_elite!
 inject_chromosome!
+reset!
 shake!
 ```
 
@@ -56,8 +56,8 @@ Retrival functions
 --------------------------------------------------------------------------------
 
 ```@docs
-get_best_fitness
 get_best_chromosome
+get_best_fitness
 get_chromosome
 get_current_population
 ```
@@ -73,10 +73,10 @@ Path relink functions
 --------------------------------------------------------------------------------
 
 ```@docs
-hamming_distance
 affect_solution_hamming_distance
-kendall_tau_distance
 affect_solution_kendall_tau
+hamming_distance
+kendall_tau_distance
 path_relink!
 ```
 
@@ -93,19 +93,29 @@ CurrentModule = BrkgaMpIpr
 ### Types
 
 ```@docs
+DecodeStruct
 Population
 Triple
-DecodeStruct
-empty_function
 ```
 
-### Helper functions
+### Minor helper functions
+```@docs
+:|
+empty_function
+find_block_range
+swap!
+```
 
+### Major helper functions
 ```@docs
 evolve_population!
 direct_path_relink!
 permutation_based_path_relink!
-swap!
-:|
-find_block_range
+```
+
+Index
+--------------------------------------------------------------------------------
+
+```@index
+Pages = ["api.md"]
 ```
