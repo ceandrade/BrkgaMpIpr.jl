@@ -30,7 +30,7 @@ makedocs(
     # format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true"),
     sitename="BrkgaMpIpr.jl documentation",
     authors = "Carlos E. Andrade",
-    assets = ["assets/logo.png", "assets/favicon.png"],
+    assets = ["assets/logo.png", "assets/favicon.ico"],
     pages = [
             "Home" => "index.md",
             "Guide" => "guide.md",

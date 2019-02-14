@@ -1,14 +1,20 @@
 Guide
 ================================================================================
 
+Instalation and tests
+--------------------------------------------------------------------------------
+
+Getting started
+--------------------------------------------------------------------------------
+
 The BrkgaMpIpr.jl is pretty simple, and you must provide one required data
 structure representing the _problem instance_, and one required _decoder_
 function to translate chromosomes to solutions.
 
 Before you go further, please take a look at the `examples` folder in
 [the git repo](https://github.com/ceandrade/BrkgaMpIpr).
-We will use parts of that code in this tutorial. There, we solve
-the classical [Traveling Salesman
+We will use parts of that code in this guide. There, we solve the classical
+[Traveling Salesman
 Problem](https://en.wikipedia.org/wiki/Travelling_salesman_problem). Given a
 set of cities and the distances between them (full weighted undirect graph),
 one must find a minimum-cost tour among all cities, such that each city is
@@ -35,6 +41,118 @@ the files:
     **You should use this code for serious business and experimentation;**
 
   - `instances`: folder containing some TSP instances for testing.
+
+When you call `main_minimal.jl` or `main_complete.jl` without arguments,
+they show the usage. For example, assuming you are using a terminal:
+
+```bash
+$ julia main_minimal.jl
+Usage: julia main_minimal.jl <seed> <config-file> <num-generations> <tsp-instance-file>
+
+$ julia main_complete.jl
+Usage:
+  main_complete.jl -c <config_file> -s <seed> -r <stop_rule> -a <stop_arg> -t <max_time> -i <instance_file> [--no_evolution]
+  main_complete.jl (-h | --help)
+```
+
+!!! note
+    `main_complete.jl` uses the [DocOpt package](https://github.com/docopt/DocOpt.jl).
+    Please, install it before run this script.
+
+So, this is a possible output whe calling `main_minimal.jl`:
+
+```bash
+$ julia main_minimal.jl 27000001 config.conf 100 instances/brazil58.dat
+Reading data...
+Building BRKGA data and initializing...
+Evolving 100 generations...
+best_cost = 37552.0
+```
+
+For `main_complete.jl`, the output is more verbose, since we want to capture
+as much information as possible to do some statistical analysis. The output
+should be something close to this:
+
+```julia
+$ julia main_complete.jl -c config.conf -s 2700001 -r Generations -a 100 -t 60 -i instances/brazil58.dat
+------------------------------------------------------
+> Experiment started at 2019-02-13T18:40:11.789
+> Instance: instances/brazil58.dat
+> Configuration: config.conf
+> Algorithm Parameters:
+>  - population_size 2000
+>  - elite_percentage 0.3
+>  - mutants_percentage 0.15
+>  - num_elite_parents 2
+>  - total_parents 3
+>  - bias_type LOGINVERSE
+>  - num_independent_populations 3
+>  - pr_number_pairs 0
+>  - pr_minimum_distance 0.15
+>  - pr_type PERMUTATION
+>  - pr_selection BESTSOLUTION
+>  - alpha_block_size 1.0
+>  - pr_percentage 1.0
+>  - exchange_interval 200
+>  - num_exchange_indivuduals 2
+>  - reset_interval 600
+> Seed: 2700001
+> Stop rule: GENERATIONS
+> Stop argument: 100
+> Maximum time (s): 60.0
+> Number of parallel threads for decoding: 1
+------------------------------------------------------
+
+[18:40:11.87] Reading TSP data...
+Number of nodes: 58
+
+[18:40:11.906] Generating initial tour...
+Initial cost: 30774.0
+
+[18:40:11.909] Building BRKGA data...
+New population size: 580
+
+[18:40:12.092] Initializing BRKGA data...
+
+[18:40:12.247] Warming up...
+
+[18:40:12.771] Evolving...
+* Iteration | Cost | CurrentTime
+* 1 | 30774 | 0.03
+* 34 | 30751 | 0.83
+* 35 | 30507 | 0.85
+* 36 | 30088 | 0.87
+* 38 | 30023 | 0.93
+* 39 | 29882 | 0.95
+* 40 | 29665 | 0.97
+* 41 | 29131 | 1.00
+* 57 | 28221 | 1.38
+* 66 | 28211 | 1.59
+* 83 | 28200 | 2.01
+* 86 | 28129 | 2.08
+* 91 | 28118 | 2.19
+[18:40:15.171] End of optimization
+
+Total number of iterations: 100
+Last update iteration: 91
+Total optimization time: 2.40
+Last update time: 2.19
+Large number of iterations between improvements: 33
+Total path relink time: 0.00
+Total path relink calls: 0
+Number of homogenities: 0
+Improvements in the elite set: 0
+Best individual improvements: 0
+
+% Best tour cost: 28118
+% Best tour: 22 8 1 30 13 40 25 9 32 20 53 50 4 18 44 24 58 5 27 43 12 57 23 54 55 2 41 35 10 52 51 47 49 3 48 39 29 36 17 26 19 6 28 14 37 34 56 46 15 45 33 21 11 16 42 38 31 7
+
+Instance,Seed,NumNodes,TotalIterations,TotalTime,TotalPRTime,PRCalls,NumHomogenities,NumPRImprovElite,NumPrImprovBest,LargeOffset,LastUpdateIteration,LastUpdateTime,Cost
+brazil58.dat,2700001,58,100,2.40,0.00,0,0,0,0,33,91,2.19,28118
+```
+
+I hope by now you got your system set up and running. Let's see the essential
+details on how to use the BrkgaMpIpr.jl.
 
 First things first: basic data structures and decoder function
 --------------------------------------------------------------------------------
@@ -297,11 +415,12 @@ solutions from fast heuristics
 or even from relaxations of integer linear programming models
 [[4]](http://dx.doi.org/10.1162/EVCO_a_00138).
 
-To do it, you must set these initial solutions before call [`initialize!`](@ref).
-Since BRKGA-MP-IPR does not know the problem structure, you must _encode_ the
-warm-start solution as chromosomes (vectors in the interval [0, 1]). In other
-words, you must do the inverse process that `decode!` does. For instance,
-this is a piece of code from `main_complete.jl` showing this process:
+To do it, you must set these initial solutions before call
+[`initialize!`](@ref). Since BRKGA-MP-IPR does not know the problem
+structure, you must _encode_ the warm-start solution as chromosomes (vectors
+in the interval [0, 1]). In other words, you must do the inverse process that
+`decode!` does. For instance, this is a piece of code from `main_complete.jl`
+showing this process:
 
 ```julia
 initial_cost, initial_tour = greedy_tour(instance)
@@ -447,10 +566,11 @@ Implicit Path Relink
 Shaking and Resetting
 --------------------------------------------------------------------------------
 
-Sometimes, BRKGA gets stuck, converging to local maxima/minima, for several iterations. When such a situation happens, it is a good idea to perturb the population, or even restart from a new one completely new.
-
-BrkgaMpIpr.jl offers [`shake!`](@ref) function, an improved variation of the original version proposed in
-[this paper](http://dx.doi.org/xxx).
+Sometimes, BRKGA gets stuck, converging to local maxima/minima, for several
+iterations. When such a situation happens, it is a good idea to perturb the
+population, or even restart from a new one completely new. BrkgaMpIpr.jl
+offers [`shake!`](@ref) function, an improved variation of the original
+version proposed in [this paper](http://dx.doi.org/xxx).
 
 ```julia
 shake!(brkga_data::BrkgaData,
@@ -529,5 +649,122 @@ exchange_elite!(brkga_data, 3)
 Simulating the standard BRKGA
 --------------------------------------------------------------------------------
 
+Sometimes, it is a good idea to test how the standard BRKGA algorithm
+performs for a problem. You can use BrkgaMpIpr.jl framework to quickly
+implement and test a standard BRKGA.
+
+First, you must guarantee that, during the crossover, the algorithm chooses
+only one elite individual and only one non-elite individual. This is easily
+accomplished setting `num_elite_parents = 1` and `total_parents = 2`. Then,
+you must set up a bias function that ranks the elite and no-elite individual
+according to the original BRKGA bias parameter ``\rho`` (rho).
+
+You can use [`set_bias_custom_function!`](@ref) for that task. The given
+function receives the index of the chromosome and returns a ranking for it.
+Such ranking is used in the roulette method to choose the individual from
+which each allele comes to build the new chromosome. Since we have one two
+individuals for crossover in the standard BRKGA, the bias function must
+return the probability to one or other individual. In the following code, we
+do that with a simple `if...else` lambda function.
+
+```julia
+# create brkga_params by hand or reading from a file,
+# then set the following by hand.
+brkga_params.num_elite_parents = 1
+brkga_params.total_parents = 2
+
+rho = 0.75
+set_bias_custom_function!(brkga_data, x -> x == 1 ? rho : 1.0 - rho)
+initialize!(brkga_data)
+```
+
+Here, we first set the `num_elite_parents = 1` and `total_parents = 2` as
+explained before. Following, we set a variable `rho = 0.75`. This is the
+``\rho`` from standard BRKGA, and you may set it as you wish. Then, we set the
+bias function as a very simple lambda function:
+
+```julia
+x -> x == 1 ? rho : 1.0 - rho
+```
+
+So, if the index of the chromosome is 1 (elite individual), it gets a 0.75
+rank/probability. If the index is 2 (non-elite individual), the chromosome
+gets 0.25 rank/probability.
+
+!!! note
+    All these operations must be done before calling [`initialize!`](@ref).
+
+
 Reading and writing parameters
 --------------------------------------------------------------------------------
+
+Although we can build a [`BrkgaData`](@ref) by set up a BrkgaParams object
+manually, the easiest way to do so is to read such parameters from a
+configuration file. For this, we can use [`load_configuration`](@ref) that
+reads a simple plain text file and returns a tuple of [`BrkgaParams`](@ref)
+and [`ExternalControlParams`](@ref) objects. For instance,
+
+```julia
+brkga_params, control_params = load_configuration("tuned_conf.txt")
+```
+
+The configuration file must be plain text such that contains pairs of
+parameter name and value. This file must list all fields from
+[`BrkgaParams`](@ref) and [`ExternalControlParams`](@ref), even though you do
+not use each one. In [`examples`
+folder](https://github.com/ceandrade/BrkgaMpIpr), we have `config.conf` that
+looks like this:
+
+```txt
+population_size 2000
+elite_percentage 0.30
+mutants_percentage 0.15
+num_elite_parents 2
+total_parents 3
+bias_type LOGINVERSE
+num_independent_populations 3
+pr_number_pairs 0
+pr_minimum_distance 0.15
+pr_type PERMUTATION
+pr_selection BESTSOLUTION
+alpha_block_size 1.0
+pr_percentage 1.0
+exchange_interval 200
+num_exchange_indivuduals 2
+reset_interval 600
+```
+
+It does not matter whether we use lower or upper cases. Blank lines and lines
+starting with **#** are ignored. The order of the parameters should not
+matter either. And, finally, this file should be readble for both C++ and Julia
+version.
+
+In some cases, you define some of the parameters at the running time, and you
+may want to save them for debug or posterior use. To do so, you can use
+[`write_configuration`](@ref), call upon a [`BrkgaParams`](@ref) object or
+[`BrkgaData`](@ref) object. For example,
+
+```julia
+write_configuration("my_new_parameters.conf", brkga_params, external_params)
+# or
+write_configuration("crazy_parameters.txt", brkga_data)
+```
+
+!!! note
+    [`write_configuration`](@ref) rewrites the given file. So, watch out to
+    not lose previous configurations.
+
+(Probable Valuable) Tips
+--------------------------------------------------------------------------------
+
+### Algorithm warmup
+
+a
+
+### Complex decoders and timing
+
+a
+
+### Multi-threading
+
+a
