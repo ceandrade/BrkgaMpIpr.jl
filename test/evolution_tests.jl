@@ -137,7 +137,7 @@ include("util.jl")
     results = load(joinpath(data_path, "best_solution4.jld"))
 
     rho = 0.75
-    set_bias_custom_function!(brkga_data, x -> x ≈ 1.0 ? rho : 1.0 - rho)
+    set_bias_custom_function!(brkga_data, x -> x == 1 ? rho : 1.0 - rho)
 
     BrkgaMpIpr.evolve_population!(brkga_data, 1)
     @test get_best_fitness(brkga_data) ≈ results["fitness1"]

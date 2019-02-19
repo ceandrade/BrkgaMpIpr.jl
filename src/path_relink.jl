@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 06, 2018 by ceandrade
-# Last update: Feb 12, 2019 by ceandrade
+# Last update: Feb 19, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -591,11 +591,11 @@ end
 
 """
     function path_relink!(brkga_data::BrkgaData,
+                          pr_type::PathRelinkingType,
+                          pr_selection::PathRelinkingSelection,
                           compute_distance::Function,
                           affect_solution::Function,
                           minimum_distance::Float64,
-                          pr_type::PathRelinkingType,
-                          pr_selection::PathRelinkingSelection,
                           block_size::Int64,
                           max_time::Int64,
                           percentage::Float64
@@ -647,12 +647,19 @@ the candidates, which can be costly if the `chromosome_size` is very large.
 # Arguments
 - [`brkga_data::BrkgaData`](@ref BrkgaData): the BRKGA data.
 
+- [`pr_type::PathRelinkingType`](@ref PathRelinkingType): type of path relinking
+  to be performed. Either `DIRECT` or `PERMUTATION`-based.
+
+- [`pr_selection::PathRelinkingSelection`](@ref PathRelinkingSelection):
+  selection of which individuals use to path relinking. Either `BESTSOLUTION`
+  or `RANDOMELITE`.
+
 - `compute_distance::Function`: the function used to compute the distance
   between two chromosomes. The function **MUST HAVE** the following signature
 
   ```julia
   compute_distance(vector1::Array{Float64, 1},
-                   vector2::Array{Float64, 1}::Float64
+                   vector2::Array{Float64, 1})::Float64
   ```
 
 - `affect_solution::Function`: function that takes two partial chromosomes /
@@ -681,13 +688,6 @@ the candidates, which can be costly if the `chromosome_size` is very large.
 - `minimum_distance::Float64`: minimum distance between two chromosomes computed
   by `compute_distance`.
 
-- [`pr_type::PathRelinkingType`](@ref PathRelinkingType): type of path relinking
-  to be performed. Either `DIRECT` or `PERMUTATION`-based.
-
-- [`pr_selection::PathRelinkingSelection`](@ref PathRelinkingSelection):
-  selection of which individuals use to path relinking. Either `BESTSOLUTION`
-  or `RANDOMELITE`.
-
 - `block_size::Int64 = 1`: number of alleles to be exchanged at once in each
   iteration. If one, the traditional path relinking is performed.
   It must be ≥ 1.
@@ -708,12 +708,12 @@ the candidates, which can be costly if the `chromosome_size` is very large.
   `block_size < 1`.
 """
 function path_relink!(brkga_data::BrkgaData,
+                      pr_type::PathRelinkingType,
+                      pr_selection::PathRelinkingSelection,
                       compute_distance::Function,
                       affect_solution::Function,
                       number_pairs::Int64,
                       minimum_distance::Float64,
-                      pr_type::PathRelinkingType,
-                      pr_selection::PathRelinkingSelection,
                       block_size::Int64 = 1,
                       max_time::Float64 = 0.0,
                       percentage::Float64 = 1.0

@@ -204,7 +204,7 @@ end
 Write `brkga_params` and `external_params` into `filename`.
 
 # Throws
-- `ArgumentError`: in case the bias description does not match.
+- `SystemError`: in case the configuration files cannot be openned.
 """
 function write_configuration(filename::String, brkga_params::BrkgaParams,
                              external_params::ExternalControlParams)
@@ -232,7 +232,7 @@ Write the parameters from `brkga_data.params` and `external_params`
 into `filename`.
 
 # Throws
-- `ArgumentError`: in case the bias description does not match.
+- `SystemError`: in case the configuration files cannot be openned.
 """
 function write_configuration(filename::String, brkga_data::BrkgaData,
                              external_params::ExternalControlParams =

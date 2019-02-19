@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 06, 2018 by ceandrade
-# Last update: Jan 08, 2019 by ceandrade
+# Last update: Feb 19, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -612,7 +612,7 @@ end
     @test yx[2] ≈ results["yx"][2]
 end
 
-###############################################################################
+################################################################################
 
 @testset "path_relink!()" begin
     param_values = deepcopy(default_param_values)
@@ -629,12 +629,12 @@ end
     ########################
 
     @test_throws ErrorException path_relink!(brkga_data, #::BrkgaData,
+                                            DIRECT, #::PathRelinkingType,
+                                            BESTSOLUTION, # PathRelinkingSelection
                                             (x, y) -> 1.0, #compute_distance::Function,
                                             (x, y) -> true, #affect_solution::Function,
                                             10, #number_pairs::Int64,
                                             0.5, #minimum_distance::Float64,
-                                            DIRECT, #::PathRelinkingType,
-                                            BESTSOLUTION, # PathRelinkingSelection
                                             1, #block_size::Int64,
                                             120.0, #max_time::Float64,
                                             1.0 #percentage::Float64
@@ -643,48 +643,48 @@ end
     initialize!(brkga_data)
 
     @test_throws ArgumentError path_relink!(brkga_data, #::BrkgaData,
+                                            DIRECT, #::PathRelinkingType,
+                                            BESTSOLUTION, # PathRelinkingSelection
                                             (x, y) -> 1.0, #compute_distance::Function,
                                             (x, y) -> true, #affect_solution::Function,
                                             10, #number_pairs::Int64,
                                             0.5, #minimum_distance::Float64,
-                                            DIRECT, #::PathRelinkingType,
-                                            BESTSOLUTION, # PathRelinkingSelection
                                             1, #block_size::Int64,
                                             120.0, #max_time::Float64,
                                             -0.1 #percentage::Float64
                                             )
 
     @test_throws ArgumentError path_relink!(brkga_data, #::BrkgaData,
+                                            DIRECT, #::PathRelinkingType,
+                                            BESTSOLUTION, # PathRelinkingSelection
                                             (x, y) -> 1.0, #compute_distance::Function,
                                             (x, y) -> true, #affect_solution::Function,
                                             10, #number_pairs::Int64,
                                             0.5, #minimum_distance::Float64,
-                                            DIRECT, #::PathRelinkingType,
-                                            BESTSOLUTION, # PathRelinkingSelection
                                             1, #block_size::Int64,
                                             120.0, #max_time::Float64,
                                             1.01 #percentage::Float64
                                             )
 
     @test_throws ArgumentError path_relink!(brkga_data, #::BrkgaData,
+                                            DIRECT, #::PathRelinkingType,
+                                            BESTSOLUTION, # PathRelinkingSelection
                                             (x, y) -> 1.0, #compute_distance::Function,
                                             (x, y) -> true, #affect_solution::Function,
                                             10, #number_pairs::Int64,
                                             0.5, #minimum_distance::Float64,
-                                            DIRECT, #::PathRelinkingType,
-                                            BESTSOLUTION, # PathRelinkingSelection
                                             0, #block_size::Int64,
                                             120.0, #max_time::Float64,
                                             1.0 #percentage::Float64
                                             )
 
     @test_throws ArgumentError path_relink!(brkga_data, #::BrkgaData,
+                                            DIRECT, #::PathRelinkingType,
+                                            BESTSOLUTION, # PathRelinkingSelection
                                             (x, y) -> 1.0, #compute_distance::Function,
                                             (x, y) -> true, #affect_solution::Function,
                                             10, #number_pairs::Int64,
                                             0.5, #minimum_distance::Float64,
-                                            DIRECT, #::PathRelinkingType,
-                                            BESTSOLUTION, # PathRelinkingSelection
                                             -10, #block_size::Int64,
                                             120.0, #max_time::Float64,
                                             1.0 #percentage::Float64
@@ -696,12 +696,12 @@ end
 
     @test TOO_HOMOGENEOUS == path_relink!(
         brkga_data, #::BrkgaData,
+        DIRECT, #::PathRelinkingType,
+        RANDOMELITE, # PathRelinkingSelection
         (x, y) -> 0.0, #compute_distance::Function,
         (x, y) -> true, #affect_solution::Function,
         10, #number_pairs::Int64,
         1.0, #minimum_distance::Float64,
-        DIRECT, #::PathRelinkingType,
-        RANDOMELITE, # PathRelinkingSelection
         1, #block_size::Int64,
         2.0, #max_time::Float64,
         1.0 #percentage::Float64
@@ -716,12 +716,12 @@ end
 
     @test BEST_IMPROVEMENT == path_relink!(
         brkga_data, #::BrkgaData,
+        DIRECT, #::PathRelinkingType,
+        RANDOMELITE, # PathRelinkingSelection
         (x, y) -> 1.0, #compute_distance::Function,
         (x, y) -> true, #affect_solution::Function,
         10, #number_pairs::Int64,
         0.5, #minimum_distance::Float64,
-        DIRECT, #::PathRelinkingType,
-        RANDOMELITE, # PathRelinkingSelection
         1, #block_size::Int64,
         10.0, #max_time::Float64,
         1.0, #percentage::Float64
@@ -771,12 +771,12 @@ end
 
     @test NO_IMPROVEMENT == path_relink!(
             brkga_data, #::BrkgaData,
+            DIRECT, #::PathRelinkingType,
+            BESTSOLUTION, # PathRelinkingSelection
             (x, y) -> 1.0, #compute_distance::Function,
             (x, y) -> true, #affect_solution::Function,
             10, #number_pairs::Int64,
             0.5, #minimum_distance::Float64,
-            DIRECT, #::PathRelinkingType,
-            BESTSOLUTION, # PathRelinkingSelection
             1, #block_size::Int64,
             10.0, #max_time::Float64,
             1.0, #percentage::Float64
@@ -805,12 +805,12 @@ end
 
     @test ELITE_IMPROVEMENT == path_relink!(
         brkga_data, #::BrkgaData,
+        PERMUTATION, #::PathRelinkingType,
+        RANDOMELITE, # PathRelinkingSelection
         (x, y) -> 1.0, #compute_distance::Function,
         (x, y) -> true, #affect_solution::Function,
         0, #number_pairs::Int64,
         0.5, #minimum_distance::Float64,
-        PERMUTATION, #::PathRelinkingType,
-        RANDOMELITE, # PathRelinkingSelection
         1, #block_size::Int64,
         0.0, #max_time::Float64,
         1.0, #percentage::Float64
@@ -866,12 +866,12 @@ end
 
     @test BEST_IMPROVEMENT == path_relink!(
         brkga_data, #::BrkgaData,
+        PERMUTATION, #::PathRelinkingType,
+        RANDOMELITE, # PathRelinkingSelection
         dist, #compute_distance::Function,
         (x, y) -> true, #affect_solution::Function,
         0, #number_pairs::Int64,
         1.0, #minimum_distance::Float64,
-        PERMUTATION, #::PathRelinkingType,
-        RANDOMELITE, # PathRelinkingSelection
         1, #block_size::Int64,
         0.0, #max_time::Float64,
         1.0, #percentage::Float64
@@ -924,12 +924,12 @@ end
 
     @test BEST_IMPROVEMENT == path_relink!(
         brkga_data, #::BrkgaData,
+        DIRECT, #::PathRelinkingType,
+        BESTSOLUTION, # PathRelinkingSelection
         dist, #compute_distance::Function,
         (x, y) -> true, #affect_solution::Function,
         0, #number_pairs::Int64,
         1.0, #minimum_distance::Float64,
-        DIRECT, #::PathRelinkingType,
-        BESTSOLUTION, # PathRelinkingSelection
         1, #block_size::Int64,
         0.0, #max_time::Float64,
         1.0, #percentage::Float64
