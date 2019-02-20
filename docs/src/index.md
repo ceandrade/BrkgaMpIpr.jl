@@ -25,7 +25,7 @@ section. If you know what _elite set_, _decoder_, and so means,
 we can get to the guts on the [Guide](@ref).
 
 ```@contents
-Pages = ["guide.md", "api.md"]
+Pages = ["guide.md", "api.md", "contributing.md"]
 ```
 
 License and Citing
