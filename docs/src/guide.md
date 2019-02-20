@@ -30,7 +30,7 @@ the files:
   - `config.conf`: example of parameter settings;
 
   - `main_minimal.jl`: minimal code useful to understand and test the framework.
-    **You should start here!**. Please take a look on this file before continue
+    **You should start here!** Please take a look on this file before continue
     this tutorial;
 
   - `main_complete.jl`: full-featured code, handy for scientific use, such as
@@ -403,7 +403,7 @@ initialize!(brkga_data)
     THREAD-SAFE.** If such property cannot be held, we suggest using a single
     thread by setting the environmental variable `JULIA_NUM_THREADS = 1`
     [(see Julia Parallel Computing)]
-    (https://docs.julialang.org/en/v1.1/manual/parallel-computing/).
+    (https://docs.julialang.org/en/v1.1/manual/parallel-computing).
 
 ### Warm-start solutions
 
@@ -491,7 +491,7 @@ advantage of that code is that we can track all optimization details.
     THREAD-SAFE.** If such property cannot be held, we suggest using a single
     thread by setting the environmental variable `JULIA_NUM_THREADS = 1`
     [(see Julia Parallel Computing)]
-    (https://docs.julialang.org/en/v1.1/manual/parallel-computing/).
+    (https://docs.julialang.org/en/v1.1/manual/parallel-computing).
 
 Accessing solutions/chromosomes
 --------------------------------------------------------------------------------
@@ -562,6 +562,217 @@ inject_chromosome!(brkga_data, keys, 1, brkga_data.params.population_size)
 Implicit Path Relink
 --------------------------------------------------------------------------------
 
+The Implicit Path Relinking (IPR) is a nice addition to the standard BRKGA
+framework, and it provides an excellent way to create hybrid heuristics and
+push the optimization further. The good thing about IPR is that you do not
+need to worry about the path relink implementation, which can be long and
+tedious if done by hand or customized per problem.
+
+BrkgaMpIpr.jl provides a friendly interface to use IPR directly from the
+BRKGA population, and you only must provide a few functions and arguments to
+have a Path Relink algorithm ready to go. This is the main signature of
+[`path_relink!`](@ref)
+
+```julia
+path_relink!(brkga_data::BrkgaData,
+             pr_type::PathRelinkingType,
+             pr_selection::PathRelinkingSelection,
+             compute_distance::Function,
+             affect_solution::Function,
+             number_pairs::Int64,
+             minimum_distance::Float64,
+             block_size::Int64 = 1,
+             max_time::Float64 = 0.0,
+             percentage::Float64 = 1.0
+)::PathRelinkingResult
+```
+
+The first argument is the [`BrkgaData`](@ref) as usual. The 2nd argument
+defines the type of implicit path relink to be performed
+([`PathRelinkingType`](@ref)). The `DIRECT` path relink exchanges the keys of
+two chromosomes directly, and it is usually more suitable to or threshold
+representations, i.e., where the key values are used to some kind of
+discretization, such as " if x < 0.5, then 0, otherwise 1." The `PERMUTATION`
+path relink switches the order of a key according to its position in the
+other chromosome. Usually, this kind of path relink is more suitable to
+permutation representations, where the chromosome induces an order or
+permutation. For example, chromosome `[0.4, 0.7, 0.1]` may induce the
+increasing order `(3, 1, 2)`. More details about threshold and permutation
+representations in [this paper](http://dx.doi.org/xxx).
+
+[`PathRelinkingSelection`](@ref) defines how the algorithm picks the
+chromosomes for relinking. `BESTSOLUTION` selects, in the order, the best
+solution of each population. `RANDOMELITE` chooses uniformly random solutions
+from the elite sets.
+
+The next argument is a function to compute the distance between two
+chromosomes such signature must be
+
+```julia
+compute_distance(vector1::Array{Float64, 1},
+                 vector2::Array{Float64, 1})::Float64
+```
+
+If the value returned by `compute_distance()` is greater than or equal to
+`minimum_distance`, the algorithm will perform the path relink between the
+two chromosomes. Otherwise, it will look for another pair of chromosomes.
+The algorithm will try `number_pairs` chromosomes before gives up.
+In the presence of multiple populations, the path relinking is performed
+between elite chromosomes from different populations, in a circular fashion.
+For example, suppose we have 3 populations. The framework performs 3 path
+relinkings: the first between individuals from populations 1 and 2, the
+second between populations 2 and 3, and the third between populations 3 and 1.
+In the case of just one population, both base and guiding individuals are
+sampled from the elite set of that population.
+
+Note that in traditional path relink algorithms, `compute_distance()` depends
+on the problem structure. On IPR, you can use a generic distance function, or
+provide one that incorporates more knowledge about the problem. BrkgaMpIpr.jl
+provides a function to compute the (modified) [Hamming
+distance](https://en.wikipedia.org/wiki/Hamming_distance) for threshold
+representations ([`hamming_distance`](@ref)), and a function that computes
+the [Kendall Tau
+distance](https://en.wikipedia.org/wiki/Kendall_tau_distance) distance for
+permutation representations ([`kendall_tau_distance`](@ref)). Again,
+details about threshold and permutation representations in
+[this paper](http://dx.doi.org/xxx).
+
+As a simple example, suppose you are using a threshold representation where
+each chromosome key can represent one of 3 different values (a ternary
+threshold representation). So, one possible way to compute the distance
+between two chromosomes can be:
+
+```julia
+function value(key::Float64)::Float64
+    return key < 0.33 ? 0.0 : (key < 0.66 ? 1.0 : 2.0)
+end
+
+function compute_distance(vector1::Array{Float64, 1},
+                          vector2::Array{Float64, 1})::Float64
+    total = 0.0
+    for i in 1:length(vector1)
+        total += abs(value(vector1[i]) - value(vector2[i]))
+    end
+    return total
+end
+```
+
+To avoid changes that do not lead to new solutions, we must verify if such
+key exchanges affect the solution. For that, we must pass a function with the
+signature:
+
+```julia
+affect_solution(block1::SubArray{Float64, 1},
+                block2::SubArray{Float64, 1})::Bool
+```
+
+`affect_solution` two gets partial chromosomes/block of genes `block1` and
+`block2` and checks whether changing the keys from `block1` to `block2`
+affects the solution. For instance, suppose that the alleles/keys are used as
+threshold such that values > 0.5 activate a feature. Suppose we have
+`block1 = [0.3, 0.4, 0.1]` and `block2 = [0.4, 0.1, 0.2]`. Since all values are
+below 0.5, changing the keys from `block1` to `block2` do not change the
+solution, and therefore, we can drop such change (and subsequently decoding).
+The blocks can hold only one key/allele, sequential key blocks, or even the
+whole chromosome. Note that `affect_solution` is crucial to the IPR performance
+since this function helps to avoid exploring regions already surveyed. Also,
+note that `affect_solution` can incorporate some problem knowledge.
+
+!!! warning
+    The current implementation of permutation path relink does not make use
+    of `affect_solution`. However, [`path_relink!`](@ref) requires the
+    function. You can use the simple lambda function for that:
+
+    ```julia
+    (x, y) -> true
+    ```
+
+`block_size` defines the number of keys / size of the chromosome block to be
+exchanged during the direct path relink. This parameter is also critical for
+IPR performance since it avoids too many exchanges during the path building.
+Usually, we can compute this number based on the size of the chromosome by
+some factor (`alpha_block_size` in the configuration file), chosen by you.
+Again, details here.
+
+!!! note
+    Experiments have shown that a good choice is
+
+    ``
+    block\_size = alpha\_block\_size \times \sqrt{size~of~chromosome}
+    ``
+
+The last two parameters are stopping criteria. The algorithm stops either
+when `max_time` seconds is reached or `percentage`% of the path is built.
+
+!!! warning
+    IPR is a very time-intensive process. You must set the stopping criteria
+    accordingly.
+
+Let's see the example on [`main_complete.jl`](https://github.com/ceandrade/BrkgaMpIpr).
+Remember, since we are solving the TSP, we want to use the permutation-based
+IPR, and the Kendall Tau distance functions.
+
+```julia
+result = path_relink!(
+    brkga_data,
+    brkga_params.pr_type,
+    brkga_params.pr_selection,
+    kendall_tau_distance,
+    affect_solution_kendall_tau,
+    brkga_params.pr_number_pairs,
+    brkga_params.pr_minimum_distance,
+    1, #block_size doesn't not matter for permutation.
+    maximum_time - (time() - start_time),
+    brkga_params.pr_percentage
+)
+```
+
+Note that most parameters come from [`BrkgaParams`](@ref). The maximum IPR
+time is set to the remaining time for optimization (global `maximum_time`
+minus the elapsed time `time() - start_time`.
+
+[`path_relink!`](@ref) returns a [`PathRelinkingResult`](@ref) object which
+defines the status of the IPR optimization. These status are described on
+[`PathRelinkingResult`](@ref).
+
+!!! note
+    The `TOO_HOMOGENEOUS` status is directly linked to the chosen distance
+    function and minimum distance. If the minimum distance is too large, IPR
+    may not be able to find a pair of chromosomes far enough for path relink.
+
+If the found solution is the best solution found so far, IPR replaces the
+worst solution by it. Otherwise, IPR computes the distance between the found
+solution and all other solutions in the elite set, and replaces the worst
+solution by it if and only if the found solution is, at least,
+`minimum_distance` from all them.
+
+### Important notes about IPR
+
+The API will call `decode!()` function always with `writeback = false`. The
+reason is that if the decoder rewrites the chromosome, the path between
+solutions is lost and inadvertent results may come up. Note that at the end
+of the path relinking, the method calls the decoder with `writeback = true`
+in the best chromosome found to guarantee that this chromosome is re-written
+to reflect the best solution found.
+
+!!! warning
+    Make sure your decoder does not rewrite the chromosome when called with
+    the argument `writeback = false`.
+
+BrkgaMpIpr.jl [`path_relink!`](@ref) implementation is multi-threaded.
+Instead of to build and decode each chromosome one at a time, the method
+builds a list of candidates, altering the alleles/keys according to the guide
+solution, and then decode all candidates in parallel. Note that
+`O(chromosome_size^2 / block_size)` additional memory is necessary to build
+the candidates, which can be costly if the `chromosome_size` is very large.
+
+!!! warning
+    As it is in [`evolve!()`](@ref), the decoding is done in parallel using
+    threads, and the user **must guarantee that the decoder is THREAD-SAFE.**
+    If such property cannot be held, we suggest using single thread by
+    setting the environmental variable `JULIA_NUM_THREADS = 1` [(see Julia
+    Parallel Computing)]
+    (https://docs.julialang.org/en/v1.1/manual/parallel-computing).
 
 Shaking and Resetting
 --------------------------------------------------------------------------------
@@ -613,7 +824,7 @@ reset!(brkga_data)
     THREAD-SAFE.** If such property cannot be held, we suggest using a single
     thread by setting the environmental variable `JULIA_NUM_THREADS = 1`
     [(see Julia Parallel Computing)]
-    (https://docs.julialang.org/en/v1.1/manual/parallel-computing/).
+    (https://docs.julialang.org/en/v1.1/manual/parallel-computing).
 
 Multi-population and migration
 --------------------------------------------------------------------------------
@@ -759,12 +970,133 @@ write_configuration("crazy_parameters.txt", brkga_data)
 
 ### Algorithm warmup
 
-a
+When using Julia code, it is an excellent idea to dry-run all functions you
+may use and, mainly, want to time. The reason is that Julia uses lazy
+evaluation when live-compiling the code, i.e., it compiles as it goes.
+Another advantage is the memory location effects of our data (principle of
+locality), that can be brought closer to the processor (L2/L3 caches) during
+the running. Obliviously, this depends on how you implement and use your data
+structures.
+
+In [`main_complete.jl`](https://github.com/ceandrade/BrkgaMpIpr), we have the
+following piece of code to warmup mainly the decoder and other functions.
+Note that we just deep-copy `brkga_data`, and then, we may lose the principle
+of locality.
+
+```julia
+bogus_data = deepcopy(brkga_data)
+evolve!(bogus_data, 2)
+path_relink!(bogus_data, brkga_params.pr_type, brkga_params.pr_selection,
+             (x, y) -> 1.0, (x, y) -> true, 0, 0.5, 1, 10.0, 1.0)
+get_best_fitness(brkga_data)
+get_best_chromosome(brkga_data)
+bogus_data = nothing
+```
 
 ### Complex decoders and timing
 
-a
+Some problems require complex decoders while for others, the decoder contains
+local search procedures, that can be time-consuming. In general, the decoding
+is the most time-expensive component of a BRKGA algorithm, and it may skew
+some stopping criteria based on running time. Therefore, if your decoder is
+time-consuming, it is a good idea to implement a timer or chronometer kind of
+thing inside the decoder.
+
+Testing for stopping time uses several CPU cycles, and you need to be careful
+when/where to test it, otherwise, you spend all the optimization time doing
+system calls to the clock.
+
+IMHO, the most effective way to do it is to test time at the very end of the
+decoding. If the current time is larger than the maximum time allowed, simple
+return `Inf` or `-Inf` according to your optimization direction. In this way,
+we make the solution **invalid** since it violates the maximum time allowed.
+The BRKGA framework takes care of the rest.
 
 ### Multi-threading
 
-a
+Since [Moore's law](https://en.wikipedia.org/wiki/Moore%27s_law) is not
+holding its status anymore, we, simple mortals, must appeal to the wonders of
+multi-threading. This paradigm can be tricky to code, and [Amdahl's
+law](https://en.wikipedia.org/wiki/Amdahl%27s_law) plays against us.
+Several genetic algorithms, and in particular, BRKGA, can use parallel
+solution evaluation (or decoding), which makes the use of multi-threading
+relatively straightforward. BrkgaMpIpr.jl is not different, and it uses
+[Julia multi-threading](https://docs.julialang.org/en/v1.1/manual/parallel-computing)
+capabilities to do so.
+
+First, as commented several times in this guide, **the decoder must be
+THREAD-SAFE.** So, each thread must have its own read/write data structures
+and may share other read-only data. The simplest way to do it is to create
+those structures inside the decoder (like most people do). **But be aware**,
+this strategy slows down the algorithm significantly depending on the size
+and format of the structures, and _I do not recommend it_.
+
+IMHO, the best way to do that is to preallocate the data structure per thread
+(using
+[`Threads.nthreads()`](https://docs.julialang.org/en/v1/base/multi-threading/#Base.Threads.nthreads)),
+and pass them to the decoder through the problem instance. Then, inside the
+decoder, you can use
+[`Threads.threadid()`](https://docs.julialang.org/en/v1/base/multi-threading/#Base.Threads.threadid)
+and recover the memory you want to use.
+
+Let's see a simple example considering the TSP example. `tsp_decode!` uses
+a single array to create the permutation of nodes. Let's pre-allocate its
+memory per thread. So, in `TSP_Instance`, we pre-allocate copies of such
+array, one for each thread:
+
+```julia
+using Base.Threads
+
+# Declare as a type to make the code shorter and more readable.
+PermutationArray = Array{Tuple{Float64, Int64}, 1}
+
+struct TSP_Instance <: AbstractInstance
+    num_nodes::Int64
+    distances::Array{Float64}
+
+    # Permutations arrays per thread, to be pre-allocated.
+    permutation_per_thread::Array{PermutationArray, 1}
+
+    function TSP_Instance(filename::String)
+        #... Code for loading here
+
+        # Allocate the main array to create references for other arrays per thread.
+        permutation_per_thread = Array{PermutationArray, 1}(undef, nthreads())
+
+        # Pre-allocate the permutation arrays, one for each thread.
+        for i in 1:nthreads()
+            permutation_per_thread[i] = PermutationArray(undef, num_nodes)
+        end
+
+        new(num_nodes, distances, permutation_per_thread)
+    end
+end
+```
+
+Then, in `tsp_decode!`, we simply refer to the array according to the local
+thread ID:
+
+```julia
+function tsp_decode!(chromosome::Array{Float64}, instance::TSP_Instance,
+                     rewrite::Bool = true)::Float64
+    permutation = instance.permutation_per_thread[threadid()]
+    #...
+    #...
+end
+```
+
+Note that to pre-allocate decoding structures inside the object holding the
+instance is not the most elegant and decoupled code we can write. However, to
+decouple the decoding data from the instance data requires that we pass
+another data object to the decoder. To do this explicitly, we may get an
+embroidered API. We could do it implicitly, by creating a Singleton object to
+hold the decoding data. However, this also reduces (a lot) the clarity and
+objectivity of the code. In C++ code, this is much easier accomplished by
+creating a Decoder object that can hold data members as much as methods.
+Therefore, when creating the Decoder object, we can pre-allocate all data
+structures we need.
+
+!!! note
+    Pre-allocation and multi-threading only make sense for large data
+    structures and time-consuming decoders. Otherwise, the code spends too
+    much time on context switching and system calls.

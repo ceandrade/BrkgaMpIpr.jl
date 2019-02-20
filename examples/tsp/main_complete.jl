@@ -7,7 +7,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Jan 07, 2019 by ceandrade
-# Last update: Jan 09, 2019 by ceandrade
+# Last update: Feb 20, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -197,11 +197,10 @@ function main(args)
 
     bogus_data = deepcopy(brkga_data)
     evolve!(bogus_data, 2)
-    path_relink!(bogus_data, (x, y) -> 1.0, (x, y) -> true, 0, 0.5,
-                 brkga_params.pr_type, brkga_params.pr_selection, 1, 10.0, 1.0)
+    path_relink!(bogus_data, brkga_params.pr_type, brkga_params.pr_selection,
+                 (x, y) -> 1.0, (x, y) -> true, 0, 0.5, 1, 10.0, 1.0)
     get_best_fitness(brkga_data)
     get_best_chromosome(brkga_data)
-
     bogus_data = nothing
 
     ########################################
@@ -266,11 +265,13 @@ function main(args)
 
             pr_now = time()
             result = path_relink!(
-                brkga_data, kendall_tau_distance, affect_solution_kendall_tau,
-                brkga_params.pr_number_pairs,
-                brkga_params.pr_minimum_distance,
+                brkga_data,
                 brkga_params.pr_type,
                 brkga_params.pr_selection,
+                kendall_tau_distance,
+                affect_solution_kendall_tau,
+                brkga_params.pr_number_pairs,
+                brkga_params.pr_minimum_distance,
                 1, #block_size doesn't not matter for permutation.
                 maximum_time - (time() - start_time),
                 brkga_params.pr_percentage
