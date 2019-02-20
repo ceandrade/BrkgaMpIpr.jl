@@ -622,6 +622,12 @@ populations (in a circular fashion, as described above). Yet, if such pairs
 are not found in any case, the algorithm declares failure. This indicates
 that the populations are very homogeneous.
 
+If the found solution is the best solution found so far, IPR replaces the
+worst solution by it. Otherwise, IPR computes the distance between the found
+solution and all other solutions in the elite set, and replaces the worst
+solution by it if and only if the found solution is, at least,
+`minimum_distance` from all them.
+
 The API will call `decode!()` function always with `writeback = false`. The
 reason is that if the decoder rewrites the chromosome, the path between
 solutions is lost and inadvertent results may come up. Note that at the end
@@ -668,9 +674,9 @@ the candidates, which can be costly if the `chromosome_size` is very large.
   alleles/keys are used as threshold such that values > 0.5 activate a feature.
   Suppose we have `block1 = [0.3, 0.4, 0.1]` and `block2 = [0.4, 0.1, 0.2]`.
   Since all values are below 0.5, changing the keys from `block1` to `block2`
-  does not chage the solution, and therefore, we can drop such change (and
+  do not change the solution, and therefore, we can drop such change (and
   subsequentely decoding). The blocks can hold only one key/allele, sequential
-  key blocks, of even the whole chromosome. `affect_solution` takes two
+  key blocks, or even the whole chromosome. `affect_solution` takes two
   views/subarrays. The function **MUST HAVE** the following signature
 
   ```julia
