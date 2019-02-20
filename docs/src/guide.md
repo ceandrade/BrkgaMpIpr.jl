@@ -4,10 +4,72 @@ Guide
 Instalation and tests
 --------------------------------------------------------------------------------
 
+BrkgaMpIpr can be installed using the Julia package manager.
+From the Julia REPL, type `]` to enter the Pkg REPL mode and run
+
+```julia-repl
+pkg> add BrkgaMpIpr
+```
+
+BrkgaMpIpr also provides a thorough unit testing that aims to harden and make
+the code ready for production environments. From Pkg REPL, just run
+
+```julia-repl
+pkg> test
+```
+
+!!! note
+    The tests take about 10 minutes, mainly because the permutation path relink.
+
+!!! warning
+    It is a hard test to test algorithms that use random signals. In
+    BrkgaMpIpr, the tests are carefully designed to ensure repeatability. For
+    that, we use the Mersenne Twister
+    [[1]](https://en.wikipedia.org/wiki/Mersenne_Twister)
+    [[2]](http://dx.doi.org/10.1145/272991.272995) as our standard random
+    generator number engine, particularly the [version that comes with
+    Julia](https://docs.julialang.org/en/v1/stdlib/Random/index.html#Random.MersenneTwister).
+    However, it may happen that such engine has slightly different
+    implementations across platforms and, therefore, the tests may fail. The
+    current version was tested on 64-bit platforms (Mac OS X, GNU/Linux, and
+    Windows 10).
+
+TL;DR
+--------------------------------------------------------------------------------
+
+The best way to keep it short is to look in the
+[`example`](https://github.com/ceandrade/BrkgaMpIpr) folder
+on [the git repo.](https://github.com/ceandrade/BrkgaMpIpr)
+From [`main_minimal.jl`](https://github.com/ceandrade/BrkgaMpIpr),
+you can identify the following basic steps:
+
+1. Create a data structure inherited from [`AbstractInstance`](@ref) to hold
+   your input data. This object is passed to the decoder function (example
+   [`tsp_instance.jl`](https://github.com/ceandrade/BrkgaMpIpr));
+
+2. Implement a decoder function. This function translates a chromosome (array
+   of numbers in the interval [0,1]) to a solution for your problem. The decoder
+   must return the solution value or cost to be used as fitness by BRKGA
+   (example [`tsp_decoder.jl`](https://github.com/ceandrade/BrkgaMpIpr));
+
+3. Load the instance and other relevant data;
+
+4. Use [`build_brkga`](@ref) to create a [`BrkgaData`](@ref) that represents
+   the internal state of the BRKGA-MP-IPR algorithm;
+
+5. Use [`initialize!`](@ref) to init the BRKGA state;
+
+6. Call [`evolve!`](@ref) to optimize;
+
+7. Call [`get_best_fitness`](@ref) and/or [`get_best_chromosome`](@ref) to
+   retrieve the best solution.
+
+These are the basic steps, but I do recommend the reading of this guide.
+
 Getting started
 --------------------------------------------------------------------------------
 
-The BrkgaMpIpr.jl is pretty simple, and you must provide one required data
+BrkgaMpIpr is pretty simple, and you must provide one required data
 structure representing the _problem instance_, and one required _decoder_
 function to translate chromosomes to solutions.
 
@@ -152,7 +214,7 @@ brazil58.dat,2700001,58,100,2.40,0.00,0,0,0,0,33,91,2.19,28118
 ```
 
 I hope by now you got your system set up and running. Let's see the essential
-details on how to use the BrkgaMpIpr.jl.
+details on how to use the BrkgaMpIpr.
 
 First things first: basic data structures and decoder function
 --------------------------------------------------------------------------------
@@ -226,7 +288,7 @@ structures and perform the optimization.
 Building BRKGA-MP-IPR data structures
 --------------------------------------------------------------------------------
 
-BrkgaMpIpr.jl framework revolves over a single data structure called
+BrkgaMpIpr framework revolves over a single data structure called
 [`BrkgaData`](@ref) that represents the internal state of the BRKGA-MP-IPR
 algorithm. Since this structure has no constructor, you must build it using
 one of the [`Building functions`](@ref building_funcs). There are two
@@ -273,7 +335,7 @@ You also must indicate whether you are minimizing or maximizing through
 optimization [`Sense`](@ref).
 
 A good seed also must beprovided for the (pseudo) random number generator
-(BrkgaMpIpr.jl uses the Mersenne Twister
+(BrkgaMpIpr uses the Mersenne Twister
 [[1]](https://en.wikipedia.org/wiki/Mersenne_Twister)
 [[2]](http://dx.doi.org/10.1145/272991.272995)).
 
@@ -398,12 +460,12 @@ initialize!(brkga_data)
     `initialize!` must be called before any optimization methods.
 
 !!! warning
-    BrkgaMpIpr.jl performs the decoding of each chromosome in parallel if
+    BrkgaMpIpr performs the decoding of each chromosome in parallel if
     multi-thread is enabled. Therefore, **we must guarantee that the decoder is
     THREAD-SAFE.** If such property cannot be held, we suggest using a single
     thread by setting the environmental variable `JULIA_NUM_THREADS = 1`
     [(see Julia Parallel Computing)]
-    (https://docs.julialang.org/en/v1.1/manual/parallel-computing).
+    (https://docs.julialang.org/en/v1/manual/parallel-computing).
 
 ### Warm-start solutions
 
@@ -491,7 +553,7 @@ advantage of that code is that we can track all optimization details.
     THREAD-SAFE.** If such property cannot be held, we suggest using a single
     thread by setting the environmental variable `JULIA_NUM_THREADS = 1`
     [(see Julia Parallel Computing)]
-    (https://docs.julialang.org/en/v1.1/manual/parallel-computing).
+    (https://docs.julialang.org/en/v1/manual/parallel-computing).
 
 Accessing solutions/chromosomes
 --------------------------------------------------------------------------------
@@ -499,7 +561,7 @@ Accessing solutions/chromosomes
 Since Julia does not offer encapsulation mechanisms to keep data private
 within data structures, you can access all chromosomes, fitness, and other
 data members directly from [`BrkgaData`](@ref). **However, we do not recommend
-that, unless you are sure what you are doing.** So, BrkgaMpIpr.jl offers some
+that, unless you are sure what you are doing.** So, BrkgaMpIpr offers some
 helper functions.
 
 Usually, we want to access the best chromosome after some iterations. You can
@@ -568,7 +630,7 @@ push the optimization further. The good thing about IPR is that you do not
 need to worry about the path relink implementation, which can be long and
 tedious if done by hand or customized per problem.
 
-BrkgaMpIpr.jl provides a friendly interface to use IPR directly from the
+BrkgaMpIpr provides a friendly interface to use IPR directly from the
 BRKGA population, and you only must provide a few functions and arguments to
 have a Path Relink algorithm ready to go. This is the main signature of
 [`path_relink!`](@ref)
@@ -627,7 +689,7 @@ sampled from the elite set of that population.
 
 Note that in traditional path relink algorithms, `compute_distance()` depends
 on the problem structure. On IPR, you can use a generic distance function, or
-provide one that incorporates more knowledge about the problem. BrkgaMpIpr.jl
+provide one that incorporates more knowledge about the problem. BrkgaMpIpr
 provides a function to compute the (modified) [Hamming
 distance](https://en.wikipedia.org/wiki/Hamming_distance) for threshold
 representations ([`hamming_distance`](@ref)), and a function that computes
@@ -759,7 +821,7 @@ to reflect the best solution found.
     Make sure your decoder does not rewrite the chromosome when called with
     the argument `writeback = false`.
 
-BrkgaMpIpr.jl [`path_relink!`](@ref) implementation is multi-threaded.
+BrkgaMpIpr [`path_relink!`](@ref) implementation is multi-threaded.
 Instead of to build and decode each chromosome one at a time, the method
 builds a list of candidates, altering the alleles/keys according to the guide
 solution, and then decode all candidates in parallel. Note that
@@ -772,14 +834,14 @@ the candidates, which can be costly if the `chromosome_size` is very large.
     If such property cannot be held, we suggest using single thread by
     setting the environmental variable `JULIA_NUM_THREADS = 1` [(see Julia
     Parallel Computing)]
-    (https://docs.julialang.org/en/v1.1/manual/parallel-computing).
+    (https://docs.julialang.org/en/v1/manual/parallel-computing).
 
 Shaking and Resetting
 --------------------------------------------------------------------------------
 
 Sometimes, BRKGA gets stuck, converging to local maxima/minima, for several
 iterations. When such a situation happens, it is a good idea to perturb the
-population, or even restart from a new one completely new. BrkgaMpIpr.jl
+population, or even restart from a new one completely new. BrkgaMpIpr
 offers [`shake!`](@ref) function, an improved variation of the original
 version proposed in [this paper](http://dx.doi.org/xxx).
 
@@ -824,7 +886,7 @@ reset!(brkga_data)
     THREAD-SAFE.** If such property cannot be held, we suggest using a single
     thread by setting the environmental variable `JULIA_NUM_THREADS = 1`
     [(see Julia Parallel Computing)]
-    (https://docs.julialang.org/en/v1.1/manual/parallel-computing).
+    (https://docs.julialang.org/en/v1/manual/parallel-computing).
 
 Multi-population and migration
 --------------------------------------------------------------------------------
@@ -835,7 +897,7 @@ The idea is to evolve parallel and independent populations and, once a
 while, exchange individuals among these populations. In several scenarios,
 this approach is very beneficial for optimization.
 
-BrkgaMpIpr.jl is implemented using such island idea from the core. If you
+BrkgaMpIpr is implemented using such island idea from the core. If you
 read the guide until here, you may notice that several methods take into
 account multiple populations. To use multiple populations, you must set
 [`BrkgaParams`](@ref)`.num_independent_populations` with 2 ou more populations,
@@ -861,7 +923,7 @@ Simulating the standard BRKGA
 --------------------------------------------------------------------------------
 
 Sometimes, it is a good idea to test how the standard BRKGA algorithm
-performs for a problem. You can use BrkgaMpIpr.jl framework to quickly
+performs for a problem. You can use BrkgaMpIpr framework to quickly
 implement and test a standard BRKGA.
 
 First, you must guarantee that, during the crossover, the algorithm chooses
@@ -1020,8 +1082,8 @@ multi-threading. This paradigm can be tricky to code, and [Amdahl's
 law](https://en.wikipedia.org/wiki/Amdahl%27s_law) plays against us.
 Several genetic algorithms, and in particular, BRKGA, can use parallel
 solution evaluation (or decoding), which makes the use of multi-threading
-relatively straightforward. BrkgaMpIpr.jl is not different, and it uses
-[Julia multi-threading](https://docs.julialang.org/en/v1.1/manual/parallel-computing)
+relatively straightforward. BrkgaMpIpr is not different, and it uses
+[Julia multi-threading](https://docs.julialang.org/en/v1/manual/parallel-computing)
 capabilities to do so.
 
 First, as commented several times in this guide, **the decoder must be
