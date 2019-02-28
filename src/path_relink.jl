@@ -1,4 +1,4 @@
-################################################################################
+###############################################################################
 # path_relink.jl: main evolutionary routines.
 #
 # (c) Copyright 2019, Carlos Eduardo de Andrade. All Rights Reserved.
@@ -591,19 +591,19 @@ end
 
 """
     function path_relink!(brkga_data::BrkgaData,
-                          pr_type::PathRelinkingType,
-                          pr_selection::PathRelinkingSelection,
-                          compute_distance::Function,
-                          affect_solution::Function,
-                          minimum_distance::Float64,
-                          block_size::Int64,
-                          max_time::Int64,
-                          percentage::Float64
+        pr_type::PathRelinkingType,
+        pr_selection::PathRelinkingSelection,
+        compute_distance::Function,
+        affect_solution::Function,
+        number_pairs::Int64,
+        minimum_distance::Float64,
+        block_size::Int64,
+        max_time::Float64,
+        percentage::Float64
     )::PathRelinkingResult
 
 Perform path relinking between elite solutions that are, at least, a given
-minimum distance between themselves. In this method, the local/loaded
-parameters are ignored in favor to the supplied ones.
+minimum distance between themselves.
 
 In the presence of multiple populations, the path relinking is performed
 between elite chromosomes from different populations, in a circular fashion.
@@ -706,7 +706,7 @@ the candidates, which can be costly if the `chromosome_size` is very large.
 
 # Returns
 
-- Returns [`PathRelinkingResult`](@ref) depending of the relink status.
+- Returns [`PathRelinkingResult`](@ref) depending on the relink status.
 
 # Throws
 - `ErrorException`: if [`initialize!()`](@ref) was not called before.

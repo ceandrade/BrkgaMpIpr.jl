@@ -344,7 +344,12 @@ end
 Set a new bias function to be used to rank the chromosomes during the mating.
 **It must be a positive non-decreasing function** returning a Float64, i.e.,
 `f(::Int64)::Float64` such that `f(i) ≥ 0` and `f(i) ≥ f(i+1)` for
-`i ∈ [1..total_parents]`.
+`i ∈ [1..total_parents]`. For instance, the following sets an inverse quadratic
+function:
+
+```julia
+set_bias_custom_function!(brkga_data, x -> 1.0 / (x * x))
+```
 
 # Throws
 - `ArgumentError`: in case the function is not a non-decreasing positive
@@ -386,6 +391,9 @@ Set initial individuals into the poulation to work as warm-starters. Such
 individuals can be obtained from solutions of external procedures such as
 fast heuristics, other methaheuristics, or even relaxations from a
 mixed integer programming model that models the problem.
+
+All given solutions are assigned to one population only. Therefore, the
+maximum number of solutions is the size of the populations.
 
 # Throws
 - `ArgumentError`: if the number of given chromosomes is larger than the

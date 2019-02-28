@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Feb 12, 2019 by ceandrade
+# Last update: Feb 28, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -30,6 +30,7 @@ include("types.jl")
 include("types_io.jl")
 include("building.jl")
 include("support.jl")
+include("population_manipulation.jl")
 include("evolution.jl")
 include("distance_functions.jl")
 include("path_relink.jl")

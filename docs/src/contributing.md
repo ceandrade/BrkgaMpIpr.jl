@@ -9,9 +9,10 @@ multi-threads applications with shared memory.
 Style
 -----------------------
 
-Please, follow the general Julia coding style. Since it is too long to
-describe all details here, study the code already written. However, in
-general,
+Please, follow the general [Julia coding
+style](https://docs.julialang.org/en/v1/manual/style-guide). Since it is too
+long to describe all details here, study the code already written. However,
+in general,
 
 - Name classes, methods, and variables as clear and meaningful as possible;
 
@@ -25,7 +26,17 @@ general,
   Try to keep line within 80 columns and do not exceed 90 columns;
 
 - Do not use one-liner branches. Always use `if...end` even it uses
-  two more lines. The code must be as clear and easy to read as possible;
+  two more lines. The code must be as clear and easy to read as possible:
+
+```julia
+ # Don't do it
+a > 1 && b += func(a)
+
+# Ah, way better and clear
+if a > 1
+    b += func(a)
+end
+```
 
 - Avoid dense expressions where possible e.g. prefer nested `if`s over complex
   nested `?`s;

@@ -42,7 +42,7 @@ set_bias_custom_function!
 set_initial_population!
 ```
 
-Support functions
+Population manipulation functions
 --------------------------------------------------------------------------------
 
 ```@docs

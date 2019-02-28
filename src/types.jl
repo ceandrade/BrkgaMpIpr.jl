@@ -295,7 +295,7 @@ mutable struct BrkgaParams
     """
     Initialization constructor.
     """
-    BrkgaParams() = new(0, 0, 0, 0, 0, CONSTANT, 0, 0, 0.0, DIRECT,
+    BrkgaParams() = new(0, 0.0, 0.0, 0, 0, CONSTANT, 0, 0, 0.0, DIRECT,
                         BESTSOLUTION, 0.0, 0.0)
 end
 

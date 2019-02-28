@@ -7,7 +7,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Jan 03, 2019 by ceandrade
+# Last update: Feb 28, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -84,6 +84,9 @@ default_param_values[param_index["evolutionary_mechanism_on"]] = true
 
     print("\n>> Testing support methods...\n")
     include("support_tests.jl")
+
+    print("\n>> Testing population manipulation methods...\n")
+    include("population_manipulation_tests.jl")
 
     print("\n>> Testing distance functions...\n")
     include("distance_functions_tests.jl")
