@@ -2,7 +2,8 @@
 # main_complete.jl: comprehensive script for BRKGA-MP-IPR experiments
 #                   using Julia.
 #
-# (c) Copyright 2019, Carlos Eduardo de Andrade. All Rights Reserved.
+# (c) Copyright 2019, Carlos Eduardo de Andrade.
+# All Rights Reserved.
 #
 # This code is released under LICENSE.md.
 #
@@ -272,7 +273,7 @@ function main(args)
                 affect_solution_kendall_tau,
                 brkga_params.pr_number_pairs,
                 brkga_params.pr_minimum_distance,
-                1, #block_size doesn't not matter for permutation.
+                1, # block_size doesn't not matter for permutation.
                 maximum_time - (time() - start_time),
                 brkga_params.pr_percentage
             )
@@ -342,6 +343,10 @@ function main(args)
     print("\nNumber of homogenities: $num_homogenities")
     print("\nImprovements in the elite set: $num_elite_improvements")
     print("\nBest individual improvements: $num_best_improvements")
+
+    ########################################
+    # Extracting the best tour
+    ########################################
 
     tour = Array{Tuple{Float64, Int64}}(undef, instance.num_nodes)
     for (index, key) in enumerate(best_chromosome)
