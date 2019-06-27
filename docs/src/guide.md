@@ -1,7 +1,7 @@
 Guide
 ================================================================================
 
-Instalation and tests
+Installation and tests
 --------------------------------------------------------------------------------
 
 BrkgaMpIpr can be installed using the Julia package manager.
@@ -135,7 +135,7 @@ For `main_complete.jl`, the output is more verbose, since we want to capture
 as much information as possible to do some statistical analysis. The output
 should be something close to this:
 
-```julia
+```bash
 $ julia main_complete.jl -c config.conf -s 2700001 -r Generations -a 100 -t 60 -i instances/brazil58.dat
 ------------------------------------------------------
 > Experiment started at 2019-02-13T18:40:11.789
@@ -334,10 +334,11 @@ Both methods require a `problem_instance` to be used in the
 You also must indicate whether you are minimizing or maximizing through
 optimization [`Sense`](@ref).
 
-A good seed also must beprovided for the (pseudo) random number generator
-(BrkgaMpIpr uses the Mersenne Twister
-[[1]](https://en.wikipedia.org/wiki/Mersenne_Twister)
-[[2]](http://dx.doi.org/10.1145/272991.272995)).
+A good seed also must be provided for the (pseudo) random number generator
+(according to [this paper](http://doi.acm.org/10.1145/1276927.1276928)).
+BrkgaMpIpr uses the Mersenne Twister
+[[1]](http://dx.doi.org/10.1145/272991.272995)
+[[2]](https://en.wikipedia.org/wiki/Mersenne_Twister).
 
 The `chromosome_size` also must be given. It indicates the length of each
 chromosome in the population. In general, this size depends on the instance
@@ -614,7 +615,8 @@ inject_chromosome!(brkga_data::BrkgaData,
 Note that the chromosome is put in a specific position of a given population.
 If you do not provide the fitness, [`inject_chromosome!`](@ref) will decode the
 injected chromosome. For example, the following code injects a random chromosome
-`keys` into the population #1 in the last position (`population_size`).
+`keys` into the population #1 in the last position (`population_size`),
+i.e., it will replace the worst solution:
 
 ```julia
 keys = sort(rand(instance.num_nodes))
@@ -843,7 +845,7 @@ Sometimes, BRKGA gets stuck, converging to local maxima/minima, for several
 iterations. When such a situation happens, it is a good idea to perturb the
 population, or even restart from a new one completely new. BrkgaMpIpr
 offers [`shake!`](@ref) function, an improved variation of the original
-version proposed in [this paper](http://dx.doi.org/xxx).
+version proposed in [this paper](http://dx.doi.org/10.1016/j.eswa.2019.03.007).
 
 ```julia
 shake!(brkga_data::BrkgaData,
@@ -1010,7 +1012,7 @@ reset_interval 600
 It does not matter whether we use lower or upper cases. Blank lines and lines
 starting with **#** are ignored. The order of the parameters should not
 matter either. And, finally, this file should be readble for both C++ and Julia
-version.
+framework versions.
 
 In some cases, you define some of the parameters at the running time, and you
 may want to save them for debug or posterior use. To do so, you can use
