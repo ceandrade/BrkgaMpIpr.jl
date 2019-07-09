@@ -1,5 +1,5 @@
 Contributing
-=======================
+================================================================================
 
 We aim to write an efficient and consistent code. So, you should keep in mind
 the balance between memory utilization and code efficiency and pay special
@@ -7,7 +7,7 @@ attention to cache utilization. This aspect is very important when using
 multi-threads applications with shared memory.
 
 Style
------------------------
+--------------------------------------------------------------------------------
 
 Please, follow the general [Julia coding
 style](https://docs.julialang.org/en/v1/manual/style-guide). Since it is too

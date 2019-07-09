@@ -29,7 +29,7 @@ If you are not familiar with how BRKGA works, take a look on
 [Multi-Parent BRKGA](http://dx.doi.org/xxx).
 In the future, we will provide a _Prime on BRKGA-MP_
 section. If you know what _elite set_, _decoder_, and so means,
-we can get to the guts on the [Guide](@ref).
+we can get to the guts on the [Guide / Tutorial](@ref).
 
 ```@contents
 Pages = ["guide.md", "api.md", "contributing.md"]
@@ -46,9 +46,10 @@ mentioning features or use of this software and/or the data used to test it
 must cite explicitly the following article":
 
 > C.E. Andrade. R.F. Toso, J.F. Gonçalves, M.G.C. Resende. The Multi-Parent
-> Biased Random-key Genetic Algorithm with Implicit Path Relinking. _European
-> Jornal of Operational Research_, volume XX, issue X, pages xx-xx, 2019.
-> DOI [to be determined](http://dx.doi.org/xxx)
+> Biased Random-key Genetic Algorithm with Implicit Path Relinking and its
+> real-world applications.  *European Journal of Operational Research*,
+> volume XX, issue X, pages xx-xx, 2019.
+> DOI [to be determined](http://dx.doi.org/xxx))
 
 About the logo
 --------------------------------------------------------------------------------
