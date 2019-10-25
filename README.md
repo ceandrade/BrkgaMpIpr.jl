@@ -1,3 +1,5 @@
+![BRKGA-MP-IPR logo](https://github.com/ceandrade/BrkgaMpIpr.jl/blob/master/docs/src/assets/logo.png)
+
 BrkgaMpIpr.jl
 ===============================
 
