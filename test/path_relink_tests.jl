@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 06, 2018 by ceandrade
-# Last update: Feb 19, 2019 by ceandrade
+# Last update: Oct 25, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -157,7 +157,9 @@ end
                 5.0, #max_time::Float64,
                 1.0 #percentage::Float64
     )
-    @test ceil(time() - start_time) ≈ 6.0
+
+    # Test 5s. We must put a slack because it can fail on slow systems.
+    @test ceil(time() - start_time) <= 10.0
 
     start_time = time()
     tmp = BrkgaMpIpr.direct_path_relink!(
@@ -169,7 +171,9 @@ end
                 10.0, #max_time::Float64,
                 1.0 #percentage::Float64
     )
-    @test ceil(time() - start_time) ≈ 11.0
+
+    # Test 10s. We must put a slack because it can fail on slow systems.
+    @test ceil(time() - start_time) <= 15.0
 
     ########################
     # Test the relink
@@ -419,7 +423,9 @@ end
                 5.0, #max_time::Float64,
                 1.0 #percentage::Float64
     )
-    @test ceil(time() - start_time) ≈ 6.0
+    
+    # Test 5s. We must put a slack because it can fail on slow systems.    
+    @test ceil(time() - start_time) <= 10.0
 
     start_time = time()
     tmp = BrkgaMpIpr.permutation_based_path_relink!(
@@ -431,7 +437,9 @@ end
                 10.0, #max_time::Float64,
                 1.0 #percentage::Float64
     )
-    @test ceil(time() - start_time) ≈ 11.0
+
+    # Test 5s. We must put a slack because it can fail on slow systems.        
+    @test ceil(time() - start_time) <= 15.0
 
     #########################
     # Test the relink
