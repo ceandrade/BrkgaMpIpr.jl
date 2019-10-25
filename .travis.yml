@@ -18,9 +18,12 @@ matrix:
   - julia: nightly
 
 before_install:
-  - sudo apt-get -y install hdf5-tools
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update          ; fi
 
 addons:
+  apt:
+    packages:
+      - hdf5-tools
   homebrew:
     packages:
     - hdf5
