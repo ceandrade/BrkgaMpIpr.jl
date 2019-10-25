@@ -40,7 +40,7 @@ Tutorial
 --------------------------------------------------------------------------------
 
 Check out the tutorial and documentation:
-(https://ceandrade.github.com/BrkgaMpIpr.jl)
+(https://ceandrade.github.io/BrkgaMpIpr.jl)
 
 License and Citing
 --------------------------------------------------------------------------------
