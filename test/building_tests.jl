@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Jan 04, 2019 by ceandrade
+# Last update: Oct 30, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -19,6 +19,12 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+################################################################################
+
+@testset "empty_function()" begin
+    @test BrkgaMpIpr.empty_function() == nothing
+end
+
 ################################################################################
 
 @testset "Detailed build_brkga()" begin
@@ -148,6 +154,11 @@
     # Elite parents for mating.
     param_values = deepcopy(default_param_values)
     param_values[param_index["brkga_params"]].num_elite_parents = 0
+    @test_throws ArgumentError build_brkga(param_values...)
+
+    param_values = deepcopy(default_param_values)
+    param_values[param_index["brkga_params"]].num_elite_parents = 1
+    param_values[param_index["brkga_params"]].total_parents = 1
     @test_throws ArgumentError build_brkga(param_values...)
 
     param_values[param_index["brkga_params"]].num_elite_parents = 2
@@ -384,6 +395,7 @@ end
     @test_throws ArgumentError set_bias_custom_function!(brkga_data, x -> x)
     @test_throws ArgumentError set_bias_custom_function!(brkga_data, x -> x + 1)
     @test_throws ArgumentError set_bias_custom_function!(brkga_data, x -> log1p(x))
+    @test_throws ArgumentError set_bias_custom_function!(brkga_data, x -> -x)
 
     set_bias_custom_function!(brkga_data, x -> 1.0 / log1p(x))
     @test brkga_data.total_bias_weight ≈ 6.554970525044798

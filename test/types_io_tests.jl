@@ -221,4 +221,42 @@ num_exchange_indivuduals 200
 reset_interval 300
 """
     @test result == standard
+
+
+    #########################
+    # From direct building
+    #########################
+    param_values = deepcopy(default_param_values)
+    brkga_data = build_brkga(param_values...)
+    set_bias_custom_function!(brkga_data, x -> 1 / x)
+    external_params = ExternalControlParams(100, 200, 300)
+
+    temp_filename = tempname()
+    write_configuration(temp_filename, brkga_data, external_params)
+
+    result = ""
+    open(temp_filename) do file
+        result = lowercase(read(file, String))
+    end
+    rm(temp_filename)
+
+    standard = """
+population_size 10
+elite_percentage 0.3
+mutants_percentage 0.1
+num_elite_parents 1
+total_parents 2
+bias_type custom
+num_independent_populations 3
+pr_number_pairs 0
+pr_minimum_distance 0.0
+pr_type direct
+pr_selection bestsolution
+alpha_block_size 1.0
+pr_percentage 1.0
+exchange_interval 100
+num_exchange_indivuduals 200
+reset_interval 300
+"""
+    @test result == standard
 end

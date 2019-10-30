@@ -39,6 +39,26 @@ end
 
 ################################################################################
 
+@testset "struct Triple" begin
+    tmp = BrkgaMpIpr.Triple()
+    @test tmp.chr == Array{Float64, 1}()
+    @test tmp.fitness == 0.0
+    @test tmp.block_index == 0
+end
+
+################################################################################
+
+@testset "struct DecodeStruct" begin
+    tmp = BrkgaMpIpr.DecodeStruct()
+    @test tmp.chr == Array{Float64, 1}()
+    @test tmp.fitness == 0.0
+    @test tmp.key_index == 0
+    @test tmp.pos1 == 0
+    @test tmp.pos2 == 0
+end
+
+################################################################################
+
 @testset "find_block_range()" begin
     SIZE::Int64 = 10
     for i in 1:SIZE

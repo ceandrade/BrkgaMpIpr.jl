@@ -7,7 +7,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Feb 28, 2019 by ceandrade
+# Last update: Oct 30, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -76,7 +76,10 @@ default_param_values[param_index["evolutionary_mechanism_on"]] = true
 ################################################################################
 
 @time begin
-    print(">> Testing types and their I/O operations...\n")
+    print(">> Testing types operations...\n")
+    include("types_tests.jl")
+
+    print(">> Testing types I/O operations...\n")
     include("types_io_tests.jl")
 
     print("\n>> Testing BRKGA data building and initialization...\n")
