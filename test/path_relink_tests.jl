@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 06, 2018 by ceandrade
-# Last update: Oct 25, 2019 by ceandrade
+# Last update: Oct 30, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -20,6 +20,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
+
+using Printf
 
 include("util.jl")
 
@@ -99,6 +101,8 @@ end
 ################################################################################
 
 @testset "direct_path_relink!()" begin
+    start_time = time()
+
     param_values = deepcopy(default_param_values)
     param_values[param_index["seed"]] = 2700001
     param_values[param_index["opt_sense"]] = MINIMIZE
@@ -121,6 +125,7 @@ end
                 0.1234 #percentage::Float64
     )
     @test tmp == [Inf, Array{Float64, 1}()]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     param_values[param_index["opt_sense"]] = MAXIMIZE
     brkga_data = build_brkga(param_values...)
@@ -136,6 +141,7 @@ end
                 0.1234 #percentage::Float64
     )
     @test tmp == [-Inf, Array{Float64, 1}()]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     ########################
     # Test maximum time
@@ -160,6 +166,7 @@ end
 
     # Test 5s. We must put a slack because it can fail on slow systems.
     @test ceil(time() - start_time) <= 10.0
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     start_time = time()
     tmp = BrkgaMpIpr.direct_path_relink!(
@@ -174,6 +181,7 @@ end
 
     # Test 10s. We must put a slack because it can fail on slow systems.
     @test ceil(time() - start_time) <= 15.0
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     ########################
     # Test the relink
@@ -206,6 +214,7 @@ end
     )
     @test block1[1] ≈ results["block1"][1]
     @test block1[2] ≈ results["block1"][2]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     # Size 10
     chr1, chr2 = next_pair(chr2)
@@ -220,6 +229,7 @@ end
     )
     @test block10[1] ≈ results["block10"][1]
     @test block10[2] ≈ results["block10"][2]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     # Size 100
     chr1, chr2 = next_pair(chr2)
@@ -234,6 +244,7 @@ end
     )
     @test block100[1] ≈ results["block100"][1]
     @test block100[2] ≈ results["block100"][2]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     # Size 400
     chr1, chr2 = next_pair(chr2)
@@ -248,6 +259,7 @@ end
     )
     @test block400[1] ≈ results["block400"][1]
     @test block400[2] ≈ results["block400"][2]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     # Size 372
     chr1, chr2 = next_pair(chr2)
@@ -262,6 +274,7 @@ end
     )
     @test block372[1] ≈ results["block372"][1]
     @test block372[2] ≈ results["block372"][2]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     ###############
     # Path sizes
@@ -280,6 +293,7 @@ end
     )
     @test path10[1] ≈ results["path10"][1]
     @test path10[2] ≈ results["path10"][2]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     # Path 30%
     chr1, chr2 = next_pair(chr2)
@@ -294,6 +308,7 @@ end
     )
     @test path30[1] ≈ results["path30"][1]
     @test path30[2] ≈ results["path30"][2]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     # Path 50%
     chr1, chr2 = next_pair(chr2)
@@ -308,6 +323,7 @@ end
     )
     @test path50[1] ≈ results["path50"][1]
     @test path50[2] ≈ results["path50"][2]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     # Path 100%
     chr1, chr2 = next_pair(chr2)
@@ -322,6 +338,7 @@ end
     )
     @test path100[1] ≈ results["path100"][1]
     @test path100[2] ≈ results["path100"][2]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     ##############################
     # Simple distance function
@@ -340,6 +357,7 @@ end
     )
     @test xy[1] ≈ results["xy"][1]
     @test xy[2] ≈ results["xy"][2]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     # x > y
     chr1, chr2 = next_pair(chr2)
@@ -354,11 +372,14 @@ end
     )
     @test yx[1] ≈ results["yx"][1]
     @test yx[2] ≈ results["yx"][2]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 end
 
 ################################################################################
 
 @testset "permutation_based_path_relink!()" begin
+    start_time = time()
+
     param_values = deepcopy(default_param_values)
     param_values[param_index["seed"]] = 2700001
     param_values[param_index["opt_sense"]] = MAXIMIZE
@@ -385,6 +406,7 @@ end
                 0.1234 #percentage::Float64
     )
     @test tmp == [-Inf, Array{Float64, 1}()]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     param_values[param_index["opt_sense"]] = MINIMIZE
     brkga_data = build_brkga(param_values...)
@@ -402,6 +424,7 @@ end
                 0.1234 #percentage::Float64
     )
     @test tmp == [Inf, Array{Float64, 1}()]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     ########################
     # Test maximum time
@@ -423,9 +446,10 @@ end
                 5.0, #max_time::Float64,
                 1.0 #percentage::Float64
     )
-    
-    # Test 5s. We must put a slack because it can fail on slow systems.    
+
+    # Test 5s. We must put a slack because it can fail on slow systems.
     @test ceil(time() - start_time) <= 10.0
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     start_time = time()
     tmp = BrkgaMpIpr.permutation_based_path_relink!(
@@ -438,8 +462,9 @@ end
                 1.0 #percentage::Float64
     )
 
-    # Test 5s. We must put a slack because it can fail on slow systems.        
+    # Test 5s. We must put a slack because it can fail on slow systems.
     @test ceil(time() - start_time) <= 15.0
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     #########################
     # Test the relink
@@ -470,6 +495,7 @@ end
                 120.0, #max_time::Float64,
                 0.5 #percentage::Float64
     )
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     # Size 10
     chr1, chr2 = next_pair(chr2)
@@ -484,6 +510,7 @@ end
     )
     @test block10[1] ≈ results["block10"][1]
     @test block10[2] ≈ results["block10"][2]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     # Size 100
     chr1, chr2 = next_pair(chr2)
@@ -498,6 +525,7 @@ end
     )
     @test block100[1] ≈ results["block100"][1]
     @test block100[2] ≈ results["block100"][2]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     # Size 400
     chr1, chr2 = next_pair(chr2)
@@ -512,6 +540,7 @@ end
     )
     @test block400[1] ≈ results["block400"][1]
     @test block400[2] ≈ results["block400"][2]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     # Size 372
     chr1, chr2 = next_pair(chr2)
@@ -526,6 +555,7 @@ end
     )
     @test block372[1] ≈ results["block372"][1]
     @test block372[2] ≈ results["block372"][2]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     ###############
     # Path sizes
@@ -544,6 +574,7 @@ end
     )
     @test path10[1] ≈ results["path10"][1]
     @test path10[2] ≈ results["path10"][2]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     # Path 30%
     chr1, chr2 = next_pair(chr2)
@@ -558,6 +589,7 @@ end
     )
     @test path30[1] ≈ results["path30"][1]
     @test path30[2] ≈ results["path30"][2]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     # Path 50%
     chr1, chr2 = next_pair(chr2)
@@ -572,6 +604,7 @@ end
     )
     @test path50[1] ≈ results["path50"][1]
     @test path50[2] ≈ results["path50"][2]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     # Path 100%
     chr1, chr2 = next_pair(chr2)
@@ -586,6 +619,7 @@ end
     )
     @test path100[1] ≈ results["path100"][1]
     @test path100[2] ≈ results["path100"][2]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     ##############################
     # Simple distance function
@@ -604,6 +638,7 @@ end
     )
     @test xy[1] ≈ results["xy"][1]
     @test xy[2] ≈ results["xy"][2]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     # x > y
     chr1, chr2 = next_pair(chr2)
@@ -618,11 +653,14 @@ end
     )
     @test yx[1] ≈ results["yx"][1]
     @test yx[2] ≈ results["yx"][2]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 end
 
 ################################################################################
 
 @testset "path_relink!()" begin
+    start_time = time()
+
     param_values = deepcopy(default_param_values)
     param_values[param_index["seed"]] = 2700001
     param_values[param_index["opt_sense"]] = MAXIMIZE
@@ -714,6 +752,7 @@ end
         2.0, #max_time::Float64,
         1.0 #percentage::Float64
     )
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     #######################
     # Test the direct path relink
@@ -738,6 +777,7 @@ end
     # Do not change the best.
     @test get_best_fitness(brkga_data) > get_best_fitness(original_brkga_data)
     @test get_best_chromosome(brkga_data) != get_best_chromosome(original_brkga_data)
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     ########################
     # Test the permutation path relink
@@ -794,6 +834,7 @@ end
     @test get_best_fitness(brkga_data) == get_best_fitness(original_brkga_data)
     @test get_current_population(brkga_data, 1) !=
           get_current_population(original_brkga_data, 1)
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     ########################
     # Improvement found, but not in the best solution.
@@ -831,6 +872,7 @@ end
     # But population changes.
     @test get_current_population(brkga_data, 1) !=
           get_current_population(original_brkga_data, 1)
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     ########################
     # Improvement found
@@ -887,6 +929,7 @@ end
 
     @test get_best_fitness(brkga_data) > get_best_fitness(original_brkga_data)
     @test get_best_chromosome(brkga_data) != get_best_chromosome(original_brkga_data)
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     ########################
     # Five populations
@@ -945,4 +988,5 @@ end
 
     @test get_best_fitness(brkga_data) < get_best_fitness(original_brkga_data)
     @test get_best_chromosome(brkga_data) != get_best_chromosome(original_brkga_data)
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 end

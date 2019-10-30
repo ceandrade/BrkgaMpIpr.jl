@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Apr 19, 2018 by ceandrade
-# Last update: Jan 07, 2019 by ceandrade
+# Last update: Oct 30, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -21,11 +21,15 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
 
+using Printf
+
 include("util.jl")
 
 ################################################################################
 
 @testset "evolve_population!()" begin
+    start_time = time()
+
     param_values = deepcopy(default_param_values)
     brkga_params = param_values[param_index["brkga_params"]]
     brkga_params.num_independent_populations = 3
@@ -60,6 +64,7 @@ include("util.jl")
         @test previous[i].chromosomes != brkga_data.current[i].chromosomes
         @test previous[i].fitness != brkga_data.current[i].fitness
     end
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     ########################
     # Test the evolutionary mechanism
@@ -88,6 +93,8 @@ include("util.jl")
     @test get_best_fitness(brkga_data) ≈ results["fitness102"]
     @test get_best_chromosome(brkga_data) ≈ results["chromosome102"]
 
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
+
     ########################
     # Data 2
     load_brkga_data(joinpath(data_path, "data2.jld"), brkga_data)
@@ -107,6 +114,8 @@ include("util.jl")
     end
     @test get_best_fitness(brkga_data) ≈ results["fitness102"]
     @test get_best_chromosome(brkga_data) ≈ results["chromosome102"]
+
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     ########################
     # Data 3
@@ -130,6 +139,8 @@ include("util.jl")
     end
     @test get_best_fitness(brkga_data) ≈ results["fitness102"]
     @test get_best_chromosome(brkga_data) ≈ results["chromosome102"]
+
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     ########################
     # Data 4 (traditional BRKGA)
@@ -155,11 +166,15 @@ include("util.jl")
     end
     @test get_best_fitness(brkga_data) ≈ results["fitness102"]
     @test get_best_chromosome(brkga_data) ≈ results["chromosome102"]
+
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 end
 
 ################################################################################
 
 @testset "evolve!()" begin
+    start_time = time()
+
     param_values = deepcopy(default_param_values)
     brkga_data = build_brkga(param_values...)
 
@@ -182,10 +197,12 @@ end
     evolve!(brkga_data, 1)
     @test get_best_fitness(brkga_data) ≈ results["fitness1"]
     @test get_best_chromosome(brkga_data) ≈ results["chromosome1"]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     evolve!(brkga_data, 10)
     @test get_best_fitness(brkga_data) ≈ results["fitness2"]
     @test get_best_chromosome(brkga_data) ≈ results["chromosome2"]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 
     # Evolve step by step, or all generations at once
     # should produce the same results.
@@ -200,4 +217,5 @@ end
     @test get_best_chromosome(brkga_data) ≈ results["chromosome102"]
     @test get_best_fitness(brkga_data2) ≈ results["fitness102"]
     @test get_best_chromosome(brkga_data2) ≈ results["chromosome102"]
+    println("Elapsed time: $(@sprintf("%.2f", time() - start_time))")
 end
