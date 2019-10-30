@@ -7,7 +7,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Feb 28, 2019 by ceandrade
-# Last update: Feb 28, 2019 by ceandrade
+# Last update: Oct 30, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -21,6 +21,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
+
+include("util.jl")
 
 @testset "reset!()" begin
     param_values = deepcopy(default_param_values)
@@ -249,5 +251,45 @@ end
     @test_throws ArgumentError shake!(brkga_data, -1, CHANGE, 1)
     @test_throws ArgumentError shake!(brkga_data, 1, CHANGE, -1)
 
-    # TODO (ceandrade): implement the full tests.
+    # NOTE (ceandrade): this is not the ideal way to test this function,
+    # but it will be until we find a better way.
+    data_path = joinpath(@__DIR__, "brkga_data_files")
+
+    load_brkga_data(joinpath(data_path, "data_shake.jld"), brkga_data)
+    results = load(joinpath(data_path, "results_shake.jld"))
+
+    data_change_10_1 = deepcopy(brkga_data)
+    shake!(data_change_10_1, 10, CHANGE, 1)
+    @test data_change_10_1.current[1].chromosomes == results["change_10_1"][1].chromosomes
+    @test data_change_10_1.current[2].chromosomes == brkga_data.current[2].chromosomes
+
+    data_change_10_2 = deepcopy(brkga_data)
+    shake!(data_change_10_2, 10, CHANGE, 2)
+    @test data_change_10_2.current[2].chromosomes == results["change_10_2"][2].chromosomes
+    @test data_change_10_2.current[1].chromosomes == brkga_data.current[1].chromosomes
+
+    data_change_10_all = deepcopy(brkga_data)
+    shake!(data_change_10_all, 10, CHANGE, 3)
+    @test data_change_10_all.current[1].chromosomes == results["change_10_all"][1].chromosomes
+    @test data_change_10_all.current[2].chromosomes == results["change_10_all"][2].chromosomes
+
+    data_swap_10_1 = deepcopy(brkga_data)
+    shake!(data_swap_10_1, 10, SWAP, 1)
+    @test data_swap_10_1.current[1].chromosomes == results["swap_10_1"][1].chromosomes
+    @test data_swap_10_1.current[2].chromosomes == brkga_data.current[2].chromosomes
+
+    data_swap_10_2 = deepcopy(brkga_data)
+    shake!(data_swap_10_2, 10, SWAP, 2)
+    @test data_swap_10_2.current[2].chromosomes == results["swap_10_2"][2].chromosomes
+    @test data_swap_10_2.current[1].chromosomes == brkga_data.current[1].chromosomes
+
+    data_swap_10_all = deepcopy(brkga_data)
+    shake!(data_swap_10_all, 10, SWAP, 3)
+    @test data_swap_10_all.current[1].chromosomes == results["swap_10_all"][1].chromosomes
+    @test data_swap_10_all.current[2].chromosomes == results["swap_10_all"][2].chromosomes
+
+    data_swap_100_all = deepcopy(brkga_data)
+    shake!(data_swap_100_all, 100, SWAP, 3)
+    @test data_swap_100_all.current[1].chromosomes == results["swap_100_all"][1].chromosomes
+    @test data_swap_100_all.current[2].chromosomes == results["swap_100_all"][2].chromosomes
 end

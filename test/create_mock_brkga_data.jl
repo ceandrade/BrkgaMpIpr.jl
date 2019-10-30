@@ -8,7 +8,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Apr 20, 2018 by ceandrade
-# Last update: Jan 07, 2018 by ceandrade
+# Last update: Oct 30, 2018 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -573,3 +573,73 @@ for (func, decoder, name) in
          "yx", yx
     )
 end
+
+################################################################################
+# Configuration for Shake
+################################################################################
+
+chromosome_size = 100
+instance = Instance(chromosome_size)
+
+brkga_params = BrkgaParams()
+brkga_params.population_size = 50
+brkga_params.elite_percentage = 0.3
+brkga_params.mutants_percentage = 0.1
+brkga_params.num_elite_parents = 1
+brkga_params.total_parents = 2
+brkga_params.bias_type = LOGINVERSE
+brkga_params.num_independent_populations = 2
+brkga_params.pr_number_pairs = 0
+brkga_params.pr_minimum_distance = 0.0
+brkga_params.pr_type = DIRECT
+brkga_params.pr_selection = BESTSOLUTION
+brkga_params.alpha_block_size = 1.0
+brkga_params.pr_percentage = 1.0
+
+param_values[param_index["instance"]] = instance
+param_values[param_index["decode!"]] = sum_decode!
+param_values[param_index["opt_sense"]] = MAXIMIZE
+param_values[param_index["seed"]] = 3979164113692134205
+param_values[param_index["chr_size"]] = chromosome_size
+param_values[param_index["evolutionary_mechanism_on"]] = true
+param_values[param_index["brkga_params"]] = brkga_params
+
+print("\n\n> Building data for shake")
+brkga_data = build_brkga(param_values...)
+initialize!(brkga_data)
+
+print("\n> Writing data for shake")
+write_data("brkga_data_files/data_shake.jld", brkga_data)
+
+data_change_10_1 = deepcopy(brkga_data)
+shake!(data_change_10_1, 10, CHANGE, 1)
+
+data_change_10_2 = deepcopy(brkga_data)
+shake!(data_change_10_2, 10, CHANGE, 2)
+
+data_change_10_all = deepcopy(brkga_data)
+shake!(data_change_10_all, 10, CHANGE, 3)
+
+data_swap_10_1 = deepcopy(brkga_data)
+shake!(data_swap_10_1, 10, SWAP, 1)
+
+data_swap_10_2 = deepcopy(brkga_data)
+shake!(data_swap_10_2, 10, SWAP, 2)
+
+data_swap_10_all = deepcopy(brkga_data)
+shake!(data_swap_10_all, 10, SWAP, 3)
+
+data_swap_100_all = deepcopy(brkga_data)
+shake!(data_swap_100_all, 100, SWAP, 3)
+
+print("\n> Writing results data for shake")
+save(File(format"JLD", "brkga_data_files/results_shake.jld"),
+     "change_10_1", data_change_10_1.current,
+     "change_10_2", data_change_10_2.current,
+     "change_10_all", data_change_10_all.current,
+     "swap_10_1", data_swap_10_1.current,
+     "swap_10_2", data_swap_10_2.current,
+     "swap_10_all", data_swap_10_all.current,
+     "swap_100_all", data_swap_100_all.current
+)
+
