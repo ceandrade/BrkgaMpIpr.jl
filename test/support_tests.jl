@@ -168,13 +168,18 @@ end
 
     initialize!(brkga_data)
 
+    # Test invalid population indices.
     @test_throws ArgumentError get_chromosome(brkga_data, 0, 1)
     @test_throws ArgumentError get_chromosome(brkga_data,
         brkga_data.params.num_independent_populations + 1, 1)
 
+    # Test invalid chrmosome indices.
     @test_throws ArgumentError get_chromosome(brkga_data, 1, 0)
     @test_throws ArgumentError get_chromosome(brkga_data, 1,
         brkga_data.params.population_size + 1)
+
+    # TODO (ceandrade): this test is not correct. Please, replicate the Python
+    # tests here.
 
     idx, pop = 1, 1
     actual_chr = brkga_data.current[pop]
@@ -183,7 +188,6 @@ end
     @test copy_chr ≈ actual_chr.chromosomes[actual_chr.fitness[idx][2]]
 
     idx, pop = 2, 2
-    actual_chr = brkga_data.current[pop]
     actual_chr = brkga_data.current[pop]
     copy_chr = get_chromosome(brkga_data, pop, idx)
     @test copy_chr !== actual_chr.chromosomes[actual_chr.fitness[idx][2]]

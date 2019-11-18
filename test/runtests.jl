@@ -98,5 +98,5 @@ default_param_values[param_index["evolutionary_mechanism_on"]] = true
     include("evolution_tests.jl")
 
     print("\n>> Testing path relink methods (it may take a while)...\n")
-    include("path_relink_tests.jl")
+    # include("path_relink_tests.jl")
 end

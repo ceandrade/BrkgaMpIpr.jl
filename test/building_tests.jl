@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Oct 30, 2019 by ceandrade
+# Last update: Nov 09, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -165,6 +165,10 @@ end
     param_values[param_index["brkga_params"]].total_parents = 2
     @test_throws ArgumentError build_brkga(param_values...)
 
+    param_values[param_index["brkga_params"]].num_elite_parents = 3
+    param_values[param_index["brkga_params"]].total_parents = 2
+    @test_throws ArgumentError build_brkga(param_values...)
+
     brkga_params = param_values[param_index["brkga_params"]]
     brkga_params.num_elite_parents = 1 +
             ceil(Int64, brkga_params.population_size *
@@ -182,12 +186,11 @@ end
     param_values[param_index["brkga_params"]].alpha_block_size = 0.0
     @test_throws ArgumentError build_brkga(param_values...)
 
-    # percentage / path size.
+    # Percentage / path size.
     param_values = deepcopy(default_param_values)
     param_values[param_index["brkga_params"]].pr_percentage = 0.0
     @test_throws ArgumentError build_brkga(param_values...)
 
-    # percentage / path size.
     param_values = deepcopy(default_param_values)
     param_values[param_index["brkga_params"]].pr_percentage = 1.001
     @test_throws ArgumentError build_brkga(param_values...)
@@ -266,12 +269,15 @@ end
 
     initialize!(brkga_data)
 
+    @test brkga_data.initialized == true
+    @test brkga_data.reset_phase == false
+    @test length(brkga_data.current) == params.num_independent_populations
+    @test length(brkga_data.previous) == params.num_independent_populations
+
     for i in 1:params.num_independent_populations
-        @test length(brkga_data.current) == params.num_independent_populations
         @test length(brkga_data.current[i].chromosomes) == params.population_size
         @test length(brkga_data.current[i].fitness) == params.population_size
 
-        @test length(brkga_data.previous) == params.num_independent_populations
         @test length(brkga_data.previous[i].chromosomes) == params.population_size
         @test length(brkga_data.previous[i].fitness) == params.population_size
 
@@ -287,9 +293,6 @@ end
         end
         @test correct_order
     end
-
-    @test brkga_data.initialized == true
-    @test brkga_data.reset_phase == false
 
     param_values = deepcopy(default_param_values)
     param_values[param_index["opt_sense"]] = MINIMIZE

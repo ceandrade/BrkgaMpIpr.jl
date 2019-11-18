@@ -58,9 +58,17 @@ include("util.jl")
     for i in 1:brkga_data.params.num_independent_populations
         BrkgaMpIpr.evolve_population!(brkga_data, i)
 
+        # Internal current and previous generation must be different.
+        @test brkga_data.current[i].chromosomes != brkga_data.previous[i].chromosomes
+        @test brkga_data.current[i].fitness != brkga_data.previous[i].fitness
+
+        # The current the from this generation is equal to the previous of
+        # the next generation.
         @test current[i].chromosomes == brkga_data.previous[i].chromosomes
         @test current[i].fitness == brkga_data.previous[i].fitness
 
+        # The previous of this generation is lost. Just make sure that
+        # the internal swap gets the new generation, not the current one.
         @test previous[i].chromosomes != brkga_data.current[i].chromosomes
         @test previous[i].fitness != brkga_data.current[i].fitness
     end

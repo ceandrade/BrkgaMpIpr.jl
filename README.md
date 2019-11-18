@@ -1,6 +1,6 @@
 ![BRKGA-MP-IPR logo](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/master/docs/src/assets/logo.png)
 
-BrkgaMpIpr.jl
+BrkgaMpIpr.jl - Julia version
 ===============================
 
 [![Build Status](https://travis-ci.org/ceandrade/brkga_mp_ipr_julia.svg?branch=master)](https://travis-ci.org/ceandrade/brkga_mp_ipr_julia)
@@ -25,7 +25,7 @@ Therefore, BrkgaMpIpr.jl should be suitable to be used in production
 environments.
 
 If you are like me and also like C++, check out the [**C++
-version.**](https://github.com/ceandrade/brkga_mp_ipr_cpp). 
+version.**](https://github.com/ceandrade/brkga_mp_ipr_cpp) 
 We are also developing a 
 [Python version](https://github.com/ceandrade/brkga_mp_ipr_python)
 which is in its earlier stages.

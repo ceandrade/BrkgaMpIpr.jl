@@ -63,7 +63,13 @@ end
 """
     evolve_population!(brkga_data::BrkgaData, population_index::Int64)
 
-Evolve the population `population_index` to the next.
+Evolve the population `population_index` to the next generation.
+
+!!! note
+    Although this method allows us to evolve populations independently, and
+    therefore, provide nice flexibility, the generation of each population
+    can be unsyched. We must proceed with care when using this function
+    instead of [`evolve!()`](@ref).
 
 !!! warning
     The decoding is done in parallel using threads, and the user
@@ -109,7 +115,6 @@ function evolve_population!(brkga_data::BrkgaData, population_index::Int64)
         # then we take the elite and non-elite parents. Note that we cannot
         # shuffled both sets together, otherwise we would mix elite
         # and non-elite individuals.
-
         bd.shuffled_individuals[1:bd.elite_size] =
             Random.shuffle(bd.rng, 1:bd.elite_size)
         bd.shuffled_individuals[(bd.elite_size + 1):bd.params.population_size] =
@@ -131,14 +136,14 @@ function evolve_population!(brkga_data::BrkgaData, population_index::Int64)
 
         # Performs the mate.
         @inbounds for allele in 1:bd.chromosome_size
+            # Roullete method.
             parent = 0
             cumulative_probability = 0.0
             toss = rand(bd.rng)
-
             while(cumulative_probability < toss)
                 parent += 1
                 cumulative_probability += bd.bias_function(parent) /
-                                          bd.total_bias_weight;
+                                          bd.total_bias_weight
             end
 
             next.chromosomes[chr][allele] =

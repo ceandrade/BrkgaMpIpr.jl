@@ -188,7 +188,7 @@ function main(args)
     initialize!(brkga_data)
 
     ########################################
-    # Warm start the script/code
+    # Warm up the script/code
     ########################################
 
     # To make sure we are timing the runs correctly, we run some warmup
@@ -214,7 +214,7 @@ function main(args)
     best_cost = Inf
     best_chromosome = initial_chromosome
 
-    iteration  = 0
+    iteration = 0
     last_update_time = 0.0
     last_update_iteration = 0
     large_offset = 0

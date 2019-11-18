@@ -275,7 +275,7 @@ want to time such procedure in his/her experiments.
 """
 function initialize!(brkga_data::BrkgaData)
     if brkga_data.bias_function == empty_function
-        error("bias function is not defined. Call set_bias_custom_function()!.")
+        error("the bias function is not defined. Call set_bias_custom_function()!.")
     end
 
     bd = brkga_data  # Just a short alias.
@@ -342,7 +342,7 @@ end
     set_bias_custom_function!(brkga_data::BrkgaData, bias_function::Function)
 
 Set a new bias function to be used to rank the chromosomes during the mating.
-**It must be a positive non-decreasing function** returning a Float64, i.e.,
+**It must be a positive non-increasing function** returning a Float64, i.e.,
 `f(::Int64)::Float64` such that `f(i) ≥ 0` and `f(i) ≥ f(i+1)` for
 `i ∈ [1..total_parents]`. For instance, the following sets an inverse quadratic
 function:
@@ -352,7 +352,7 @@ set_bias_custom_function!(brkga_data, x -> 1.0 / (x * x))
 ```
 
 # Throws
-- `ArgumentError`: in case the function is not a non-decreasing positive
+- `ArgumentError`: in case the function is not a non-increasing positive
   function.
 """
 function set_bias_custom_function!(brkga_data::BrkgaData,
@@ -361,14 +361,14 @@ function set_bias_custom_function!(brkga_data::BrkgaData,
     bias_values = map(bias_function, 1:brkga_data.params.total_parents)
 
     if any(x -> x < 0.0, bias_values)
-        throw(ArgumentError("bias_function must be positive non-decreasing"))
+        throw(ArgumentError("bias_function must be positive non-increasing"))
     end
 
     # NOTE (ceandrade) issorted(bias_values, rev=true) and variants do not
     # work for constant functions.
     for i in 2:brkga_data.params.total_parents
         if bias_values[i - 1] < bias_values[i]
-           throw(ArgumentError("bias_function is not a non-decreasing function"))
+           throw(ArgumentError("bias_function is not a non-increasing function"))
         end
     end
 
