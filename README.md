@@ -1,6 +1,6 @@
 <div align="center">
   <img src="https://github.com/ceandrade/brkga_mp_ipr_julia/blob/master/docs/src/assets/logo_name_300.png">
-</div
+</div>
 
 BrkgaMpIpr.jl - Julia version
 ===============================
