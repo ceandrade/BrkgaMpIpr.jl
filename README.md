@@ -81,7 +81,7 @@ Short usage (TL;DR)
 --------------------------------------------------------------------------------
 
 The best way to keep it short is to look in the
-[`examples`](https://github.com/ceandrade/brkga_mp_ipr_julia/tree/v1.0/examples) folder
+[`examples`](https://github.com/ceandrade/brkga_mp_ipr_julia/tree/master/examples/tsp) folder
 on [the git repo.](https://github.com/ceandrade/brkga_mp_ipr_julia)
 From [`main_minimal.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/master/examples/tsp/main_minimal.jl),
 which solves the
@@ -124,30 +124,41 @@ You can identify the following basic steps:
 
 1. Create a data structure inherited from [`AbstractInstance`](@ref) to hold
    your input data. This object is passed to the decoder function (example
-   [`tsp_instance.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/tsp_instance.jl));
+   [`tsp_instance.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/master/examples/tsp/tsp_instance.jl));
 
 2. Implement a decoder function. This function translates a chromosome (array
    of numbers in the interval [0,1]) to a solution for your problem. The decoder
    must return the solution value or cost to be used as fitness by BRKGA
-   (example [`tsp_decoder.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/tsp_decoder.jl));
+   (example [`tsp_decoder.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/master/examples/tsp/tsp_decoder.jl));
 
 3. Load the instance and other relevant data;
 
-4. Use [`build_brkga`](@ref) to create a [`BrkgaData`](@ref) that represents
+4. Use `build_brkga` to create a `BrkgaData` that represents
    the internal state of the BRKGA-MP-IPR algorithm;
 
-5. Use [`initialize!`](@ref) to init the BRKGA state;
+5. Use `initialize!` to init the BRKGA state;
 
-6. Call [`evolve!`](@ref) to optimize;
+6. Call `evolve!` to optimize;
 
-7. Call [`get_best_fitness`](@ref) and/or [`get_best_chromosome`](@ref) to
+7. Call `get_best_fitness` and/or `get_best_chromosome` to
    retrieve the best solution.
+
+[`main_minimal.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/master/examples/tsp/main_minimal.jl)
+provides a very minimal example to understand the necessary steps to use the
+BRKGA-MP-IPR framework. However,
+[`main_complete.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/master/examples/tsp/main_complete.jl)
+provides a full-featured code, handy for scientific use, such as
+experimentation and paper writing. This code allows fine-grained control of
+the optimization, shows several features of BRKGA-MP-IPR such as the resets,
+chromosome injection, and others. It also logs
+all optimization steps, _creating outputs easy to be parsed._ **You should use
+this code for serious business and experimentation.**
 
 Tutorial (complete)
 --------------------------------------------------------------------------------
 
-Check out the tutorial and documentation:
-(https://ceandrade.github.io/brkga_mp_ipr_julia)
+Check out the complete tutorial and documentation:
+https://ceandrade.github.io/brkga_mp_ipr_julia
 
 License and Citing
 --------------------------------------------------------------------------------
