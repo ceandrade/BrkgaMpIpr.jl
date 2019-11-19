@@ -1,4 +1,6 @@
-![BRKGA-MP-IPR logo](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/master/docs/src/assets/logo.png)
+<div align="center">
+  <img src="https://github.com/ceandrade/brkga_mp_ipr_julia/blob/master/docs/src/assets/logo_name_300.png">
+</div
 
 BrkgaMpIpr.jl - Julia version
 ===============================
@@ -25,8 +27,8 @@ Therefore, BrkgaMpIpr.jl should be suitable to be used in production
 environments.
 
 If you are like me and also like C++, check out the [**C++
-version.**](https://github.com/ceandrade/brkga_mp_ipr_cpp) 
-We are also developing a 
+version.**](https://github.com/ceandrade/brkga_mp_ipr_cpp)
+We are also developing a
 [Python version](https://github.com/ceandrade/brkga_mp_ipr_python)
 which is in its earlier stages.
 At this moment, we
@@ -42,7 +44,106 @@ If you are not familiar with how BRKGA works, take a look on
 In the future, we will provide a _Prime on BRKGA-MP_
 section.
 
-Tutorial
+Installation and tests
+--------------------------------------------------------------------------------
+
+BrkgaMpIpr can be installed using the Julia package manager.
+From the Julia REPL, type `]` to enter the Pkg REPL mode and run
+
+```julia-repl
+pkg> add BrkgaMpIpr
+```
+
+BrkgaMpIpr also provides a thorough unit testing that aims to harden and make
+the code ready for production environments. From Pkg REPL, just run
+
+```julia-repl
+pkg> test
+```
+
+!!! note
+    The tests take about 10 minutes, mainly because the permutation path relink.
+
+!!! warning
+    It is a hard test to test algorithms that use random signals. In
+    BrkgaMpIpr, the tests are carefully designed to ensure repeatability. For
+    that, we use the Mersenne Twister
+    [[1]](https://en.wikipedia.org/wiki/Mersenne_Twister)
+    [[2]](http://dx.doi.org/10.1145/272991.272995) as our standard random
+    generator number engine, particularly the [version that comes with
+    Julia](https://docs.julialang.org/en/v1/stdlib/Random/index.html#Random.MersenneTwister).
+    However, it may happen that such engine has slightly different
+    implementations across platforms and, therefore, the tests may fail. The
+    current version was tested on 64-bit platforms (Mac OS X, GNU/Linux, and
+    Windows 10).
+
+Short usage (TL;DR)
+--------------------------------------------------------------------------------
+
+The best way to keep it short is to look in the
+[`examples`](https://github.com/ceandrade/brkga_mp_ipr_julia/tree/v1.0/examples) folder
+on [the git repo.](https://github.com/ceandrade/brkga_mp_ipr_julia)
+From [`main_minimal.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/master/examples/tsp/main_minimal.jl),
+which solves the
+[Travelling Salesman Problem (TSP)](https://en.wikipedia.org/wiki/Travelling_salesman_problem).
+This is a trimmed copy:
+
+```julia
+using BrkgaMpIpr
+
+include("tsp_instance.jl")
+include("tsp_decoder.jl")
+
+if length(ARGS) < 4
+    println("Usage: julia main_minimal.jl <seed> <config-file> " *
+            "<num-generations> <tsp-instance-file>")
+    exit(1)
+end
+
+seed = parse(Int64, ARGS[1])
+configuration_file = ARGS[2]
+num_generations = parse(Int64, ARGS[3])
+instance_file = ARGS[4]
+
+instance = TSP_Instance(instance_file)
+
+brkga_data, control_params = build_brkga(
+    instance, tsp_decode!, MINIMIZE, seed, instance.num_nodes,
+    configuration_file
+)
+
+initialize!(brkga_data)
+
+evolve!(brkga_data, num_generations)
+
+best_cost = get_best_fitness(brkga_data)
+@show best_cost
+```
+
+You can identify the following basic steps:
+
+1. Create a data structure inherited from [`AbstractInstance`](@ref) to hold
+   your input data. This object is passed to the decoder function (example
+   [`tsp_instance.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/tsp_instance.jl));
+
+2. Implement a decoder function. This function translates a chromosome (array
+   of numbers in the interval [0,1]) to a solution for your problem. The decoder
+   must return the solution value or cost to be used as fitness by BRKGA
+   (example [`tsp_decoder.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/tsp_decoder.jl));
+
+3. Load the instance and other relevant data;
+
+4. Use [`build_brkga`](@ref) to create a [`BrkgaData`](@ref) that represents
+   the internal state of the BRKGA-MP-IPR algorithm;
+
+5. Use [`initialize!`](@ref) to init the BRKGA state;
+
+6. Call [`evolve!`](@ref) to optimize;
+
+7. Call [`get_best_fitness`](@ref) and/or [`get_best_chromosome`](@ref) to
+   retrieve the best solution.
+
+Tutorial (complete)
 --------------------------------------------------------------------------------
 
 Check out the tutorial and documentation:

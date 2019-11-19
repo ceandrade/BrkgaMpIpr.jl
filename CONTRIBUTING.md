@@ -39,4 +39,6 @@ general,
 - Make sure that, for each method/function, you write unit tests that cover
   all corner cases, and few regular cases (> 1);
 
+- New code without proper unit tests will not be merged;
+
 - Do not commit or do a pull request until the code pass in all tests.
