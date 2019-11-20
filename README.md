@@ -47,7 +47,7 @@ If you are not familiar with how BRKGA works, take a look on
 In the future, we will provide a _Prime on BRKGA-MP_
 section.
 
-Installation and tests
+:computer: Installation and tests
 --------------------------------------------------------------------------------
 
 > :information_source: **NOTE:**
