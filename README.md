@@ -47,7 +47,7 @@ section.
 Installation and tests
 --------------------------------------------------------------------------------
 
-> :note: **NOTE:**
+> :exclamation: **NOTE:**
     BrkgaMpIpr was developed using Julia 1.2, but it should work fine
     on any Julia >= 1.0. Verions <= 0.6 are not supported.|
 
@@ -65,7 +65,7 @@ the code ready for production environments. From Pkg REPL, just run
 pkg> test
 ```
 
-> :note: **NOTE:**
+> :information_source: **NOTE:**
     The tests take about 10 minutes, mainly because the permutation path relink.
 
 > :warning: **Warning**:
