@@ -161,13 +161,13 @@ chromosome injection, and others. It also logs
 all optimization steps, _creating outputs easy to be parsed._ **You should use
 this code for serious business and experimentation.**
 
-Tutorial and full documentation
+:books: Tutorial and full documentation
 --------------------------------------------------------------------------------
 
 Check out the complete tutorial and API documentation:
 https://ceandrade.github.io/brkga_mp_ipr_julia
 
-License and Citing
+:black_nib: License and Citing
 --------------------------------------------------------------------------------
 
 BRKGA-MP-IPR uses a permissive BSD-like license and it can be used as it
@@ -184,7 +184,7 @@ must cite explicitly the following article":
 
 [Check it out the full license.](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/master/LICENSE.md)
 
-Contributing
+:pencil2: Contributing
 --------------------------------------------------------------------------------
 
 [Contribution guidelines for this project](CONTRIBUTING.md)
