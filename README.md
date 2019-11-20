@@ -68,7 +68,7 @@ pkg> test
 !!! note
     The tests take about 10 minutes, mainly because the permutation path relink.
 
-!!! warning
+> :warning: **Warning**:
     It is a hard test to test algorithms that use random signals. In
     BrkgaMpIpr, the tests are carefully designed to ensure repeatability. For
     that, we use the Mersenne Twister
