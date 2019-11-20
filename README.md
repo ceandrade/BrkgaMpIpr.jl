@@ -29,7 +29,7 @@ environments.
 If you are like me and also like C++, check out the [**C++
 version.**](https://github.com/ceandrade/brkga_mp_ipr_cpp)
 We are also developing a
-[Python version](https://github.com/ceandrade/brkga_mp_ipr_python)
+[**Python version**](https://github.com/ceandrade/brkga_mp_ipr_python)
 which is in its earlier stages.
 At this moment, we
 have no plans to implement the BRKGA-MP-IPR in other languages such as
@@ -37,6 +37,9 @@ Java or C#. But if you want to do so, you are must welcome. But
 please, keep the API as close as possible to the C++ API (or Julia API in
 case you decide go C), and use the best coding and documentation practices of
 your chosen language/framework.
+
+- [**C++ version**](https://github.com/ceandrade/brkga_mp_ipr_cpp)
+- [**Python version**](https://github.com/ceandrade/brkga_mp_ipr_python)
 
 If you are not familiar with how BRKGA works, take a look on
 [Standard BRKGA](http://dx.doi.org/10.1007/s10732-010-9143-1) and
@@ -47,7 +50,7 @@ section.
 Installation and tests
 --------------------------------------------------------------------------------
 
-> :exclamation: **NOTE:**
+> :information_source: **NOTE:**
     BrkgaMpIpr was developed using Julia 1.2, but it should work fine
     on any Julia >= 1.0. Verions <= 0.6 are not supported.|
 
