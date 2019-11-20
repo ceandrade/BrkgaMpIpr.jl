@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 24, 2018 by ceandrade
-# Last update: Jan 04, 2018 by ceandrade
+# Last update: Nov 20, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -108,7 +108,6 @@ Load the parameters from `configuration_file` returning them as a tuple.
 # Throws
 - `LoadError`: in cases of the file is an invalid configuration file,
   parameters are missing, or parameters are ill-formatted.
-- `SystemError`: in case the configuration files cannot be openned.
 """
 function load_configuration(configuration_file::String)::
         Tuple{BrkgaParams, ExternalControlParams}
@@ -130,9 +129,15 @@ function load_configuration(configuration_file::String)::
     control_params = ExternalControlParams()
 
     lines = Array{String,1}()
-    open(configuration_file) do file
-        lines = readlines(file)
+    try
+        open(configuration_file) do file
+            lines = readlines(file)
+        end
+    catch err
+        throw(LoadError(configuration_file, 0,
+                        "cannot read '$configuration_file'"))
     end
+
     if length(lines) == 0
         throw(LoadError(configuration_file, 0,
                         "cannot read '$configuration_file'"))

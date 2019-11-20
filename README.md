@@ -47,6 +47,10 @@ section.
 Installation and tests
 --------------------------------------------------------------------------------
 
+!!! note
+    BrkgaMpIpr was developed using Julia 1.2, but it should work fine on any
+    Julia >= 1.0. Verions <= 0.6 are not supported.
+
 BrkgaMpIpr can be installed using the Julia package manager.
 From the Julia REPL, type `]` to enter the Pkg REPL mode and run
 
@@ -122,7 +126,7 @@ best_cost = get_best_fitness(brkga_data)
 
 You can identify the following basic steps:
 
-1. Create a data structure inherited from [`AbstractInstance`](@ref) to hold
+1. Create a data structure inherited from `AbstractInstance` to hold
    your input data. This object is passed to the decoder function (example
    [`tsp_instance.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/master/examples/tsp/tsp_instance.jl));
 
@@ -154,10 +158,10 @@ chromosome injection, and others. It also logs
 all optimization steps, _creating outputs easy to be parsed._ **You should use
 this code for serious business and experimentation.**
 
-Tutorial (complete)
+Tutorial and full documentation
 --------------------------------------------------------------------------------
 
-Check out the complete tutorial and documentation:
+Check out the complete tutorial and API documentation:
 https://ceandrade.github.io/brkga_mp_ipr_julia
 
 License and Citing
@@ -174,6 +178,8 @@ must cite explicitly the following article":
 > Biased Random-key Genetic Algorithm with Implicit Path Relinking. _European
 > Jornal of Operational Research_, volume XX, issue X, pages xx-xx, 2019.
 > DOI [to be determined](http://dx.doi.org/xxx)
+
+[Check it out the full license.](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/master/LICENSE.md)
 
 Contributing
 --------------------------------------------------------------------------------

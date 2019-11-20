@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 24, 2018 by ceandrade
-# Last update: Jan 04, 2018 by ceandrade
+# Last update: Nov 20, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -59,7 +59,7 @@ end
     config_path = joinpath(@__DIR__, "configuration_files")
 
     @test_throws LoadError load_configuration(".")
-    @test_throws SystemError load_configuration("")
+    @test_throws LoadError load_configuration("")
     @test_throws LoadError load_configuration(joinpath(config_path, "missing_value.conf"))
     @test_throws LoadError load_configuration(joinpath(config_path, "unknown_param.conf"))
     @test_throws LoadError load_configuration(joinpath(config_path, "wrong_type.conf"))
