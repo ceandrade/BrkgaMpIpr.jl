@@ -84,7 +84,7 @@ pkg> test
     current version was tested on 64-bit platforms (Mac OS X, GNU/Linux, and
     Windows 10).
 
-Short usage (TL;DR)
+:zap: Short usage (TL;DR)
 --------------------------------------------------------------------------------
 
 The best way to keep it short is to look in the
