@@ -15,7 +15,9 @@ BrkgaMpIpr.jl - Julia version
 <tr>
   <td>Build Status</td>
   <td>
-    [![Build Status](https://travis-ci.org/ceandrade/brkga_mp_ipr_julia.svg?branch=master)](https://travis-ci.org/ceandrade/brkga_mp_ipr_julia)
+    <a href="https://travis-ci.org/ceandrade/brkga_mp_ipr_julia">
+    <img src="https://travis-ci.org/ceandrade/brkga_mp_ipr_julia.svg?branch=master" alt="Build Status" />
+    </a>
   </td>
 </tr>
 </table>
