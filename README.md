@@ -2,7 +2,7 @@
   <img src="https://github.com/ceandrade/brkga_mp_ipr_julia/blob/master/docs/src/assets/logo_name_300.png">
 </div>
 
-_BrkgaMpIpr.jl_ - Julia version
+BrkgaMpIpr.jl - Julia version
 ===============================
 
 [![Build Status](https://travis-ci.org/ceandrade/brkga_mp_ipr_julia.svg?branch=master)](https://travis-ci.org/ceandrade/brkga_mp_ipr_julia)
@@ -11,7 +11,7 @@ _BrkgaMpIpr.jl_ - Julia version
 
 [![codecov.io](http://codecov.io/github/ceandrade/brkga_mp_ipr_julia/coverage.svg?branch=master)](http://codecov.io/github/ceandrade/brkga_mp_ipr_julia?branch=master)
 
-*BrkgaMpIpr.jl* provides a _very easy-to-use_ framework for the
+**BrkgaMpIpr.jl** *BrkgaMpIpr.jl* provides a _very easy-to-use_ framework for the
 Multi-Parent Biased Random-Key Genetic Algorithm with Implict Path Relink
 (**BRKGA-MP-IPR**). Assuming that your have a _decoder_ to your problem,
 we can setup, run, and extract the value of the best solution in less than
