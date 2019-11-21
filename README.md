@@ -20,6 +20,38 @@ BrkgaMpIpr.jl - Julia version
     </a>
   </td>
 </tr>
+<tr>
+  <td>Coverage Status</td>
+  <td>
+    <a href="https://coveralls.io/github/ceandrade/brkga_mp_ipr_julia?branch=master">
+    <img src="https://coveralls.io/repos/ceandrade/brkga_mp_ipr_julia/badge.svg?branch=master&service=github" alt="Coverage Status" />
+    </a>
+  </td>
+</tr>
+<tr>
+  <td>codecov.io</td>
+  <td>
+    <a href="http://codecov.io/github/ceandrade/brkga_mp_ipr_julia?branch=master">
+    <img src="http://codecov.io/github/ceandrade/brkga_mp_ipr_julia/coverage.svg?branch=master" alt="codecov.io" />
+    </a>
+  </td>
+</tr>
+<tr>
+  <td>Documentation</td>
+  <td>
+    <a href="https://ceandrade.github.io/brkga_mp_ipr_julia">
+    <img src="https://img.shields.io/badge/api-reference-blue.svg" alt="Documentation" />
+    </a>
+  </td>
+</tr>
+<tr>
+  <td>License</td>
+  <td>
+    <a href="https://github.com/ceandrade/brkga_mp_ipr_julia/blob/master/LICENSE.md">
+    <img src="https://img.shields.io/badge/license-BSD--like-blue" alt="License" />
+    </a>
+  </td>
+</tr>
 </table>
 
 _BrkgaMpIpr.jl_ provides a _very easy-to-use_ framework for the
