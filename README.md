@@ -11,7 +11,7 @@ BrkgaMpIpr.jl - Julia version
 
 [![codecov.io](http://codecov.io/github/ceandrade/brkga_mp_ipr_julia/coverage.svg?branch=master)](http://codecov.io/github/ceandrade/brkga_mp_ipr_julia?branch=master)
 
-**BrkgaMpIpr.jl** *BrkgaMpIpr.jl* provides a _very easy-to-use_ framework for the
+_BrkgaMpIpr.jl_ provides a _very easy-to-use_ framework for the
 Multi-Parent Biased Random-Key Genetic Algorithm with Implict Path Relink
 (**BRKGA-MP-IPR**). Assuming that your have a _decoder_ to your problem,
 we can setup, run, and extract the value of the best solution in less than
@@ -23,7 +23,7 @@ Python, and it is much cheaper (indeed, free) than Matlab. Unit and coverage
 tests are fully implemented, and all pseudo-random test data were carefully
 crafted to guarantee reproducibility (although it is possible that some tests
 fail because of different versions of the random number generator).
-Therefore, BrkgaMpIpr.jl should be suitable to be used in production
+Therefore, _BrkgaMpIpr.jl_ should be suitable to be used in production
 environments.
 
 If you are like me and also like C++, check out the [**C++
@@ -51,10 +51,10 @@ section.
 --------------------------------------------------------------------------------
 
 > :information_source: **NOTE:**
-    BrkgaMpIpr.jl was developed using Julia 1.2, but it should work fine
+    _BrkgaMpIpr.jl_ was developed using Julia 1.2, but it should work fine
     on any Julia >= 1.0. Verions <= 0.6 are not supported.|
 
-BrkgaMpIpr.jl can be installed using the Julia package manager.
+_BrkgaMpIpr.jl_ can be installed using the Julia package manager.
 From the Julia REPL, type `]` to enter the Pkg REPL mode and run
 
 ```julia-repl
@@ -67,7 +67,7 @@ Or, just use `Pkg` directly:
 julia> import Pkg; Pkg.add("BrkgaMpIpr")
 ```
 
-BrkgaMpIpr.jl also provides a thorough unit testing that aims to harden and make
+_BrkgaMpIpr.jl_ also provides a thorough unit testing that aims to harden and make
 the code ready for production environments. From Pkg REPL, just run
 
 ```julia-repl
@@ -79,7 +79,7 @@ pkg> test
 
 > :warning: **Warning**:
     It is a hard test to test algorithms that use random signals. In
-    BrkgaMpIpr.jl, the tests are carefully designed to ensure repeatability. For
+    _BrkgaMpIpr.jl_, the tests are carefully designed to ensure repeatability. For
     that, we use the Mersenne Twister
     [[1]](https://en.wikipedia.org/wiki/Mersenne_Twister)
     [[2]](http://dx.doi.org/10.1145/272991.272995) as our standard random
