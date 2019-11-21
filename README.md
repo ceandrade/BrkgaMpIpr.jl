@@ -11,6 +11,13 @@ BrkgaMpIpr.jl - Julia version
 
 [![codecov.io](http://codecov.io/github/ceandrade/brkga_mp_ipr_julia/coverage.svg?branch=master)](http://codecov.io/github/ceandrade/brkga_mp_ipr_julia?branch=master)
 
+
+| [![Build Status](https://travis-ci.org/ceandrade/brkga_mp_ipr_julia.svg?branch=master)](https://travis-ci.org/ceandrade/brkga_mp_ipr_julia)
+| [![Coverage Status](https://coveralls.io/repos/ceandrade/brkga_mp_ipr_julia/badge.svg?branch=master&service=github)](https://coveralls.io/github/ceandrade/brkga_mp_ipr_julia?branch=master)
+| [![codecov.io](http://codecov.io/github/ceandrade/brkga_mp_ipr_julia/coverage.svg?branch=master)](http://codecov.io/github/ceandrade/brkga_mp_ipr_julia?branch=master)
+|---|---|---|
+
+
 _BrkgaMpIpr.jl_ provides a _very easy-to-use_ framework for the
 Multi-Parent Biased Random-Key Genetic Algorithm with Implict Path Relink
 (**BRKGA-MP-IPR**). Assuming that your have a _decoder_ to your problem,
@@ -178,10 +185,11 @@ https://ceandrade.github.io/brkga_mp_ipr_julia
 
 BRKGA-MP-IPR uses a permissive BSD-like license and it can be used as it
 pleases you. And since this framework is also part of an academic effort, we
-kindly ask you to remember to cite the originating paper of this work. Indeed,
-Clause 4 estipulates that "all publications, softwares, or any other materials
-mentioning features or use of this software and/or the data used to test it
-must cite explicitly the following article":
+kindly ask you to remember to cite the originating paper of this work.
+Indeed, Clause 4 estipulates that "all publications, softwares, or any other
+materials mentioning features or use of this software (as a whole package or
+any parts of it) and/or the data used to test it must cite the following
+article explicitly:":
 
 > C.E. Andrade. R.F. Toso, J.F. Gonçalves, M.G.C. Resende. The Multi-Parent
 > Biased Random-key Genetic Algorithm with Implicit Path Relinking. _European
