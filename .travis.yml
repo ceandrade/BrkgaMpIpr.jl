@@ -8,10 +8,10 @@ julia:
   - 1.2
   - nightly
 
+codecov: true
+
 notifications:
   email: false
-git:
-  depth: 99999999
 
 matrix:
   allow_failures:
@@ -29,8 +29,6 @@ addons:
     - hdf5
 
 after_success:
-  # push coverage results to Coveralls
   - julia -e 'cd(Pkg.dir("BrkgaMpIpr")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
-  # push coverage results to Codecov
   - julia -e 'cd(Pkg.dir("BrkgaMpIpr")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
 
