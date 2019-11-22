@@ -119,8 +119,8 @@ structure representing the _problem instance_, and one required _decoder_
 function to translate chromosomes to solutions.
 
 Before you go further, please take a look at the
-[`examples`](https://github.com/ceandradebrkga_mp_ipr_julia/tree/v1.0/examples)
-folder in [the git repo](https://github.com/ceandradebrkga_mp_ipr_julia).
+[`examples`](https://github.com/ceandrade/brkga_mp_ipr_julia/tree/v1.0/examples)
+folder in [the git repo](https://github.com/ceandrade/brkga_mp_ipr_julia).
 We will use parts of that code in this guide. There, we solve the classical
 [Traveling Salesman
 Problem](https://en.wikipedia.org/wiki/Travelling_salesman_problem). Given a
@@ -129,24 +129,24 @@ one must find a minimum-cost tour among all cities, such that each city is
 visited only once (i.e., find a Hamiltonian cycle of minimum cost). These are
 the files:
 
-- [`tsp_instance.jl`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/tsp_instance.jl):
+- [`tsp_instance.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/tsp_instance.jl):
   contains the input data structures and helper functions;
 
-- [`tsp_decoder.jl`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/tsp_decoder.jl):
+- [`tsp_decoder.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/tsp_decoder.jl):
   contains the decoder function for TSP;
 
-- [`greedy_tour.jl`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/greedy_tour.jl):
+- [`greedy_tour.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/greedy_tour.jl):
   simple heuristic that computes a greedy tour;
 
-- [`config.conf`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/config.conf):
-- `config.conf`: example of parameter settings;
+- [`config.conf`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/config.conf):
+  example of parameter settings;
 
-- [`main_minimal.jl`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_minimal.jl):
+- [`main_minimal.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_minimal.jl):
   minimal code useful to understand and test the framework.
   **You should start here!** Please take a look on this file before continue
   this tutorial;
 
-- [`main_complete.jl`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_complete.jl):
+- [`main_complete.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_complete.jl):
   full-featured code, handy for scientific use, such as
   experimentation and paper writing. This code allows fine-grained control of
   the optimization, shows several features of BRKGA-MP-IPR such as the
@@ -154,13 +154,13 @@ the files:
   all optimization steps, _creating outputs easy to be parsed._
   **You should use this code for serious business and experimentation;**
 
-- [`instances`](https://github.com/ceandradebrkga_mp_ipr_julia//tree/v1.0/examples/tsp/instances):
+- [`instances`](https://github.com/ceandrade/brkga_mp_ipr_julia//tree/v1.0/examples/tsp/instances):
   folder containing some TSP instances for testing.
 
 When you call
-[`main_minimal.jl`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_minimal.jl)
+[`main_minimal.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_minimal.jl)
 or
-[`main_complete.jl`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_complete.jl)
+[`main_complete.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_complete.jl)
 without arguments,
 they show the usage. For example, assuming you are using a terminal:
 
@@ -175,12 +175,12 @@ Usage:
 ```
 
 !!! note
-    [`main_complete.jl`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_complete.jl)
+    [`main_complete.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_complete.jl)
     uses the [DocOpt package](https://github.com/docopt/DocOpt.jl).
     Please, install it before run this script.
 
 So, this is a possible output whe calling
-[`main_minimal.jl`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_minimal.jl):
+[`main_minimal.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_minimal.jl):
 
 ```bash
 $ julia main_minimal.jl 27000001 config.conf 100 instances/brazil58.dat
@@ -190,7 +190,7 @@ Evolving 100 generations...
 best_cost = 37552.0
 ```
 
-For [`main_complete.jl`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_complete.jl),
+For [`main_complete.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_complete.jl),
 the output is more verbose, since we want to capture
 as much information as possible to do some statistical analysis. The output
 should be something close to this:
@@ -295,7 +295,7 @@ end
 So, note that we have the number of nodes/cities`num_nodes`, and the
 distance matrix `distances`. We may need some additional code to load the
 instance and to deal with the distance matrix (omitted here, see
-[`tsp_instance.jl`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/tsp_instance.jl)).
+[`tsp_instance.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/tsp_instance.jl)).
 
 The second and most important requirement is the **decoder function**.
 The mandatory signature of the decoder is
@@ -321,7 +321,7 @@ In our TSP example, we have a very simple decoder that generates a permutation
 of nodes, and compute the cost of the cycle from that permutation (note the
 used of function `distance` that returns the distance between two nodes and
 it is defined on
-[`tsp_instance.jl`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/tsp_instance.jl)).
+[`tsp_instance.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/tsp_instance.jl)).
 
 ```julia
 function tsp_decode!(chromosome::Array{Float64}, instance::TSP_Instance,
@@ -415,7 +415,7 @@ As said before, the difference between the two methods is from where the
 algorithm's hyper-parameters come from. In the first version, the algorithm
 reads the BRKGA, IPR, and extra parameters from a simple text file that looks
 like this (see
-[`config.conf`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/config.conf)
+[`config.conf`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/config.conf)
 for detailed example):
 
 ```txt
@@ -453,7 +453,7 @@ object, and we just pass it directly to the function. Note that such param
 data is deep-copied inside [`BrkgaData`](@ref).
 
 Let's take a look in the example from
-[`main_minimal.jl`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_minimal.jl):
+[`main_minimal.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_minimal.jl):
 
 ```julia
 seed = parse(Int64, ARGS[1])
@@ -478,7 +478,7 @@ chromosome must be the number of nodes, i.e., `instance.num_nodes`. Finally,
 we also pass the configuration file.
 
 Let's take a look in a more elaborated example
-([`main_complete.jl`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_complete.jl)):
+([`main_complete.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_complete.jl)):
 
 ```julia
 brkga_params, control_params = load_configuration(configuration_file)
@@ -548,7 +548,7 @@ To do it, you must set these initial solutions before call
 structure, you must _encode_ the warm-start solution as chromosomes (vectors
 in the interval [0, 1]). In other words, you must do the inverse process that
 `decode!` does. For instance, this is a piece of code from
-[`main_complete.jl`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_complete.jl)
+[`main_complete.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_complete.jl)
 showing this process:
 
 ```julia
@@ -566,7 +566,7 @@ initialize!(brkga_data)
 
 Here, we create one incumbent solution using the greedy heuristic
 `greedy_tour()` found in
-[`greedy_tour.jl`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/greedy_tour.jl).
+[`greedy_tour.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/greedy_tour.jl).
 It gives us `initial_tour` which is a sequence of nodes to be visited. In the
 next four lines, we encode `initial_tour`. First, we create a vector of
 sorted random `keys`. Note that this is the same order that `tsp_decode!`
@@ -609,7 +609,7 @@ evolve!(brkga_data, num_generations)
 best_cost = get_best_fitness(brkga_data)
 ```
 
-On [`main_complete.jl`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_complete.jl),
+On [`main_complete.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_complete.jl),
 we have fine-grained control on the optimization. There, we have a main loop
 that evolves the population one generation at a time and performs several
 operations as to hold the best solution, to check whether it is time for path
@@ -841,7 +841,7 @@ when `max_time` seconds is reached or `percentage`% of the path is built.
     accordingly.
 
 Let's see the example on
-[`main_complete.jl`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_complete.jl).
+[`main_complete.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_complete.jl).
 Remember, since we are solving the TSP, we want to use the permutation-based
 IPR, and the Kendall Tau distance functions.
 
@@ -1056,9 +1056,9 @@ The configuration file must be plain text such that contains pairs of
 parameter name and value. This file must list all fields from
 [`BrkgaParams`](@ref) and [`ExternalControlParams`](@ref), even though you do
 not use each one. In
-[`examples folder`](https://github.com/ceandradebrkga_mp_ipr_julia/tree/v1.0/examples)
+[`examples folder`](https://github.com/ceandrade/brkga_mp_ipr_julia/tree/v1.0/examples)
 we have
-[`config.conf`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/config.conf)
+[`config.conf`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/config.conf)
 that looks like this:
 
 ```txt
@@ -1082,8 +1082,8 @@ reset_interval 600
 
 It does not matter whether we use lower or upper cases. Blank lines and lines
 starting with **#** are ignored. The order of the parameters should not
-matter either. And, finally, this file should be readble for both C++ and Julia
-framework versions.
+matter either. And, finally, this file should be readble for both C++, Julia,
+and Python framework versions.
 
 In some cases, you define some of the parameters at the running time, and you
 may want to save them for debug or posterior use. To do so, you can use
@@ -1106,14 +1106,14 @@ write_configuration("crazy_parameters.txt", brkga_data)
 ### Algorithm warmup
 
 When using Julia code, it is an excellent idea to dry-run all functions you
-may use and, mainly, want to time. The reason is that Julia uses lazy
-evaluation when live-compiling the code, i.e., it compiles as it goes.
+may use and, mainly, the ones you want to time. The reason is that Julia uses
+lazy evaluation when live-compiling the code, i.e., it compiles as it goes.
 Another advantage is the memory location effects of our data (principle of
 locality), that can be brought closer to the processor (L2/L3 caches) during
 the running. Obliviously, this depends on how you implement and use your data
 structures.
 
-In [`main_complete.jl`](https://github.com/ceandradebrkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_complete.jl),
+In [`main_complete.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/main_complete.jl),
 we have the following piece of code to warmup mainly the decoder and other
 functions. Note that we just deep-copy `brkga_data`, and then, we may lose
 the principle of locality.

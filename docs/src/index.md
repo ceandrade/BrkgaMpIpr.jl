@@ -1,4 +1,4 @@
-BrkgaMpIpr.jl Guide and Documentation
+BrkgaMpIpr.jl Guide and Documentation - Julia version
 ================================================================================
 
 BrkgaMpIpr.jl provides a _very easy-to-use_ framework for the
