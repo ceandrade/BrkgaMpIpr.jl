@@ -9,24 +9,24 @@ BrkgaMpIpr.jl - Julia version
 <tr>
   <td>Build Status</td>
   <td>
-    <a href="https://travis-ci.org/ceandrade/brkga_mp_ipr_julia">
-    <img src="https://travis-ci.org/ceandrade/brkga_mp_ipr_julia.svg?branch=master" alt="Build Status" />
+    <a href="https://travis-ci.org/ceandrade/BrkgaMpIpr.jl">
+    <img src="https://travis-ci.org/ceandrade/BrkgaMpIpr.jl.svg?branch=master" alt="Build Status" />
     </a>
   </td>
 </tr>
 <tr>
   <td>Coverage Status</td>
   <td>
-    <a href="https://coveralls.io/github/ceandrade/brkga_mp_ipr_julia?branch=master">
-    <img src="https://coveralls.io/repos/ceandrade/brkga_mp_ipr_julia/badge.svg?branch=master&service=github" alt="Coverage Status" />
+    <a href="https://coveralls.io/github/ceandrade/BrkgaMpIpr.jl?branch=master">
+    <img src="https://coveralls.io/repos/ceandrade/BrkgaMpIpr.jl/badge.svg?branch=master&service=github" alt="Coverage Status" />
     </a>
   </td>
 </tr>
 <tr>
   <td>codecov.io</td>
   <td>
-    <a href="http://codecov.io/github/ceandrade/brkga_mp_ipr_julia?branch=master">
-    <img src="http://codecov.io/github/ceandrade/brkga_mp_ipr_julia/coverage.svg?branch=master" alt="codecov.io" />
+    <a href="http://codecov.io/github/ceandrade/BrkgaMpIpr.jl?branch=master">
+    <img src="http://codecov.io/github/ceandrade/BrkgaMpIpr.jl/coverage.svg?branch=master" alt="codecov.io" />
     </a>
   </td>
 </tr>
