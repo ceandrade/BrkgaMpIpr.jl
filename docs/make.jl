@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Feb 05, 2018 by ceandrade
-# Last update: Jul 09, 2019 by ceandrade
+# Last update: Nov 25, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -31,6 +31,7 @@ makedocs(
     sitename="BrkgaMpIpr.jl documentation",
     authors = "Carlos E. Andrade",
     assets = ["assets/logo.png", "assets/favicon.ico"],
+    repo = "github.com/ceandrade/BrkgaMpIpr.jl.git",
     pages = [
             "Home" => "index.md",
             "Guide / Tutorial" => "guide.md",
