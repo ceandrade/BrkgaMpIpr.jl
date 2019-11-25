@@ -28,7 +28,13 @@ addons:
     packages:
     - hdf5
 
+script:
+  - julia -e 'Pkg.clone(pwd())'
+  - julia -e 'Pkg.test("PkgName",coverage=true)'
+
 after_success:
+  - julia -e julia -e 'Pkg.add("Documenter")'
+  - julia -e 'cd(Pkg.dir("BrkgaMpIpr")); include(joinpath("docs", "make.jl"))'
   - julia -e 'cd(Pkg.dir("BrkgaMpIpr")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
   - julia -e 'cd(Pkg.dir("BrkgaMpIpr")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
 
