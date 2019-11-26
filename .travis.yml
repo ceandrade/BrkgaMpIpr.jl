@@ -28,9 +28,9 @@ addons:
     packages:
     - hdf5
 
-script:
-  - julia -e 'Pkg.clone(pwd())'
-  - julia -e 'Pkg.test("PkgName",coverage=true)'
+#script:
+  #- julia -e 'import Pkg; Pkg.clone(pwd())'
+  #- julia -e 'import Pkg; Pkg.test("PkgName",coverage=true)'
 
 after_success:
   #- julia -e julia -e 'Pkg.add("Documenter")'
