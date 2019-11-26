@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 24, 2018 by ceandrade
-# Last update: Nov 20, 2019 by ceandrade
+# Last update: Nov 26, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -101,7 +101,7 @@ end
         joinpath(config_path, "regular.conf")
     )
 
-    @test_throws SystemError write_configuration("/invalid", brkga_params,
+    @test_throws SystemError write_configuration(".", brkga_params,
                                                  external_params)
 
     temp_filename = tempname()
