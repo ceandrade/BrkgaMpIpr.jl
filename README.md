@@ -18,7 +18,7 @@ BrkgaMpIpr.jl - Julia version
   <td>Coverage Status</td>
   <td>
     <a href="https://coveralls.io/github/ceandrade/BrkgaMpIpr.jl?branch=master">
-    <img src="https://coveralls.io/repos/ceandrade/BrkgaMpIpr.jl/badge.svg?branch=master&service=github" alt="Coverage Status" />
+    <img src='https://coveralls.io/repos/github/ceandrade/BrkgaMpIpr.jl/badge.svg?branch=master' alt='Coverage Status' /></a>
     </a>
   </td>
 </tr>
