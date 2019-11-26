@@ -16,13 +16,19 @@ fail because of different versions of the random number generator).
 Therefore, BrkgaMpIpr.jl should be suitable to be used in production
 environments.
 
-If you are like me and also like C++, check out the [**C++
-version.**](https://github.com/ceandrade/brkga_mp_ipr) At this moment, we
-have no plans to implement the BRKGA-MP-IPR in other languages such as
-Python, Java, or C#. But if you want to do so, you are must welcome. But
-please, keep the API as close as possible to the C++ API (or Julia API in
+If Julia is not suitable to you, we may find useful the
+[**C++ version**](https://github.com/ceandrade/brkga_mp_ipr_cpp)
+We are also developing a
+[**Python version**](https://github.com/ceandrade/brkga_mp_ipr_python)
+which is in its earlier stages.
+At this moment, we have no plans to implement the BRKGA-MP-IPR in other
+languages such as Java or C#. But if you want to do so, you are must welcome.
+But please, keep the API as close as possible to the C++ API (or Julia API in
 case you decide go C), and use the best coding and documentation practices of
 your chosen language/framework.
+
+- [**C++ version**](https://github.com/ceandrade/brkga_mp_ipr_cpp)
+- [**Python version**](https://github.com/ceandrade/brkga_mp_ipr_python)
 
 If you are not familiar with how BRKGA works, take a look on
 [Standard BRKGA](http://dx.doi.org/10.1007/s10732-010-9143-1) and
