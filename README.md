@@ -33,7 +33,7 @@ BrkgaMpIpr.jl - Julia version
 <tr>
   <td>Documentation</td>
   <td>
-    <a href="https://ceandrade.github.io/brkga_mp_ipr_julia">
+    <a href="https://ceandrade.github.io/BrkgaMpIpr.jl">
     <img src="https://img.shields.io/badge/Tutorial-API-blue.svg" alt="Documentation" />
     </a>
   </td>
@@ -208,7 +208,7 @@ this code for serious business and experimentation.**
 --------------------------------------------------------------------------------
 
 Check out the complete tutorial and API documentation:
-https://ceandrade.github.io/brkga_mp_ipr_julia
+https://ceandrade.github.io/BrkgaMpIpr.jl
 
 :black_nib: License and Citing
 --------------------------------------------------------------------------------
@@ -232,4 +232,3 @@ article explicitly:":
 --------------------------------------------------------------------------------
 
 [Contribution guidelines for this project](CONTRIBUTING.md)
-
