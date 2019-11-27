@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Nov 09, 2019 by ceandrade
+# Last update: Nov 27, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -341,14 +341,14 @@ end
         @test brkga_data.current[i].fitness !== brkga_data.previous[i].fitness
     end
 
-    sum_decode!(chromosomes[1], instance)
+    sum_decode!(chromosomes[1], instance, true)
     @test brkga_data.current[1].chromosomes[1] == chromosomes[1]
 
     # Create a local chromosome and applied the decoder on it.
     local_rng = MersenneTwister(param_values[param_index["seed"]])
     rand(local_rng, 1000)
     local_chr = rand(local_rng, param_values[param_index["chr_size"]])
-    sum_decode!(local_chr, instance)
+    sum_decode!(local_chr, instance, true)
 
     # 4th chromosome must be the 1st generated due to the warmstart.
     @test brkga_data.current[1].chromosomes[4] == local_chr
@@ -377,7 +377,7 @@ end
 
     # Create a local chromosome and applied the decoder on it.
     local_chr = rand(local_rng, param_values[param_index["chr_size"]])
-    sum_decode!(local_chr, instance)
+    sum_decode!(local_chr, instance, true)
 
     @test brkga_data.current[1].chromosomes[1] == local_chr
 end

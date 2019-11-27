@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 26, 2018 by ceandrade
-# Last update: Feb 28, 2019 by ceandrade
+# Last update: Nov 27, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -49,7 +49,7 @@
     best_value = -Inf
     for i in 1:num_individuals
         local_chr = rand(local_rng, param_values[param_index["chr_size"]])
-        best_value = max(best_value, sum_decode!(local_chr, instance))
+        best_value = max(best_value, sum_decode!(local_chr, instance, true))
     end
 
     # Assert the both generators are in the same state.
@@ -74,7 +74,7 @@
     best_value = Inf
     for i in 1:num_individuals
         local_chr = rand(local_rng, param_values[param_index["chr_size"]])
-        best_value = min(best_value, sum_decode!(local_chr, instance))
+        best_value = min(best_value, sum_decode!(local_chr, instance, true))
     end
 
     # Assert the both generators are in the same state.
@@ -114,7 +114,7 @@ end
     best_chr = Array{Float64, 1}()
     for i in 1:num_individuals
         local_chr = rand(local_rng, param_values[param_index["chr_size"]])
-        value = sum_decode!(local_chr, instance)
+        value = sum_decode!(local_chr, instance, true)
 
         if value > best_value
             best_value = value
@@ -143,7 +143,7 @@ end
     best_chr = Array{Float64, 1}()
     for i in 1:num_individuals
         local_chr = rand(local_rng, param_values[param_index["chr_size"]])
-        value = sum_decode!(local_chr, instance)
+        value = sum_decode!(local_chr, instance, true)
         if value < best_value
             best_value = value
             best_chr = local_chr

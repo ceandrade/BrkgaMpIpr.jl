@@ -303,13 +303,13 @@ The mandatory signature of the decoder is
 ```julia
 decode!(chromosome::Array{Float64, 1},
         problem_instance::AbstractInstance,
-        rewrite::Bool = true)::Float64
+        rewrite::Bool)::Float64
 ```
 
 `chromosome` is a vector of numbers in the interval [0, 1] to be decoded.
 `problem_instance` is the data structure containing information about the
 problem. Such data is used by the decoder to build a solution. `rewrite` is
-an optional argument that indicates if the decoder should rewrite the
+an argument that indicates if the decoder should rewrite the
 chromosome, in case of local search / local improvements be performed during the
 decoder process. This flag is critical if you intend to use the Implicit Path
 Relink (details on [`path_relink!`](@ref)). The decoder must return a
@@ -318,14 +318,16 @@ general, fitness is the cost/value of the solution, but you may want to use
 it to penalize solutions that violate the problem constraints, for example.
 
 In our TSP example, we have a very simple decoder that generates a permutation
-of nodes, and compute the cost of the cycle from that permutation (note the
+of nodes, and compute the cost of the cycle from that permutation. Note the
 used of function `distance` that returns the distance between two nodes and
 it is defined on
-[`tsp_instance.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/tsp_instance.jl)).
+[`tsp_instance.jl`](https://github.com/ceandrade/brkga_mp_ipr_julia/blob/v1.0/examples/tsp/tsp_instance.jl).
+Also note that, although we do not rewrite the chromosome in this example,
+we need `rewrite` in the function signature.
 
 ```julia
 function tsp_decode!(chromosome::Array{Float64}, instance::TSP_Instance,
-                     rewrite::Bool = true)::Float64
+                     rewrite::Bool)::Float64
 
     permutation = Array{Tuple{Float64, Int64}}(undef, instance.num_nodes)
     for (index, key) in enumerate(chromosome)
@@ -1213,7 +1215,7 @@ thread ID:
 
 ```julia
 function tsp_decode!(chromosome::Array{Float64}, instance::TSP_Instance,
-                     rewrite::Bool = true)::Float64
+                     rewrite::Bool)::Float64
     permutation = instance.permutation_per_thread[threadid()]
     #...
     #...

@@ -7,7 +7,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Feb 28, 2019 by ceandrade
-# Last update: Oct 30, 2019 by ceandrade
+# Last update: Nov 27, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -44,7 +44,7 @@ include("util.jl")
 
     # Create a local chromosome and applied the decoder on it.
     local_chr = rand(local_rng, param_values[param_index["chr_size"]])
-    sum_decode!(local_chr, instance)
+    sum_decode!(local_chr, instance, true)
 
     # Reset and test the first individual.
     reset!(brkga_data)
