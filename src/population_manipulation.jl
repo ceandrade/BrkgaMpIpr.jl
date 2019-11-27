@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Feb 28, 2019 by ceandrade
-# Last update: Feb 28, 2019 by ceandrade
+# Last update: Nov 27, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -173,7 +173,7 @@ function inject_chromosome!(brkga_data::BrkgaData,
     pop.chromosomes[idx] .= chromosome
 
     if fitness == Inf
-        fitness = bd.decode!(pop.chromosomes[idx], bd.problem_instance)
+        fitness = bd.decode!(pop.chromosomes[idx], bd.problem_instance, true)
     end
 
     pop.fitness[position] = (fitness, idx)
@@ -261,7 +261,7 @@ function shake!(brkga_data::BrkgaData, intensity::Int64,
         # Perform the decoding.
         curr = brkga_data.current[pop_idx]
         Threads.@threads for i in 1:bd.params.population_size
-            value = bd.decode!(curr.chromosomes[i], bd.problem_instance)
+            value = bd.decode!(curr.chromosomes[i], bd.problem_instance, true)
             curr.fitness[i] = (value, i)
         end
 

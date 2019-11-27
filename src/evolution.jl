@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Apr 19, 2018 by ceandrade
-# Last update: Feb 08, 2019 by ceandrade
+# Last update: Nov 27, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -159,7 +159,7 @@ function evolve_population!(brkga_data::BrkgaData, population_index::Int64)
 
     # Perform the decoding on the offpring and mutants.
     Threads.@threads for i in (bd.elite_size + 1):bd.params.population_size
-        value = bd.decode!(next.chromosomes[i], bd.problem_instance)
+        value = bd.decode!(next.chromosomes[i], bd.problem_instance, true)
         next.fitness[i] = (value, i)
     end
 

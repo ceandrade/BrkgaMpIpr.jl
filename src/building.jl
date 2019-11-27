@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Feb 08, 2019 by ceandrade
+# Last update: Nov 27, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -52,7 +52,7 @@ handy for tuning purposes.
   ```julia
   decode!(chromosome::Array{Float64, 1},
           problem_instance::AbstractInstance,
-          rewrite::Bool = true)::Float64
+          rewrite::Bool)::Float64
   ```
 
   Note that if `rewrite == false`, `decode!` cannot modify `chromosome`.
@@ -320,7 +320,8 @@ function initialize!(brkga_data::BrkgaData)
     # Perform initial decoding. It may take a while.
     for population in bd.current
         Threads.@threads for i in eachindex(population.chromosomes)
-            value = bd.decode!(population.chromosomes[i], bd.problem_instance)
+            value = bd.decode!(population.chromosomes[i], bd.problem_instance,
+                               true)
             population.fitness[i] = (value, i)
         end
         sort!(population.fitness, rev = (bd.opt_sense == MAXIMIZE))

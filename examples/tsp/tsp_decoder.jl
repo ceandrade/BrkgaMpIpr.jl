@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Dec 28, 2018 by ceandrade
-# Last update: Dec 28, 2018 by ceandrade
+# Last update: Nov 27, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -34,7 +34,7 @@ methods, but the instance type is TSP_Instance.
 ################################################################################
 
 function tsp_decode!(chromosome::Array{Float64}, instance::TSP_Instance,
-                     rewrite::Bool = true)::Float64
+                     rewrite::Bool)::Float64
 
     permutation = Array{Tuple{Float64, Int64}}(undef, instance.num_nodes)
     for (index, key) in enumerate(chromosome)

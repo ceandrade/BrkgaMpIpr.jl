@@ -5,8 +5,8 @@
 #
 # This code is released under LICENSE.md.
 #
-# Created on:  Apr 20, 2018 by ceandrade
-# Last update: Dec 18, 2018 by ceandrade
+# Created on:  Apr 20, 2019 by ceandrade
+# Last update: Nov 27, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -22,7 +22,7 @@
 ################################################################################
 
 function sum_decode!(chromosome::Array{Float64}, instance::Instance,
-                 rewrite::Bool = true)::Float64
+                 rewrite::Bool)::Float64
     tmp = chromosome + instance.data
     tmp /= maximum(tmp)
     if rewrite
@@ -34,7 +34,7 @@ end
 ################################################################################
 
 function rank_decode!(chromosome::Array{Float64}, instance::Instance,
-                      rewrite::Bool = true)::Float64
+                      rewrite::Bool)::Float64
     tmp = chromosome + instance.data
 
     rank = 0
