@@ -8,7 +8,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Apr 20, 2018 by ceandrade
-# Last update: Oct 30, 2018 by ceandrade
+# Last update: Dec 04, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -77,7 +77,7 @@ brkga_data = build_brkga(param_values...)
 initialize!(brkga_data)
 
 print("\n> Writing configuration 1")
-write_data("brkga_data_files/data1.jld", brkga_data)
+write_data("brkga_data_files/data1.jld2", brkga_data)
 
 print("\n> Evolving population 1")
 
@@ -95,7 +95,7 @@ end
 fitness102 = get_best_fitness(brkga_data)
 chromosome102 = get_best_chromosome(brkga_data)
 
-save(File(format"JLD", "brkga_data_files/best_solution1.jld"),
+save(File(format"JLD2", "brkga_data_files/best_solution1.jld2"),
     "fitness1", fitness1,
     "chromosome1", chromosome1,
     "fitness2", fitness2,
@@ -139,7 +139,7 @@ brkga_data = build_brkga(param_values...)
 initialize!(brkga_data)
 
 print("\n> Writing configuration 2")
-write_data("brkga_data_files/data2.jld", brkga_data)
+write_data("brkga_data_files/data2.jld2", brkga_data)
 
 print("\n> Evolving population 2")
 
@@ -158,7 +158,7 @@ end
 fitness102 = get_best_fitness(brkga_data)
 chromosome102 = get_best_chromosome(brkga_data)
 
-save(File(format"JLD", "brkga_data_files/best_solution2.jld"),
+save(File(format"JLD2", "brkga_data_files/best_solution2.jld2"),
     "fitness1", fitness1,
     "chromosome1", chromosome1,
     "fitness2", fitness2,
@@ -202,7 +202,7 @@ brkga_data = build_brkga(param_values...)
 initialize!(brkga_data)
 
 print("\n> Writing configuration 3")
-write_data("brkga_data_files/data3.jld", brkga_data)
+write_data("brkga_data_files/data3.jld2", brkga_data)
 
 print("\n> Evolving population 3")
 
@@ -225,7 +225,7 @@ end
 fitness102 = get_best_fitness(brkga_data)
 chromosome102 = get_best_chromosome(brkga_data)
 
-save(File(format"JLD", "brkga_data_files/best_solution3.jld"),
+save(File(format"JLD2", "brkga_data_files/best_solution3.jld2"),
     "fitness1", fitness1,
     "chromosome1", chromosome1,
     "fitness2", fitness2,
@@ -273,7 +273,7 @@ set_bias_custom_function!(brkga_data, x -> x ≈ 1.0 ? rho : 1.0 - rho)
 initialize!(brkga_data)
 
 print("\n> Writing configuration 4")
-write_data("brkga_data_files/data4.jld", brkga_data)
+write_data("brkga_data_files/data4.jld2", brkga_data)
 
 print("\n> Evolving population 4")
 
@@ -295,7 +295,7 @@ end
 fitness102 = get_best_fitness(brkga_data)
 chromosome102 = get_best_chromosome(brkga_data)
 
-save(File(format"JLD", "brkga_data_files/best_solution4.jld"),
+save(File(format"JLD2", "brkga_data_files/best_solution4.jld2"),
     "fitness1", fitness1,
     "chromosome1", chromosome1,
     "fitness2", fitness2,
@@ -339,7 +339,7 @@ brkga_data = build_brkga(param_values...)
 initialize!(brkga_data)
 
 print("\n> Writing configuration 5")
-write_data("brkga_data_files/data5.jld", brkga_data)
+write_data("brkga_data_files/data5.jld2", brkga_data)
 
 print("\n> Evolving population 5")
 
@@ -355,7 +355,7 @@ evolve!(brkga_data, 100)
 fitness102 = get_best_fitness(brkga_data)
 chromosome102 = get_best_chromosome(brkga_data)
 
-save(File(format"JLD", "brkga_data_files/best_solution5.jld"),
+save(File(format"JLD2", "brkga_data_files/best_solution5.jld2"),
     "fitness1", fitness1,
     "chromosome1", chromosome1,
     "fitness2", fitness2,
@@ -399,7 +399,7 @@ brkga_data = build_brkga(param_values...)
 initialize!(brkga_data)
 
 print("\n> Writing path relink")
-write_data("brkga_data_files/data_path_relink.jld", brkga_data)
+write_data("brkga_data_files/data_path_relink.jld2", brkga_data)
 
 next_pair(x::Int64) = (x + 1, x + 2)
 
@@ -426,7 +426,7 @@ for (func, decoder, name) in
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 1, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Int64,
                 0.5 #percentage::Float64
     )
 
@@ -438,7 +438,7 @@ for (func, decoder, name) in
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 10, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Int64,
                 0.5 #percentage::Float64
     )
 
@@ -450,7 +450,7 @@ for (func, decoder, name) in
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 100, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Int64,
                 0.5 #percentage::Float64
     )
 
@@ -462,7 +462,7 @@ for (func, decoder, name) in
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 400, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Int64,
                 0.5 #percentage::Float64
     )
 
@@ -474,7 +474,7 @@ for (func, decoder, name) in
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 372, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Int64,
                 0.5 #percentage::Float64
     )
 
@@ -490,7 +490,7 @@ for (func, decoder, name) in
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 10, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Int64,
                 0.1 #percentage::Float64
     )
 
@@ -502,7 +502,7 @@ for (func, decoder, name) in
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 10, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Int64,
                 0.3 #percentage::Float64
     )
 
@@ -514,7 +514,7 @@ for (func, decoder, name) in
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 10, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Int64,
                 0.5 #percentage::Float64
     )
 
@@ -526,7 +526,7 @@ for (func, decoder, name) in
                 brkga_data.current[1].chromosomes[chr2], #chromosome2
                 (x, y) -> true, #affect_solution::Function,
                 10, #block_size::Int64,
-                120, #max_time::Int64,
+                120.0, #max_time::Int64,
                 1.0 #percentage::Float64
     )
 
@@ -542,7 +542,7 @@ for (func, decoder, name) in
             brkga_data.current[1].chromosomes[chr2], #chromosome2
             (x, y) -> x[1] < y[2], #affect_solution::Function,
             10, #block_size::Int64,
-            120, #max_time::Int64,
+            120.0, #max_time::Int64,
             0.5 #percentage::Float64
     )
 
@@ -554,12 +554,12 @@ for (func, decoder, name) in
             brkga_data.current[1].chromosomes[chr2], #chromosome2
             (x, y) -> x[1] > y[2], #affect_solution::Function,
             10, #block_size::Int64,
-            120, #max_time::Int64,
+            120.0, #max_time::Int64,
             0.5 #percentage::Float64
     )
 
-    save(File(format"JLD", "brkga_data_files/best_solutions_pr_" *
-                           name * ".jld"),
+    save(File(format"JLD2", "brkga_data_files/best_solutions_pr_" *
+                           name * ".jld2"),
          "block1", block1,
          "block10", block10,
          "block100", block100,
@@ -609,7 +609,7 @@ brkga_data = build_brkga(param_values...)
 initialize!(brkga_data)
 
 print("\n> Writing data for shake")
-write_data("brkga_data_files/data_shake.jld", brkga_data)
+write_data("brkga_data_files/data_shake.jld2", brkga_data)
 
 data_change_10_1 = deepcopy(brkga_data)
 shake!(data_change_10_1, 10, CHANGE, 1)
@@ -633,7 +633,7 @@ data_swap_100_all = deepcopy(brkga_data)
 shake!(data_swap_100_all, 100, SWAP, 3)
 
 print("\n> Writing results data for shake")
-save(File(format"JLD", "brkga_data_files/results_shake.jld"),
+save(File(format"JLD2", "brkga_data_files/results_shake.jld2"),
      "change_10_1", data_change_10_1.current,
      "change_10_2", data_change_10_2.current,
      "change_10_all", data_change_10_all.current,

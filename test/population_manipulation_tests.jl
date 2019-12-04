@@ -7,7 +7,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Feb 28, 2019 by ceandrade
-# Last update: Nov 27, 2019 by ceandrade
+# Last update: Dev 04, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -255,8 +255,8 @@ end
     # but it will be until we find a better way.
     data_path = joinpath(@__DIR__, "brkga_data_files")
 
-    load_brkga_data(joinpath(data_path, "data_shake.jld"), brkga_data)
-    results = load(joinpath(data_path, "results_shake.jld"))
+    load_brkga_data(joinpath(data_path, "data_shake.jld2"), brkga_data)
+    results = load(joinpath(data_path, "results_shake.jld2"))
 
     data_change_10_1 = deepcopy(brkga_data)
     shake!(data_change_10_1, 10, CHANGE, 1)

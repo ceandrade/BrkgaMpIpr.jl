@@ -84,8 +84,8 @@ include("util.jl")
 
     ########################
     # Data 1
-    load_brkga_data(joinpath(data_path, "data1.jld"), brkga_data)
-    results = load(joinpath(data_path, "best_solution1.jld"))
+    load_brkga_data(joinpath(data_path, "data1.jld2"), brkga_data)
+    results = load(joinpath(data_path, "best_solution1.jld2"))
 
     BrkgaMpIpr.evolve_population!(brkga_data, 1)
     @test get_best_fitness(brkga_data) ≈ results["fitness1"]
@@ -105,8 +105,8 @@ include("util.jl")
 
     ########################
     # Data 2
-    load_brkga_data(joinpath(data_path, "data2.jld"), brkga_data)
-    results = load(joinpath(data_path, "best_solution2.jld"))
+    load_brkga_data(joinpath(data_path, "data2.jld2"), brkga_data)
+    results = load(joinpath(data_path, "best_solution2.jld2"))
 
     BrkgaMpIpr.evolve_population!(brkga_data, 1)
     @test get_best_fitness(brkga_data) ≈ results["fitness1"]
@@ -127,8 +127,8 @@ include("util.jl")
 
     ########################
     # Data 3
-    load_brkga_data(joinpath(data_path, "data3.jld"), brkga_data)
-    results = load(joinpath(data_path, "best_solution3.jld"))
+    load_brkga_data(joinpath(data_path, "data3.jld2"), brkga_data)
+    results = load(joinpath(data_path, "best_solution3.jld2"))
 
     BrkgaMpIpr.evolve_population!(brkga_data, 1)
     @test get_best_fitness(brkga_data) ≈ results["fitness1"]
@@ -152,8 +152,8 @@ include("util.jl")
 
     ########################
     # Data 4 (traditional BRKGA)
-    load_brkga_data(joinpath(data_path, "data4.jld"), brkga_data)
-    results = load(joinpath(data_path, "best_solution4.jld"))
+    load_brkga_data(joinpath(data_path, "data4.jld2"), brkga_data)
+    results = load(joinpath(data_path, "best_solution4.jld2"))
 
     rho = 0.75
     set_bias_custom_function!(brkga_data, x -> x == 1 ? rho : 1.0 - rho)
@@ -199,8 +199,8 @@ end
     #################################
 
     data_path = joinpath(@__DIR__, "brkga_data_files")
-    load_brkga_data(joinpath(data_path, "data5.jld"), brkga_data)
-    results = load(joinpath(data_path, "best_solution5.jld"))
+    load_brkga_data(joinpath(data_path, "data5.jld2"), brkga_data)
+    results = load(joinpath(data_path, "best_solution5.jld2"))
 
     evolve!(brkga_data, 1)
     @test get_best_fitness(brkga_data) ≈ results["fitness1"]

@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 11, 2018 by ceandrade
-# Last update: Jan 07, 2019 by ceandrade
+# Last update: Dec 04, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -21,7 +21,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
 
-using JLD
+using JLD2
 using FileIO
 
 ################################################################################
@@ -29,7 +29,7 @@ using FileIO
 ################################################################################
 
 function write_data(filename::String, data::BrkgaData)
-    save(File(format"JLD", filename),
+    save(File(format"JLD2", filename),
         "opt_sense", brkga_data.opt_sense,
         "chromosome_size", brkga_data.chromosome_size,
         "evolutionary_mechanism_on", brkga_data.evolutionary_mechanism_on,

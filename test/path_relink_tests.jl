@@ -6,7 +6,7 @@
 # This code is released under LICENSE.md.
 #
 # Created on:  Jun 06, 2018 by ceandrade
-# Last update: Nov 22, 2019 by ceandrade
+# Last update: Dec 04, 2019 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -212,8 +212,8 @@ end
 
     data_path = joinpath(@__DIR__, "brkga_data_files")
 
-    load_brkga_data(joinpath(data_path, "data_path_relink.jld"), brkga_data)
-    results = load(joinpath(data_path, "best_solutions_pr_direct.jld"))
+    load_brkga_data(joinpath(data_path, "data_path_relink.jld2"), brkga_data)
+    results = load(joinpath(data_path, "best_solutions_pr_direct.jld2"))
     brkga_data.decode! = sum_decode!
     chr1 = 0
     chr2 = 0
@@ -496,8 +496,8 @@ end
 
     data_path = joinpath(@__DIR__, "brkga_data_files")
 
-    load_brkga_data(joinpath(data_path, "data_path_relink.jld"), brkga_data)
-    results = load(joinpath(data_path, "best_solutions_pr_permutation_based.jld"))
+    load_brkga_data(joinpath(data_path, "data_path_relink.jld2"), brkga_data)
+    results = load(joinpath(data_path, "best_solutions_pr_permutation_based.jld2"))
     brkga_data.decode! = rank_decode!
     chr1 = 0
     chr2 = 0
