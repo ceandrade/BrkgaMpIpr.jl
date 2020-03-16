@@ -88,7 +88,7 @@ section.
 
 > :information_source: **NOTE:**
     _BrkgaMpIpr.jl_ was developed using Julia 1.2, but it should work fine
-    on any Julia >= 1.0. Verions <= 0.6 are not supported.|
+    on any Julia >= 1.0. Versions <= 0.6 are not supported.|
 
 _BrkgaMpIpr.jl_ can be installed using the Julia package manager.
 From the Julia REPL, type `]` to enter the Pkg REPL mode and run
