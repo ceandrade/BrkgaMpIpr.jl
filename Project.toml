@@ -1,7 +1,7 @@
 name = "BrkgaMpIpr"
 uuid = "028a27d2-de01-11e8-146d-d556803d83ae"
 authors = ["Carlos Eduardo de Andrade <ce.andrade@gmail.com>"]
-version = "1.0.1"
+version = "1.0.2"
 
 [deps]
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
