@@ -107,11 +107,31 @@ _BrkgaMpIpr.jl_ also provides a thorough unit testing that aims to harden and ma
 the code ready for production environments. From Pkg REPL, just run
 
 ```julia-repl
-pkg> test
+pkg> test BrkgaMpIpr
 ```
 
 > :information_source: **NOTE:**
     The tests take about 10 minutes, mainly because the permutation path relink.
+
+Although BrkgaMpIpr should work fine on Julia >= 1.2, some tests can fail. This
+issue occurs because BrkgaMpIpr uses the JLD package to save the population and
+results. JLD uses the HDF5 package, which produces slightly different binaries
+of different Julia versions. Although the tests may fail in those cases,
+BrkgaMpIpr is functional for regular usage. In the table below, you can see
+the testing fails due to JDL binary incompatibility.
+
+| Julia version   | Windows   | Linux   | Mac OS X   |
+| :-------------: | :-------: | :-----: | :--------: |
+| 1.2             | ![](https://img.shields.io/badge/-Fail-red)   | ![](https://img.shields.io/badge/-Pass-green)   | ![](https://img.shields.io/badge/-Pass-green) |
+| 1.3             | ![](https://img.shields.io/badge/-Pass-green) | ![](https://img.shields.io/badge/-Pass-green)   | ![](https://img.shields.io/badge/-Pass-green) |
+| 1.4             | ![](https://img.shields.io/badge/-Pass-green) | ![](https://img.shields.io/badge/-Pass-green)   | ![](https://img.shields.io/badge/-Pass-green) |
+
+> :warning: **Warning**:
+    Some timing tests may fail when carried out on virtual machines and
+    containers. The reason is that in such environments, the code runs much
+    slower than on bare metal, and some control loops take much time to finish
+    before the time stop.  Usually, the difference is a few seconds, but it is
+    enough to break some tests.
 
 > :warning: **Warning**:
     It is a hard test to test algorithms that use random signals. In
