@@ -15,7 +15,7 @@ BrkgaMpIpr.jl - Julia version
   </td>
 </tr>
 <tr>
-  <td>Travis Build Status</td>
+  <td>AppVeyor Build Status</td>
   <td>
     <a href="https://ci.appveyor.com/project/ceandrade/brkga-mp-ipr-julia">
     <img src="https://ci.appveyor.com/api/projects/status/nea1697qj5jt9sed?svg=true" alt="Build Status" />
