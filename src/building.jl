@@ -1,12 +1,12 @@
 ################################################################################
 # building.jl: Building and parameter setup routines.
 #
-# (c) Copyright 2019, Carlos Eduardo de Andrade. All Rights Reserved.
+# (c) Copyright 2022, Carlos Eduardo de Andrade. All Rights Reserved.
 #
 # This code is released under LICENSE.md.
 #
 # Created on:  Mar 20, 2018 by ceandrade
-# Last update: Nov 27, 2019 by ceandrade
+# Last update: May 18, 2022 by ceandrade
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -96,14 +96,18 @@ function build_brkga(problem_instance::AbstractInstance,
     end
 
     # Check for errors.
-    if chromosome_size < 1
-        throw(ArgumentError("chromosome size must be larger than zero: $chromosome_size"))
+    if chromosome_size < 2
+        throw(ArgumentError("chromosome size must be larger than one, " * 
+                            "current: $chromosome_size"))
     elseif bp.population_size < 1
-        throw(ArgumentError("population size must be larger than zero: $(bp.population_size)"))
+        throw(ArgumentError("population size must be larger than zero, " * 
+                            "current: $(bp.population_size)"))
     elseif elite_size < 1
-        throw(ArgumentError("elite-set size less then one: $elite_size"))
+        throw(ArgumentError("elite-set size less then one, " * 
+                            "current: $elite_size"))
     elseif num_mutants < 0
-        throw(ArgumentError("mutant-set size less then zero: $num_mutants"))
+        throw(ArgumentError("mutant-set size less then zero, " * 
+                            "current: $num_mutants"))
     elseif elite_size > bp.population_size
         throw(ArgumentError("elite-set size ($elite_size) greater than " *
                             "population size ($(bp.population_size)"))
@@ -111,27 +115,30 @@ function build_brkga(problem_instance::AbstractInstance,
         throw(ArgumentError("mutant-set size ($num_mutants) greater than " *
                             "population size ($(bp.population_size)"))
     elseif elite_size + num_mutants > bp.population_size
-        throw(ArgumentError("elite ($elite_size) + mutant sets ($num_mutants)" *
-                            " greater than population size ($(bp.population_size))"))
+        throw(ArgumentError("elite ($elite_size) + mutant sets ($num_mutants) " *
+                            "greater than population size ($(bp.population_size))"))
     elseif bp.num_elite_parents < 1
-        throw(ArgumentError("num_elite_parents must be at least 1: $(bp.num_elite_parents)"))
+        throw(ArgumentError("num_elite_parents must be at least 1, " *
+                            "current: $(bp.num_elite_parents)"))
     elseif bp.total_parents < 2
-        throw(ArgumentError("total_parents must be at least 2: $(bp.total_parents)"))
+        throw(ArgumentError("total_parents must be at least 2, " *
+                            "current: $(bp.total_parents)"))
     elseif bp.num_elite_parents >= bp.total_parents
         throw(ArgumentError("num_elite_parents ($(bp.num_elite_parents) is " *
-                            "greater than or equal to total_parents ($(bp.total_parents)"))
+                            "greater than or equal to " * 
+                            "total_parents ($(bp.total_parents)"))
     elseif bp.num_elite_parents > elite_size
         throw(ArgumentError("num_elite_parents ($(bp.num_elite_parents) is " *
                              "greater than elite set ($elite_size)"))
     elseif bp.num_independent_populations < 1
         throw(ArgumentError("number of parallel populations must be larger " *
-                            "than zero: $(bp.num_independent_populations)"))
+                            "than zero, current: $(bp.num_independent_populations)"))
     elseif bp.alpha_block_size <= 0.0
-        throw(ArgumentError("alpha_block_size must be larger than zero: " *
-                            "$(bp.alpha_block_size)"))
+        throw(ArgumentError("alpha_block_size must be larger than zero, " *
+                            "current: $(bp.alpha_block_size)"))
     elseif bp.pr_percentage <= 0.0 || bp.pr_percentage > 1.0
-        throw(ArgumentError("percentage / path size must be in (0, 1]: " *
-                            "$(bp.pr_percentage)"))
+        throw(ArgumentError("percentage / path size must be in (0, 1], " *
+                            "current $(bp.pr_percentage)"))
     end
 
     brkga_data = BrkgaData(
@@ -406,9 +413,11 @@ function set_initial_population!(brkga_data::BrkgaData,
 
     bd = brkga_data
     if length(chromosomes) > bd.params.population_size
-        throw(ArgumentError("number of given chromosomes " *
+        throw(ArgumentError(
+            "number of given chromosomes " *
             "($(length(chromosomes))) is larger than the population size " *
-            "($(bd.params.population_size))"))
+            "($(bd.params.population_size))"
+        ))
     end
 
     # Clean up the current population.
@@ -418,8 +427,8 @@ function set_initial_population!(brkga_data::BrkgaData,
     for (i, chr) in enumerate(chromosomes)
         if length(chr) != bd.chromosome_size
             msg = "error on setting initial population: chromosome $i does " *
-                "not have the required dimension (actual size: " *
-                "$(length(chr)), required size: $(bd.chromosome_size))"
+                  "not have the required dimension (actual size: " *
+                  "$(length(chr)), required size: $(bd.chromosome_size))"
             throw(ArgumentError(msg))
         end
         push!(current[1].chromosomes, copy(chr))
